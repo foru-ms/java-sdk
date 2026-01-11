@@ -47,7 +47,7 @@ java {
 
 group = 'com.foru-ms'
 
-version = '0.0.29'
+version = '0.0.30'
 
 jar {
     dependsOn(":generatePomFileForMavenPublication")
@@ -78,7 +78,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.foru-ms'
             artifactId = 'sdk'
-            version = '0.0.29'
+            version = '0.0.30'
             from components.java
             pom {
                 name = 'foru-ms'

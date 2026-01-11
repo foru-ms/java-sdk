@@ -31,7 +31,7 @@ Add the dependency in your `pom.xml` file:
 <dependency>
   <groupId>com.foru-ms</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.0.29</version>
+  <version>0.0.30</version>
 </dependency>
 ```
 
