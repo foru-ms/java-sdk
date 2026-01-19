@@ -5,14 +5,15 @@ package com.foru.ms.api.resources.reports;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.reports.requests.DeleteReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsRequest;
-import com.foru.ms.api.resources.reports.requests.PostReportsRequest;
-import com.foru.ms.api.resources.reports.types.DeleteReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsResponse;
-import com.foru.ms.api.resources.reports.types.PostReportsResponse;
+import com.foru.ms.api.resources.reports.requests.CreateReportsRequest;
+import com.foru.ms.api.resources.reports.requests.DeleteReportsRequest;
+import com.foru.ms.api.resources.reports.requests.ListReportsRequest;
+import com.foru.ms.api.resources.reports.requests.RetrieveReportsRequest;
+import com.foru.ms.api.resources.reports.requests.UpdateReportsRequest;
+import com.foru.ms.api.resources.reports.types.UpdateReportsResponse;
+import com.foru.ms.api.types.ReportListResponse;
+import com.foru.ms.api.types.ReportResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncReportsClient {
@@ -32,63 +33,132 @@ public class AsyncReportsClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetReportsResponse> listAllReports() {
-        return this.rawClient.listAllReports().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ReportListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsResponse> listAllReports(RequestOptions requestOptions) {
-        return this.rawClient.listAllReports(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ReportListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsResponse> listAllReports(GetReportsRequest request) {
-        return this.rawClient.listAllReports(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ReportListResponse> list(ListReportsRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsResponse> listAllReports(
-            GetReportsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllReports(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ReportListResponse> list(ListReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostReportsResponse> createAReport(PostReportsRequest request) {
-        return this.rawClient.createAReport(request).thenApply(response -> response.body());
+    /**
+     * Create a new report.
+     */
+    public CompletableFuture<ReportResponse> create(CreateReportsRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostReportsResponse> createAReport(
-            PostReportsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAReport(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create a new report.
+     */
+    public CompletableFuture<ReportResponse> create(CreateReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsIdResponse> getAReport(String id) {
-        return this.rawClient.getAReport(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ReportResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsIdResponse> getAReport(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAReport(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ReportResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsIdResponse> getAReport(String id, GetReportsIdRequest request) {
-        return this.rawClient.getAReport(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ReportResponse> retrieve(String id, RetrieveReportsRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetReportsIdResponse> getAReport(
-            String id, GetReportsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAReport(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ReportResponse> retrieve(
+            String id, RetrieveReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteReportsIdResponse> deleteAReport(String id) {
-        return this.rawClient.deleteAReport(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteReportsIdResponse> deleteAReport(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAReport(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteReportsIdResponse> deleteAReport(String id, DeleteReportsIdRequest request) {
-        return this.rawClient.deleteAReport(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteReportsRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteReportsIdResponse> deleteAReport(
-            String id, DeleteReportsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAReport(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateReportsResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateReportsResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateReportsResponse> update(String id, UpdateReportsRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateReportsResponse> update(
+            String id, UpdateReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 }

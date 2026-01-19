@@ -18,27 +18,26 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersRequest;
-import com.foru.ms.api.resources.users.requests.PatchUsersIdRequest;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersResponse;
-import com.foru.ms.api.resources.users.types.PatchUsersIdResponse;
+import com.foru.ms.api.resources.users.requests.CreateUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowersUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveUsersRequest;
+import com.foru.ms.api.resources.users.requests.UpdateUsersRequest;
+import com.foru.ms.api.resources.users.types.RetrieveFollowerUsersResponse;
+import com.foru.ms.api.resources.users.types.RetrieveFollowingUsersResponse;
+import com.foru.ms.api.resources.users.types.UpdateUsersResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.UserFollowerListResponse;
+import com.foru.ms.api.types.UserFollowingListResponse;
+import com.foru.ms.api.types.UserListResponse;
+import com.foru.ms.api.types.UserResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -59,34 +58,50 @@ public class AsyncRawUsersClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersResponse>> listAllUsers() {
-        return listAllUsers(GetUsersRequest.builder().build());
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserListResponse>> list() {
+        return list(ListUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersResponse>> listAllUsers(RequestOptions requestOptions) {
-        return listAllUsers(GetUsersRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserListResponse>> list(RequestOptions requestOptions) {
+        return list(ListUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersResponse>> listAllUsers(GetUsersRequest request) {
-        return listAllUsers(request, null);
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserListResponse>> list(ListUsersRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersResponse>> listAllUsers(
-            GetUsersRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserListResponse>> list(
+            ListUsersRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -98,7 +113,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetUsersResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UserListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -106,7 +121,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserListResponse.class),
                                 response));
                         return;
                     }
@@ -153,22 +168,125 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdResponse>> getAUser(String id) {
-        return getAUser(id, GetUsersIdRequest.builder().build());
+    /**
+     * Create a new user.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserResponse>> create(CreateUsersRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdResponse>> getAUser(
-            String id, RequestOptions requestOptions) {
-        return getAUser(id, GetUsersIdRequest.builder().build(), requestOptions);
+    /**
+     * Create a new user.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserResponse>> create(
+            CreateUsersRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("users")
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<ForumClientHttpResponse<UserResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    if (response.isSuccessful()) {
+                        future.complete(new ForumClientHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserResponse.class), response));
+                        return;
+                    }
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 402:
+                                future.completeExceptionally(new PaymentRequiredError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 429:
+                                future.completeExceptionally(new TooManyRequestsError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                    future.completeExceptionally(new ForumClientApiException(
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdResponse>> getAUser(
-            String id, GetUsersIdRequest request) {
-        return getAUser(id, request, null);
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdResponse>> getAUser(
-            String id, GetUsersIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserResponse>> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveUsersRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserResponse>> retrieve(String id, RetrieveUsersRequest request) {
+        return retrieve(id, request, null);
+    }
+
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserResponse>> retrieve(
+            String id, RetrieveUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -184,7 +302,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetUsersIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UserResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -192,8 +310,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersIdResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserResponse.class), response));
                         return;
                     }
                     try {
@@ -244,22 +361,33 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdResponse>> deleteAUser(String id) {
-        return deleteAUser(id, DeleteUsersIdRequest.builder().build());
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdResponse>> deleteAUser(
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteAUser(id, DeleteUsersIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdResponse>> deleteAUser(
-            String id, DeleteUsersIdRequest request) {
-        return deleteAUser(id, request, null);
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id, DeleteUsersRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdResponse>> deleteAUser(
-            String id, DeleteUsersIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -275,7 +403,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteUsersIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -283,7 +411,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteUsersIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -335,22 +463,34 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchUsersIdResponse>> updateAUser(String id) {
-        return updateAUser(id, PatchUsersIdRequest.builder().build());
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateUsersResponse>> update(String id) {
+        return update(id, UpdateUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchUsersIdResponse>> updateAUser(
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateUsersResponse>> update(
             String id, RequestOptions requestOptions) {
-        return updateAUser(id, PatchUsersIdRequest.builder().build(), requestOptions);
+        return update(id, UpdateUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchUsersIdResponse>> updateAUser(
-            String id, PatchUsersIdRequest request) {
-        return updateAUser(id, request, null);
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateUsersResponse>> update(
+            String id, UpdateUsersRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchUsersIdResponse>> updateAUser(
-            String id, PatchUsersIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateUsersResponse>> update(
+            String id, UpdateUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -374,7 +514,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PatchUsersIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UpdateUsersResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -382,7 +522,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchUsersIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateUsersResponse.class),
                                 response));
                         return;
                     }
@@ -439,34 +579,46 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersResponse>> listUserFollowers(String id) {
-        return listUserFollowers(id, GetUsersIdFollowersRequest.builder().build());
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowerListResponse>> listFollowers(String id) {
+        return listFollowers(id, ListFollowersUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersResponse>> listUserFollowers(
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowerListResponse>> listFollowers(
             String id, RequestOptions requestOptions) {
-        return listUserFollowers(id, GetUsersIdFollowersRequest.builder().build(), requestOptions);
+        return listFollowers(id, ListFollowersUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersResponse>> listUserFollowers(
-            String id, GetUsersIdFollowersRequest request) {
-        return listUserFollowers(id, request, null);
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowerListResponse>> listFollowers(
+            String id, ListFollowersUsersRequest request) {
+        return listFollowers(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersResponse>> listUserFollowers(
-            String id, GetUsersIdFollowersRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowerListResponse>> listFollowers(
+            String id, ListFollowersUsersRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
                 .addPathSegment(id)
                 .addPathSegments("followers");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -478,7 +630,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UserFollowerListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -486,8 +638,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetUsersIdFollowersResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserFollowerListResponse.class),
                                 response));
                         return;
                     }
@@ -534,25 +685,25 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse>> getAFollowerFromUser(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowerUsersResponse>> retrieveFollower(
             String id, String subId) {
-        return getAFollowerFromUser(
-                id, subId, GetUsersIdFollowersSubIdRequest.builder().build());
+        return retrieveFollower(
+                id, subId, RetrieveFollowerUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse>> getAFollowerFromUser(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowerUsersResponse>> retrieveFollower(
             String id, String subId, RequestOptions requestOptions) {
-        return getAFollowerFromUser(
-                id, subId, GetUsersIdFollowersSubIdRequest.builder().build(), requestOptions);
+        return retrieveFollower(
+                id, subId, RetrieveFollowerUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse>> getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request) {
-        return getAFollowerFromUser(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowerUsersResponse>> retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request) {
+        return retrieveFollower(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse>> getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowerUsersResponse>> retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -570,7 +721,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RetrieveFollowerUsersResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -579,7 +730,7 @@ public class AsyncRawUsersClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetUsersIdFollowersSubIdResponse.class),
+                                        responseBodyString, RetrieveFollowerUsersResponse.class),
                                 response));
                         return;
                     }
@@ -626,25 +777,22 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse>> deleteAFollowerFromUser(
-            String id, String subId) {
-        return deleteAFollowerFromUser(
-                id, subId, DeleteUsersIdFollowersSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollower(String id, String subId) {
+        return deleteFollower(id, subId, DeleteFollowerUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse>> deleteAFollowerFromUser(
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollower(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteAFollowerFromUser(
-                id, subId, DeleteUsersIdFollowersSubIdRequest.builder().build(), requestOptions);
+        return deleteFollower(id, subId, DeleteFollowerUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse>> deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request) {
-        return deleteAFollowerFromUser(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request) {
+        return deleteFollower(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse>> deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -662,8 +810,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -671,8 +818,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeleteUsersIdFollowersSubIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -719,34 +865,46 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingResponse>> listUserFollowing(String id) {
-        return listUserFollowing(id, GetUsersIdFollowingRequest.builder().build());
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowingListResponse>> listFollowing(String id) {
+        return listFollowing(id, ListFollowingUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingResponse>> listUserFollowing(
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowingListResponse>> listFollowing(
             String id, RequestOptions requestOptions) {
-        return listUserFollowing(id, GetUsersIdFollowingRequest.builder().build(), requestOptions);
+        return listFollowing(id, ListFollowingUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingResponse>> listUserFollowing(
-            String id, GetUsersIdFollowingRequest request) {
-        return listUserFollowing(id, request, null);
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowingListResponse>> listFollowing(
+            String id, ListFollowingUsersRequest request) {
+        return listFollowing(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingResponse>> listUserFollowing(
-            String id, GetUsersIdFollowingRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UserFollowingListResponse>> listFollowing(
+            String id, ListFollowingUsersRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
                 .addPathSegment(id)
                 .addPathSegments("following");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -758,7 +916,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UserFollowingListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -767,7 +925,7 @@ public class AsyncRawUsersClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetUsersIdFollowingResponse.class),
+                                        responseBodyString, UserFollowingListResponse.class),
                                 response));
                         return;
                     }
@@ -814,25 +972,25 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse>> getAFollowingFromUser(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowingUsersResponse>> retrieveFollowing(
             String id, String subId) {
-        return getAFollowingFromUser(
-                id, subId, GetUsersIdFollowingSubIdRequest.builder().build());
+        return retrieveFollowing(
+                id, subId, RetrieveFollowingUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse>> getAFollowingFromUser(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowingUsersResponse>> retrieveFollowing(
             String id, String subId, RequestOptions requestOptions) {
-        return getAFollowingFromUser(
-                id, subId, GetUsersIdFollowingSubIdRequest.builder().build(), requestOptions);
+        return retrieveFollowing(
+                id, subId, RetrieveFollowingUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse>> getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request) {
-        return getAFollowingFromUser(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowingUsersResponse>> retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request) {
+        return retrieveFollowing(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse>> getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrieveFollowingUsersResponse>> retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -850,7 +1008,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RetrieveFollowingUsersResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -859,7 +1017,7 @@ public class AsyncRawUsersClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetUsersIdFollowingSubIdResponse.class),
+                                        responseBodyString, RetrieveFollowingUsersResponse.class),
                                 response));
                         return;
                     }
@@ -906,25 +1064,22 @@ public class AsyncRawUsersClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse>> deleteAFollowingFromUser(
-            String id, String subId) {
-        return deleteAFollowingFromUser(
-                id, subId, DeleteUsersIdFollowingSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollowing(String id, String subId) {
+        return deleteFollowing(id, subId, DeleteFollowingUsersRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse>> deleteAFollowingFromUser(
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollowing(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteAFollowingFromUser(
-                id, subId, DeleteUsersIdFollowingSubIdRequest.builder().build(), requestOptions);
+        return deleteFollowing(id, subId, DeleteFollowingUsersRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse>> deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request) {
-        return deleteAFollowingFromUser(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request) {
+        return deleteFollowing(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse>> deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -942,8 +1097,7 @@ public class AsyncRawUsersClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -951,8 +1105,7 @@ public class AsyncRawUsersClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeleteUsersIdFollowingSubIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }

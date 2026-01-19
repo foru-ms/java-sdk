@@ -5,32 +5,27 @@ package com.foru.ms.api.resources.posts;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdPostsRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsRequest;
-import com.foru.ms.api.resources.posts.requests.PatchPostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.PostPostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.PostPostsRequest;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdPostsResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsResponse;
-import com.foru.ms.api.resources.posts.types.PatchPostsIdResponse;
-import com.foru.ms.api.resources.posts.types.PostPostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.PostPostsResponse;
+import com.foru.ms.api.resources.posts.requests.CreatePostsRequest;
+import com.foru.ms.api.resources.posts.requests.CreateReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeletePostPostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeletePostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeleteReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListPostsPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListReactionsPostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrievePostPostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrievePostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrieveReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.UpdatePostsRequest;
+import com.foru.ms.api.resources.posts.types.RetrievePostPostsResponse;
+import com.foru.ms.api.resources.posts.types.RetrieveReactionPostsResponse;
+import com.foru.ms.api.resources.posts.types.UpdatePostsResponse;
+import com.foru.ms.api.types.PostListResponse;
+import com.foru.ms.api.types.PostPostListResponse;
+import com.foru.ms.api.types.PostReactionListResponse;
+import com.foru.ms.api.types.PostReactionResponse;
+import com.foru.ms.api.types.PostResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class PostsClient {
     protected final ClientOptions clientOptions;
@@ -49,230 +44,272 @@ public class PostsClient {
         return this.rawClient;
     }
 
-    public GetPostsResponse listAllPosts() {
-        return this.rawClient.listAllPosts().body();
-    }
-
-    public GetPostsResponse listAllPosts(RequestOptions requestOptions) {
-        return this.rawClient.listAllPosts(requestOptions).body();
-    }
-
-    public GetPostsResponse listAllPosts(GetPostsRequest request) {
-        return this.rawClient.listAllPosts(request).body();
-    }
-
-    public GetPostsResponse listAllPosts(GetPostsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllPosts(request, requestOptions).body();
-    }
-
-    public PostPostsResponse createAPost(PostPostsRequest request) {
-        return this.rawClient.createAPost(request).body();
-    }
-
-    public PostPostsResponse createAPost(PostPostsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAPost(request, requestOptions).body();
-    }
-
-    public GetPostsIdResponse getAPost(String id) {
-        return this.rawClient.getAPost(id).body();
-    }
-
-    public GetPostsIdResponse getAPost(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAPost(id, requestOptions).body();
-    }
-
-    public GetPostsIdResponse getAPost(String id, GetPostsIdRequest request) {
-        return this.rawClient.getAPost(id, request).body();
-    }
-
-    public GetPostsIdResponse getAPost(String id, GetPostsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAPost(id, request, requestOptions).body();
-    }
-
-    public DeletePostsIdResponse deleteAPost(String id) {
-        return this.rawClient.deleteAPost(id).body();
-    }
-
-    public DeletePostsIdResponse deleteAPost(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPost(id, requestOptions).body();
-    }
-
-    public DeletePostsIdResponse deleteAPost(String id, DeletePostsIdRequest request) {
-        return this.rawClient.deleteAPost(id, request).body();
-    }
-
-    public DeletePostsIdResponse deleteAPost(String id, DeletePostsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPost(id, request, requestOptions).body();
-    }
-
-    public PatchPostsIdResponse updateAPost(String id) {
-        return this.rawClient.updateAPost(id).body();
-    }
-
-    public PatchPostsIdResponse updateAPost(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAPost(id, requestOptions).body();
-    }
-
-    public PatchPostsIdResponse updateAPost(String id, PatchPostsIdRequest request) {
-        return this.rawClient.updateAPost(id, request).body();
-    }
-
-    public PatchPostsIdResponse updateAPost(String id, PatchPostsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAPost(id, request, requestOptions).body();
-    }
-
-    public GetPostsIdReactionsResponse listPostReactions(String id) {
-        return this.rawClient.listPostReactions(id).body();
-    }
-
-    public GetPostsIdReactionsResponse listPostReactions(String id, RequestOptions requestOptions) {
-        return this.rawClient.listPostReactions(id, requestOptions).body();
-    }
-
-    public GetPostsIdReactionsResponse listPostReactions(String id, GetPostsIdReactionsRequest request) {
-        return this.rawClient.listPostReactions(id, request).body();
-    }
-
-    public GetPostsIdReactionsResponse listPostReactions(
-            String id, GetPostsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listPostReactions(id, request, requestOptions).body();
-    }
-
-    public PostPostsIdReactionsResponse createAReactionInPost(String id, PostPostsIdReactionsRequest request) {
-        return this.rawClient.createAReactionInPost(id, request).body();
-    }
-
-    public PostPostsIdReactionsResponse createAReactionInPost(
-            String id, PostPostsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAReactionInPost(id, request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public PostListResponse list() {
+        return this.rawClient.list().body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of posts. Use cursor for pagination.
      */
-    public DeletePostsIdReactionsResponse removeYourReactionFromPost(String id) {
-        return this.rawClient.removeYourReactionFromPost(id).body();
+    public PostListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of posts. Use cursor for pagination.
      */
-    public DeletePostsIdReactionsResponse removeYourReactionFromPost(String id, RequestOptions requestOptions) {
-        return this.rawClient.removeYourReactionFromPost(id, requestOptions).body();
+    public PostListResponse list(ListPostsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of posts. Use cursor for pagination.
      */
-    public DeletePostsIdReactionsResponse removeYourReactionFromPost(String id, DeletePostsIdReactionsRequest request) {
-        return this.rawClient.removeYourReactionFromPost(id, request).body();
+    public PostListResponse list(ListPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Create a new post.
      */
-    public DeletePostsIdReactionsResponse removeYourReactionFromPost(
-            String id, DeletePostsIdReactionsRequest request, RequestOptions requestOptions) {
+    public PostResponse create(CreatePostsRequest request) {
+        return this.rawClient.create(request).body();
+    }
+
+    /**
+     * Create a new post.
+     */
+    public PostResponse create(CreatePostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public PostResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
+    }
+
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public PostResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public PostResponse retrieve(String id, RetrievePostsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
+    }
+
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public PostResponse retrieve(String id, RetrievePostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
+    }
+
+    /**
+     * Permanently delete a post.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
+    }
+
+    /**
+     * Permanently delete a post.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
+    }
+
+    /**
+     * Permanently delete a post.
+     */
+    public SuccessResponse delete(String id, DeletePostsRequest request) {
+        return this.rawClient.delete(id, request).body();
+    }
+
+    /**
+     * Permanently delete a post.
+     */
+    public SuccessResponse delete(String id, DeletePostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
+    }
+
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public UpdatePostsResponse update(String id) {
+        return this.rawClient.update(id).body();
+    }
+
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public UpdatePostsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
+    }
+
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public UpdatePostsResponse update(String id, UpdatePostsRequest request) {
+        return this.rawClient.update(id, request).body();
+    }
+
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public UpdatePostsResponse update(String id, UpdatePostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public PostReactionListResponse listReactions(String id) {
+        return this.rawClient.listReactions(id).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public PostReactionListResponse listReactions(String id, RequestOptions requestOptions) {
+        return this.rawClient.listReactions(id, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public PostReactionListResponse listReactions(String id, ListReactionsPostsRequest request) {
+        return this.rawClient.listReactions(id, request).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public PostReactionListResponse listReactions(
+            String id, ListReactionsPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listReactions(id, request, requestOptions).body();
+    }
+
+    /**
+     * Create a Reaction in Post.
+     */
+    public PostReactionResponse createReaction(String id, CreateReactionPostsRequest request) {
+        return this.rawClient.createReaction(id, request).body();
+    }
+
+    /**
+     * Create a Reaction in Post.
+     */
+    public PostReactionResponse createReaction(
+            String id, CreateReactionPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createReaction(id, request, requestOptions).body();
+    }
+
+    public SuccessResponse deleteReaction(String id, String subId) {
+        return this.rawClient.deleteReaction(id, subId).body();
+    }
+
+    public SuccessResponse deleteReaction(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteReaction(id, subId, requestOptions).body();
+    }
+
+    public SuccessResponse deleteReaction(String id, String subId, DeleteReactionPostsRequest request) {
+        return this.rawClient.deleteReaction(id, subId, request).body();
+    }
+
+    public SuccessResponse deleteReaction(
+            String id, String subId, DeleteReactionPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteReaction(id, subId, request, requestOptions).body();
+    }
+
+    public RetrieveReactionPostsResponse retrieveReaction(String id, String subId) {
+        return this.rawClient.retrieveReaction(id, subId).body();
+    }
+
+    public RetrieveReactionPostsResponse retrieveReaction(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveReaction(id, subId, requestOptions).body();
+    }
+
+    public RetrieveReactionPostsResponse retrieveReaction(
+            String id, String subId, RetrieveReactionPostsRequest request) {
+        return this.rawClient.retrieveReaction(id, subId, request).body();
+    }
+
+    public RetrieveReactionPostsResponse retrieveReaction(
+            String id, String subId, RetrieveReactionPostsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .removeYourReactionFromPost(id, request, requestOptions)
+                .retrieveReaction(id, subId, request, requestOptions)
                 .body();
     }
 
-    public GetPostsIdReactionsSubIdResponse getAReactionFromPost(String id, String subId) {
-        return this.rawClient.getAReactionFromPost(id, subId).body();
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public PostPostListResponse listPosts(String id) {
+        return this.rawClient.listPosts(id).body();
     }
 
-    public GetPostsIdReactionsSubIdResponse getAReactionFromPost(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAReactionFromPost(id, subId, requestOptions).body();
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public PostPostListResponse listPosts(String id, RequestOptions requestOptions) {
+        return this.rawClient.listPosts(id, requestOptions).body();
     }
 
-    public GetPostsIdReactionsSubIdResponse getAReactionFromPost(
-            String id, String subId, GetPostsIdReactionsSubIdRequest request) {
-        return this.rawClient.getAReactionFromPost(id, subId, request).body();
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public PostPostListResponse listPosts(String id, ListPostsPostsRequest request) {
+        return this.rawClient.listPosts(id, request).body();
     }
 
-    public GetPostsIdReactionsSubIdResponse getAReactionFromPost(
-            String id, String subId, GetPostsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAReactionFromPost(id, subId, request, requestOptions)
-                .body();
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public PostPostListResponse listPosts(String id, ListPostsPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listPosts(id, request, requestOptions).body();
     }
 
-    public DeletePostsIdReactionsSubIdResponse deleteAReactionFromPost(String id, String subId) {
-        return this.rawClient.deleteAReactionFromPost(id, subId).body();
+    public RetrievePostPostsResponse retrievePost(String id, String subId) {
+        return this.rawClient.retrievePost(id, subId).body();
     }
 
-    public DeletePostsIdReactionsSubIdResponse deleteAReactionFromPost(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.deleteAReactionFromPost(id, subId, requestOptions).body();
+    public RetrievePostPostsResponse retrievePost(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrievePost(id, subId, requestOptions).body();
     }
 
-    public DeletePostsIdReactionsSubIdResponse deleteAReactionFromPost(
-            String id, String subId, DeletePostsIdReactionsSubIdRequest request) {
-        return this.rawClient.deleteAReactionFromPost(id, subId, request).body();
+    public RetrievePostPostsResponse retrievePost(String id, String subId, RetrievePostPostsRequest request) {
+        return this.rawClient.retrievePost(id, subId, request).body();
     }
 
-    public DeletePostsIdReactionsSubIdResponse deleteAReactionFromPost(
-            String id, String subId, DeletePostsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReactionFromPost(id, subId, request, requestOptions)
-                .body();
+    public RetrievePostPostsResponse retrievePost(
+            String id, String subId, RetrievePostPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrievePost(id, subId, request, requestOptions).body();
     }
 
-    public GetPostsIdPostsResponse listPostPosts(String id) {
-        return this.rawClient.listPostPosts(id).body();
+    public SuccessResponse deletePost(String id, String subId) {
+        return this.rawClient.deletePost(id, subId).body();
     }
 
-    public GetPostsIdPostsResponse listPostPosts(String id, RequestOptions requestOptions) {
-        return this.rawClient.listPostPosts(id, requestOptions).body();
+    public SuccessResponse deletePost(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deletePost(id, subId, requestOptions).body();
     }
 
-    public GetPostsIdPostsResponse listPostPosts(String id, GetPostsIdPostsRequest request) {
-        return this.rawClient.listPostPosts(id, request).body();
+    public SuccessResponse deletePost(String id, String subId, DeletePostPostsRequest request) {
+        return this.rawClient.deletePost(id, subId, request).body();
     }
 
-    public GetPostsIdPostsResponse listPostPosts(
-            String id, GetPostsIdPostsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listPostPosts(id, request, requestOptions).body();
-    }
-
-    public GetPostsIdPostsSubIdResponse getAPostFromPost(String id, String subId) {
-        return this.rawClient.getAPostFromPost(id, subId).body();
-    }
-
-    public GetPostsIdPostsSubIdResponse getAPostFromPost(String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAPostFromPost(id, subId, requestOptions).body();
-    }
-
-    public GetPostsIdPostsSubIdResponse getAPostFromPost(String id, String subId, GetPostsIdPostsSubIdRequest request) {
-        return this.rawClient.getAPostFromPost(id, subId, request).body();
-    }
-
-    public GetPostsIdPostsSubIdResponse getAPostFromPost(
-            String id, String subId, GetPostsIdPostsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAPostFromPost(id, subId, request, requestOptions)
-                .body();
-    }
-
-    public DeletePostsIdPostsSubIdResponse deleteAPostFromPost(String id, String subId) {
-        return this.rawClient.deleteAPostFromPost(id, subId).body();
-    }
-
-    public DeletePostsIdPostsSubIdResponse deleteAPostFromPost(String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPostFromPost(id, subId, requestOptions).body();
-    }
-
-    public DeletePostsIdPostsSubIdResponse deleteAPostFromPost(
-            String id, String subId, DeletePostsIdPostsSubIdRequest request) {
-        return this.rawClient.deleteAPostFromPost(id, subId, request).body();
-    }
-
-    public DeletePostsIdPostsSubIdResponse deleteAPostFromPost(
-            String id, String subId, DeletePostsIdPostsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAPostFromPost(id, subId, request, requestOptions)
-                .body();
+    public SuccessResponse deletePost(
+            String id, String subId, DeletePostPostsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deletePost(id, subId, request, requestOptions).body();
     }
 }

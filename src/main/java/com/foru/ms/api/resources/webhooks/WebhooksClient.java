@@ -5,20 +5,20 @@ package com.foru.ms.api.resources.webhooks;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.requests.PostWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksResponse;
-import com.foru.ms.api.resources.webhooks.types.PostWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.requests.CreateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListDeliveriesWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.UpdateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.types.RetrieveDeliveryWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.types.UpdateWebhooksResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.WebhookDeliveryListResponse;
+import com.foru.ms.api.types.WebhookListResponse;
+import com.foru.ms.api.types.WebhookResponse;
 
 public class WebhooksClient {
     protected final ClientOptions clientOptions;
@@ -37,121 +37,217 @@ public class WebhooksClient {
         return this.rawClient;
     }
 
-    public GetWebhooksResponse listAllWebhooks() {
-        return this.rawClient.listAllWebhooks().body();
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetWebhooksResponse listAllWebhooks(RequestOptions requestOptions) {
-        return this.rawClient.listAllWebhooks(requestOptions).body();
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetWebhooksResponse listAllWebhooks(GetWebhooksRequest request) {
-        return this.rawClient.listAllWebhooks(request).body();
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookListResponse list(ListWebhooksRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetWebhooksResponse listAllWebhooks(GetWebhooksRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllWebhooks(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookListResponse list(ListWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostWebhooksResponse createAWebhook(PostWebhooksRequest request) {
-        return this.rawClient.createAWebhook(request).body();
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookResponse create(CreateWebhooksRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostWebhooksResponse createAWebhook(PostWebhooksRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAWebhook(request, requestOptions).body();
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookResponse create(CreateWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetWebhooksIdResponse getAWebhook(String id) {
-        return this.rawClient.getAWebhook(id).body();
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetWebhooksIdResponse getAWebhook(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAWebhook(id, requestOptions).body();
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetWebhooksIdResponse getAWebhook(String id, GetWebhooksIdRequest request) {
-        return this.rawClient.getAWebhook(id, request).body();
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookResponse retrieve(String id, RetrieveWebhooksRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetWebhooksIdResponse getAWebhook(String id, GetWebhooksIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAWebhook(id, request, requestOptions).body();
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookResponse retrieve(String id, RetrieveWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteWebhooksIdResponse deleteAWebhook(String id) {
-        return this.rawClient.deleteAWebhook(id).body();
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteWebhooksIdResponse deleteAWebhook(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAWebhook(id, requestOptions).body();
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteWebhooksIdResponse deleteAWebhook(String id, DeleteWebhooksIdRequest request) {
-        return this.rawClient.deleteAWebhook(id, request).body();
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public SuccessResponse delete(String id, DeleteWebhooksRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteWebhooksIdResponse deleteAWebhook(
-            String id, DeleteWebhooksIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAWebhook(id, request, requestOptions).body();
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public SuccessResponse delete(String id, DeleteWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public GetWebhooksIdDeliveriesResponse listWebhookDeliveries(String id) {
-        return this.rawClient.listWebhookDeliveries(id).body();
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public UpdateWebhooksResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public GetWebhooksIdDeliveriesResponse listWebhookDeliveries(String id, RequestOptions requestOptions) {
-        return this.rawClient.listWebhookDeliveries(id, requestOptions).body();
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public UpdateWebhooksResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public GetWebhooksIdDeliveriesResponse listWebhookDeliveries(String id, GetWebhooksIdDeliveriesRequest request) {
-        return this.rawClient.listWebhookDeliveries(id, request).body();
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public UpdateWebhooksResponse update(String id, UpdateWebhooksRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public GetWebhooksIdDeliveriesResponse listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listWebhookDeliveries(id, request, requestOptions).body();
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public UpdateWebhooksResponse update(String id, UpdateWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 
-    public GetWebhooksIdDeliveriesSubIdResponse getADeliveryFromWebhook(String id, String subId) {
-        return this.rawClient.getADeliveryFromWebhook(id, subId).body();
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookDeliveryListResponse listDeliveries(String id) {
+        return this.rawClient.listDeliveries(id).body();
     }
 
-    public GetWebhooksIdDeliveriesSubIdResponse getADeliveryFromWebhook(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getADeliveryFromWebhook(id, subId, requestOptions).body();
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookDeliveryListResponse listDeliveries(String id, RequestOptions requestOptions) {
+        return this.rawClient.listDeliveries(id, requestOptions).body();
     }
 
-    public GetWebhooksIdDeliveriesSubIdResponse getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request) {
-        return this.rawClient.getADeliveryFromWebhook(id, subId, request).body();
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookDeliveryListResponse listDeliveries(String id, ListDeliveriesWebhooksRequest request) {
+        return this.rawClient.listDeliveries(id, request).body();
     }
 
-    public GetWebhooksIdDeliveriesSubIdResponse getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public WebhookDeliveryListResponse listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listDeliveries(id, request, requestOptions).body();
+    }
+
+    public RetrieveDeliveryWebhooksResponse retrieveDelivery(String id, String subId) {
+        return this.rawClient.retrieveDelivery(id, subId).body();
+    }
+
+    public RetrieveDeliveryWebhooksResponse retrieveDelivery(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveDelivery(id, subId, requestOptions).body();
+    }
+
+    public RetrieveDeliveryWebhooksResponse retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request) {
+        return this.rawClient.retrieveDelivery(id, subId, request).body();
+    }
+
+    public RetrieveDeliveryWebhooksResponse retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getADeliveryFromWebhook(id, subId, request, requestOptions)
+                .retrieveDelivery(id, subId, request, requestOptions)
                 .body();
     }
 
-    public DeleteWebhooksIdDeliveriesSubIdResponse deleteADeliveryFromWebhook(String id, String subId) {
-        return this.rawClient.deleteADeliveryFromWebhook(id, subId).body();
+    public SuccessResponse deleteDelivery(String id, String subId) {
+        return this.rawClient.deleteDelivery(id, subId).body();
     }
 
-    public DeleteWebhooksIdDeliveriesSubIdResponse deleteADeliveryFromWebhook(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteADeliveryFromWebhook(id, subId, requestOptions)
-                .body();
+    public SuccessResponse deleteDelivery(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteDelivery(id, subId, requestOptions).body();
     }
 
-    public DeleteWebhooksIdDeliveriesSubIdResponse deleteADeliveryFromWebhook(
-            String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request) {
-        return this.rawClient.deleteADeliveryFromWebhook(id, subId, request).body();
+    public SuccessResponse deleteDelivery(String id, String subId, DeleteDeliveryWebhooksRequest request) {
+        return this.rawClient.deleteDelivery(id, subId, request).body();
     }
 
-    public DeleteWebhooksIdDeliveriesSubIdResponse deleteADeliveryFromWebhook(
-            String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteADeliveryFromWebhook(id, subId, request, requestOptions)
-                .body();
+    public SuccessResponse deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteDelivery(id, subId, request, requestOptions).body();
     }
 }

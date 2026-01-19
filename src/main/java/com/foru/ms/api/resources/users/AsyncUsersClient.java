@@ -5,26 +5,25 @@ package com.foru.ms.api.resources.users;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersRequest;
-import com.foru.ms.api.resources.users.requests.PatchUsersIdRequest;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersResponse;
-import com.foru.ms.api.resources.users.types.PatchUsersIdResponse;
+import com.foru.ms.api.resources.users.requests.CreateUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowersUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveUsersRequest;
+import com.foru.ms.api.resources.users.requests.UpdateUsersRequest;
+import com.foru.ms.api.resources.users.types.RetrieveFollowerUsersResponse;
+import com.foru.ms.api.resources.users.types.RetrieveFollowingUsersResponse;
+import com.foru.ms.api.resources.users.types.UpdateUsersResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.UserFollowerListResponse;
+import com.foru.ms.api.types.UserFollowingListResponse;
+import com.foru.ms.api.types.UserListResponse;
+import com.foru.ms.api.types.UserResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncUsersClient {
@@ -44,192 +43,270 @@ public class AsyncUsersClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetUsersResponse> listAllUsers() {
-        return this.rawClient.listAllUsers().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<UserListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersResponse> listAllUsers(RequestOptions requestOptions) {
-        return this.rawClient.listAllUsers(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<UserListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersResponse> listAllUsers(GetUsersRequest request) {
-        return this.rawClient.listAllUsers(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<UserListResponse> list(ListUsersRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersResponse> listAllUsers(GetUsersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllUsers(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public CompletableFuture<UserListResponse> list(ListUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdResponse> getAUser(String id) {
-        return this.rawClient.getAUser(id).thenApply(response -> response.body());
+    /**
+     * Create a new user.
+     */
+    public CompletableFuture<UserResponse> create(CreateUsersRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdResponse> getAUser(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAUser(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create a new user.
+     */
+    public CompletableFuture<UserResponse> create(CreateUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdResponse> getAUser(String id, GetUsersIdRequest request) {
-        return this.rawClient.getAUser(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<UserResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdResponse> getAUser(
-            String id, GetUsersIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAUser(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<UserResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdResponse> deleteAUser(String id) {
-        return this.rawClient.deleteAUser(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<UserResponse> retrieve(String id, RetrieveUsersRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdResponse> deleteAUser(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAUser(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public CompletableFuture<UserResponse> retrieve(
+            String id, RetrieveUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdResponse> deleteAUser(String id, DeleteUsersIdRequest request) {
-        return this.rawClient.deleteAUser(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdResponse> deleteAUser(
-            String id, DeleteUsersIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAUser(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchUsersIdResponse> updateAUser(String id) {
-        return this.rawClient.updateAUser(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteUsersRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchUsersIdResponse> updateAUser(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAUser(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a user.
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchUsersIdResponse> updateAUser(String id, PatchUsersIdRequest request) {
-        return this.rawClient.updateAUser(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateUsersResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchUsersIdResponse> updateAUser(
-            String id, PatchUsersIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAUser(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateUsersResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersResponse> listUserFollowers(String id) {
-        return this.rawClient.listUserFollowers(id).thenApply(response -> response.body());
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateUsersResponse> update(String id, UpdateUsersRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersResponse> listUserFollowers(String id, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowers(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateUsersResponse> update(
+            String id, UpdateUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersResponse> listUserFollowers(
-            String id, GetUsersIdFollowersRequest request) {
-        return this.rawClient.listUserFollowers(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<UserFollowerListResponse> listFollowers(String id) {
+        return this.rawClient.listFollowers(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersResponse> listUserFollowers(
-            String id, GetUsersIdFollowersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowers(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<UserFollowerListResponse> listFollowers(String id, RequestOptions requestOptions) {
+        return this.rawClient.listFollowers(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(String id, String subId) {
-        return this.rawClient.getAFollowerFromUser(id, subId).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<UserFollowerListResponse> listFollowers(String id, ListFollowersUsersRequest request) {
+        return this.rawClient.listFollowers(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public CompletableFuture<UserFollowerListResponse> listFollowers(
+            String id, ListFollowersUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listFollowers(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveFollowerUsersResponse> retrieveFollower(String id, String subId) {
+        return this.rawClient.retrieveFollower(id, subId).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveFollowerUsersResponse> retrieveFollower(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAFollowerFromUser(id, subId, requestOptions).thenApply(response -> response.body());
+        return this.rawClient.retrieveFollower(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request) {
-        return this.rawClient.getAFollowerFromUser(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveFollowerUsersResponse> retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request) {
+        return this.rawClient.retrieveFollower(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<RetrieveFollowerUsersResponse> retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAFollowerFromUser(id, subId, request, requestOptions)
+                .retrieveFollower(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(String id, String subId) {
-        return this.rawClient.deleteAFollowerFromUser(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteFollower(String id, String subId) {
+        return this.rawClient.deleteFollower(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
+    public CompletableFuture<SuccessResponse> deleteFollower(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteFollower(id, subId, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request) {
+        return this.rawClient.deleteFollower(id, subId, request).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteFollower(id, subId, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<UserFollowingListResponse> listFollowing(String id) {
+        return this.rawClient.listFollowing(id).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<UserFollowingListResponse> listFollowing(String id, RequestOptions requestOptions) {
+        return this.rawClient.listFollowing(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<UserFollowingListResponse> listFollowing(String id, ListFollowingUsersRequest request) {
+        return this.rawClient.listFollowing(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public CompletableFuture<UserFollowingListResponse> listFollowing(
+            String id, ListFollowingUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listFollowing(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveFollowingUsersResponse> retrieveFollowing(String id, String subId) {
+        return this.rawClient.retrieveFollowing(id, subId).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveFollowingUsersResponse> retrieveFollowing(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.deleteAFollowerFromUser(id, subId, requestOptions).thenApply(response -> response.body());
+        return this.rawClient.retrieveFollowing(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request) {
-        return this.rawClient.deleteAFollowerFromUser(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveFollowingUsersResponse> retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request) {
+        return this.rawClient.retrieveFollowing(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<RetrieveFollowingUsersResponse> retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .deleteAFollowerFromUser(id, subId, request, requestOptions)
+                .retrieveFollowing(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowingResponse> listUserFollowing(String id) {
-        return this.rawClient.listUserFollowing(id).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteFollowing(String id, String subId) {
+        return this.rawClient.deleteFollowing(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowingResponse> listUserFollowing(String id, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowing(id, requestOptions).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteFollowing(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteFollowing(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowingResponse> listUserFollowing(
-            String id, GetUsersIdFollowingRequest request) {
-        return this.rawClient.listUserFollowing(id, request).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request) {
+        return this.rawClient.deleteFollowing(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetUsersIdFollowingResponse> listUserFollowing(
-            String id, GetUsersIdFollowingRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowing(id, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(String id, String subId) {
-        return this.rawClient.getAFollowingFromUser(id, subId).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAFollowingFromUser(id, subId, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request) {
-        return this.rawClient.getAFollowingFromUser(id, subId, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<SuccessResponse> deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAFollowingFromUser(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(String id, String subId) {
-        return this.rawClient.deleteAFollowingFromUser(id, subId).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAFollowingFromUser(id, subId, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request) {
-        return this.rawClient.deleteAFollowingFromUser(id, subId, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAFollowingFromUser(id, subId, request, requestOptions)
+                .deleteFollowing(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 }

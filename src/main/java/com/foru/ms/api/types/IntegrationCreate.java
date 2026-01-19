@@ -24,29 +24,45 @@ import org.jetbrains.annotations.NotNull;
 public final class IntegrationCreate {
     private final String type;
 
+    private final String name;
+
     private final Map<String, Object> config;
 
-    private final Optional<Boolean> enabled;
+    private final Optional<Boolean> active;
+
+    private final Optional<Map<String, Object>> extendedData;
 
     private final Map<String, Object> additionalProperties;
 
     private IntegrationCreate(
             String type,
+            String name,
             Map<String, Object> config,
-            Optional<Boolean> enabled,
+            Optional<Boolean> active,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
         this.type = type;
+        this.name = name;
         this.config = config;
-        this.enabled = enabled;
+        this.active = active;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Integration type (e.g. slack, discord)
+     * @return Integration type (e.g. SLACK, DISCORD)
      */
     @JsonProperty("type")
     public String getType() {
         return type;
+    }
+
+    /**
+     * @return Integration name
+     */
+    @JsonProperty("name")
+    public String getName() {
+        return name;
     }
 
     /**
@@ -57,9 +73,20 @@ public final class IntegrationCreate {
         return config;
     }
 
-    @JsonProperty("enabled")
-    public Optional<Boolean> getEnabled() {
-        return enabled;
+    /**
+     * @return Whether integration is active
+     */
+    @JsonProperty("active")
+    public Optional<Boolean> getActive() {
+        return active;
+    }
+
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
     }
 
     @java.lang.Override
@@ -74,12 +101,16 @@ public final class IntegrationCreate {
     }
 
     private boolean equalTo(IntegrationCreate other) {
-        return type.equals(other.type) && config.equals(other.config) && enabled.equals(other.enabled);
+        return type.equals(other.type)
+                && name.equals(other.name)
+                && config.equals(other.config)
+                && active.equals(other.active)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.type, this.config, this.enabled);
+        return Objects.hash(this.type, this.name, this.config, this.active, this.extendedData);
     }
 
     @java.lang.Override
@@ -93,11 +124,18 @@ public final class IntegrationCreate {
 
     public interface TypeStage {
         /**
-         * <p>Integration type (e.g. slack, discord)</p>
+         * <p>Integration type (e.g. SLACK, DISCORD)</p>
          */
-        _FinalStage type(@NotNull String type);
+        NameStage type(@NotNull String type);
 
         Builder from(IntegrationCreate other);
+    }
+
+    public interface NameStage {
+        /**
+         * <p>Integration name</p>
+         */
+        _FinalStage name(@NotNull String name);
     }
 
     public interface _FinalStage {
@@ -112,16 +150,30 @@ public final class IntegrationCreate {
 
         _FinalStage config(String key, Object value);
 
-        _FinalStage enabled(Optional<Boolean> enabled);
+        /**
+         * <p>Whether integration is active</p>
+         */
+        _FinalStage active(Optional<Boolean> active);
 
-        _FinalStage enabled(Boolean enabled);
+        _FinalStage active(Boolean active);
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
+
+        _FinalStage extendedData(Map<String, Object> extendedData);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TypeStage, _FinalStage {
+    public static final class Builder implements TypeStage, NameStage, _FinalStage {
         private String type;
 
-        private Optional<Boolean> enabled = Optional.empty();
+        private String name;
+
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
+
+        private Optional<Boolean> active = Optional.empty();
 
         private Map<String, Object> config = new LinkedHashMap<>();
 
@@ -133,33 +185,74 @@ public final class IntegrationCreate {
         @java.lang.Override
         public Builder from(IntegrationCreate other) {
             type(other.getType());
+            name(other.getName());
             config(other.getConfig());
-            enabled(other.getEnabled());
+            active(other.getActive());
+            extendedData(other.getExtendedData());
             return this;
         }
 
         /**
-         * <p>Integration type (e.g. slack, discord)</p>
-         * <p>Integration type (e.g. slack, discord)</p>
+         * <p>Integration type (e.g. SLACK, DISCORD)</p>
+         * <p>Integration type (e.g. SLACK, DISCORD)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
         @JsonSetter("type")
-        public _FinalStage type(@NotNull String type) {
+        public NameStage type(@NotNull String type) {
             this.type = Objects.requireNonNull(type, "type must not be null");
             return this;
         }
 
+        /**
+         * <p>Integration name</p>
+         * <p>Integration name</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
-        public _FinalStage enabled(Boolean enabled) {
-            this.enabled = Optional.ofNullable(enabled);
+        @JsonSetter("name")
+        public _FinalStage name(@NotNull String name) {
+            this.name = Objects.requireNonNull(name, "name must not be null");
             return this;
         }
 
+        /**
+         * <p>Custom extended data</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
-        @JsonSetter(value = "enabled", nulls = Nulls.SKIP)
-        public _FinalStage enabled(Optional<Boolean> enabled) {
-            this.enabled = enabled;
+        public _FinalStage extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
+            return this;
+        }
+
+        /**
+         * <p>Whether integration is active</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage active(Boolean active) {
+            this.active = Optional.ofNullable(active);
+            return this;
+        }
+
+        /**
+         * <p>Whether integration is active</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "active", nulls = Nulls.SKIP)
+        public _FinalStage active(Optional<Boolean> active) {
+            this.active = active;
             return this;
         }
 
@@ -200,7 +293,7 @@ public final class IntegrationCreate {
 
         @java.lang.Override
         public IntegrationCreate build() {
-            return new IntegrationCreate(type, config, enabled, additionalProperties);
+            return new IntegrationCreate(type, name, config, active, extendedData, additionalProperties);
         }
     }
 }

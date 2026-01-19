@@ -5,44 +5,36 @@ package com.foru.ms.api.resources.threads;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdReactionsRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdPollRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdPostsRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdReactionsRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdSubscribersRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsRequest;
-import com.foru.ms.api.resources.threads.requests.PatchThreadsIdPollRequest;
-import com.foru.ms.api.resources.threads.requests.PatchThreadsIdRequest;
-import com.foru.ms.api.resources.threads.requests.PostThreadsIdPollRequest;
-import com.foru.ms.api.resources.threads.requests.PostThreadsIdReactionsRequest;
-import com.foru.ms.api.resources.threads.requests.PostThreadsRequest;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdReactionsResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdPollResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdPostsResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdReactionsResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdSubscribersResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsResponse;
-import com.foru.ms.api.resources.threads.types.PatchThreadsIdPollResponse;
-import com.foru.ms.api.resources.threads.types.PatchThreadsIdResponse;
-import com.foru.ms.api.resources.threads.types.PostThreadsIdPollResponse;
-import com.foru.ms.api.resources.threads.types.PostThreadsIdReactionsResponse;
-import com.foru.ms.api.resources.threads.types.PostThreadsResponse;
+import com.foru.ms.api.resources.threads.requests.CreatePollThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.CreateReactionThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.CreateThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeletePostThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeleteReactionThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeleteSubscriberThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeleteThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListPostsThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListReactionsThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListSubscribersThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrievePollThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrievePostThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrieveReactionThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrieveSubscriberThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrieveThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.UpdatePollThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.UpdateThreadsRequest;
+import com.foru.ms.api.resources.threads.types.RetrievePostThreadsResponse;
+import com.foru.ms.api.resources.threads.types.RetrieveReactionThreadsResponse;
+import com.foru.ms.api.resources.threads.types.RetrieveSubscriberThreadsResponse;
+import com.foru.ms.api.resources.threads.types.UpdateThreadsResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.ThreadListResponse;
+import com.foru.ms.api.types.ThreadPollResponse;
+import com.foru.ms.api.types.ThreadPostListResponse;
+import com.foru.ms.api.types.ThreadReactionListResponse;
+import com.foru.ms.api.types.ThreadReactionResponse;
+import com.foru.ms.api.types.ThreadResponse;
+import com.foru.ms.api.types.ThreadSubscriberListResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncThreadsClient {
@@ -62,357 +54,394 @@ public class AsyncThreadsClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetThreadsResponse> listAllThreads() {
-        return this.rawClient.listAllThreads().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public CompletableFuture<ThreadListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsResponse> listAllThreads(RequestOptions requestOptions) {
-        return this.rawClient.listAllThreads(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public CompletableFuture<ThreadListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsResponse> listAllThreads(GetThreadsRequest request) {
-        return this.rawClient.listAllThreads(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public CompletableFuture<ThreadListResponse> list(ListThreadsRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsResponse> listAllThreads(
-            GetThreadsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllThreads(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public CompletableFuture<ThreadListResponse> list(ListThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostThreadsResponse> createAThread(PostThreadsRequest request) {
-        return this.rawClient.createAThread(request).thenApply(response -> response.body());
+    /**
+     * Create a new thread.
+     */
+    public CompletableFuture<ThreadResponse> create(CreateThreadsRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostThreadsResponse> createAThread(
-            PostThreadsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAThread(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create a new thread.
+     */
+    public CompletableFuture<ThreadResponse> create(CreateThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdResponse> getAThread(String id) {
-        return this.rawClient.getAThread(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public CompletableFuture<ThreadResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdResponse> getAThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAThread(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public CompletableFuture<ThreadResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdResponse> getAThread(String id, GetThreadsIdRequest request) {
-        return this.rawClient.getAThread(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public CompletableFuture<ThreadResponse> retrieve(String id, RetrieveThreadsRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdResponse> getAThread(
-            String id, GetThreadsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAThread(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public CompletableFuture<ThreadResponse> retrieve(
+            String id, RetrieveThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdResponse> deleteAThread(String id) {
-        return this.rawClient.deleteAThread(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete a thread.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdResponse> deleteAThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAThread(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a thread.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdResponse> deleteAThread(String id, DeleteThreadsIdRequest request) {
-        return this.rawClient.deleteAThread(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete a thread.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteThreadsRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdResponse> deleteAThread(
-            String id, DeleteThreadsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAThread(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a thread.
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchThreadsIdResponse> updateAThread(String id) {
-        return this.rawClient.updateAThread(id).thenApply(response -> response.body());
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateThreadsResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchThreadsIdResponse> updateAThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAThread(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateThreadsResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchThreadsIdResponse> updateAThread(String id, PatchThreadsIdRequest request) {
-        return this.rawClient.updateAThread(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateThreadsResponse> update(String id, UpdateThreadsRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchThreadsIdResponse> updateAThread(
-            String id, PatchThreadsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAThread(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateThreadsResponse> update(
+            String id, UpdateThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsResponse> listThreadPosts(String id) {
-        return this.rawClient.listThreadPosts(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public CompletableFuture<ThreadPostListResponse> listPosts(String id) {
+        return this.rawClient.listPosts(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsResponse> listThreadPosts(String id, RequestOptions requestOptions) {
-        return this.rawClient.listThreadPosts(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public CompletableFuture<ThreadPostListResponse> listPosts(String id, RequestOptions requestOptions) {
+        return this.rawClient.listPosts(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsResponse> listThreadPosts(String id, GetThreadsIdPostsRequest request) {
-        return this.rawClient.listThreadPosts(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public CompletableFuture<ThreadPostListResponse> listPosts(String id, ListPostsThreadsRequest request) {
+        return this.rawClient.listPosts(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsResponse> listThreadPosts(
-            String id, GetThreadsIdPostsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listThreadPosts(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public CompletableFuture<ThreadPostListResponse> listPosts(
+            String id, ListPostsThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listPosts(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsSubIdResponse> getAPostFromThread(String id, String subId) {
-        return this.rawClient.getAPostFromThread(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<RetrievePostThreadsResponse> retrievePost(String id, String subId) {
+        return this.rawClient.retrievePost(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsSubIdResponse> getAPostFromThread(
+    public CompletableFuture<RetrievePostThreadsResponse> retrievePost(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAPostFromThread(id, subId, requestOptions).thenApply(response -> response.body());
+        return this.rawClient.retrievePost(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsSubIdResponse> getAPostFromThread(
-            String id, String subId, GetThreadsIdPostsSubIdRequest request) {
-        return this.rawClient.getAPostFromThread(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrievePostThreadsResponse> retrievePost(
+            String id, String subId, RetrievePostThreadsRequest request) {
+        return this.rawClient.retrievePost(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdPostsSubIdResponse> getAPostFromThread(
-            String id, String subId, GetThreadsIdPostsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAPostFromThread(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<RetrievePostThreadsResponse> retrievePost(
+            String id, String subId, RetrievePostThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrievePost(id, subId, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdPostsSubIdResponse> deleteAPostFromThread(String id, String subId) {
-        return this.rawClient.deleteAPostFromThread(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deletePost(String id, String subId) {
+        return this.rawClient.deletePost(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdPostsSubIdResponse> deleteAPostFromThread(
+    public CompletableFuture<SuccessResponse> deletePost(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deletePost(id, subId, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deletePost(String id, String subId, DeletePostThreadsRequest request) {
+        return this.rawClient.deletePost(id, subId, request).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deletePost(
+            String id, String subId, DeletePostThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deletePost(id, subId, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public CompletableFuture<ThreadReactionListResponse> listReactions(String id) {
+        return this.rawClient.listReactions(id).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public CompletableFuture<ThreadReactionListResponse> listReactions(String id, RequestOptions requestOptions) {
+        return this.rawClient.listReactions(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public CompletableFuture<ThreadReactionListResponse> listReactions(String id, ListReactionsThreadsRequest request) {
+        return this.rawClient.listReactions(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public CompletableFuture<ThreadReactionListResponse> listReactions(
+            String id, ListReactionsThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listReactions(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Create a Reaction in Thread.
+     */
+    public CompletableFuture<ThreadReactionResponse> createReaction(String id, CreateReactionThreadsRequest request) {
+        return this.rawClient.createReaction(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Create a Reaction in Thread.
+     */
+    public CompletableFuture<ThreadReactionResponse> createReaction(
+            String id, CreateReactionThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createReaction(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteReaction(String id, String subId) {
+        return this.rawClient.deleteReaction(id, subId).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteReaction(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteReaction(id, subId, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteReaction(
+            String id, String subId, DeleteReactionThreadsRequest request) {
+        return this.rawClient.deleteReaction(id, subId, request).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteReaction(
+            String id, String subId, DeleteReactionThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteReaction(id, subId, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveReactionThreadsResponse> retrieveReaction(String id, String subId) {
+        return this.rawClient.retrieveReaction(id, subId).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveReactionThreadsResponse> retrieveReaction(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPostFromThread(id, subId, requestOptions).thenApply(response -> response.body());
+        return this.rawClient.retrieveReaction(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdPostsSubIdResponse> deleteAPostFromThread(
-            String id, String subId, DeleteThreadsIdPostsSubIdRequest request) {
-        return this.rawClient.deleteAPostFromThread(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveReactionThreadsResponse> retrieveReaction(
+            String id, String subId, RetrieveReactionThreadsRequest request) {
+        return this.rawClient.retrieveReaction(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdPostsSubIdResponse> deleteAPostFromThread(
-            String id, String subId, DeleteThreadsIdPostsSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<RetrieveReactionThreadsResponse> retrieveReaction(
+            String id, String subId, RetrieveReactionThreadsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .deleteAPostFromThread(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdReactionsResponse> listThreadReactions(String id) {
-        return this.rawClient.listThreadReactions(id).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdReactionsResponse> listThreadReactions(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.listThreadReactions(id, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdReactionsResponse> listThreadReactions(
-            String id, GetThreadsIdReactionsRequest request) {
-        return this.rawClient.listThreadReactions(id, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdReactionsResponse> listThreadReactions(
-            String id, GetThreadsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listThreadReactions(id, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PostThreadsIdReactionsResponse> createAReactionInThread(
-            String id, PostThreadsIdReactionsRequest request) {
-        return this.rawClient.createAReactionInThread(id, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PostThreadsIdReactionsResponse> createAReactionInThread(
-            String id, PostThreadsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .createAReactionInThread(id, request, requestOptions)
+                .retrieveReaction(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public CompletableFuture<DeleteThreadsIdReactionsResponse> removeYourReactionFromThread(String id) {
-        return this.rawClient.removeYourReactionFromThread(id).thenApply(response -> response.body());
+    public CompletableFuture<ThreadSubscriberListResponse> listSubscribers(String id) {
+        return this.rawClient.listSubscribers(id).thenApply(response -> response.body());
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public CompletableFuture<DeleteThreadsIdReactionsResponse> removeYourReactionFromThread(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.removeYourReactionFromThread(id, requestOptions).thenApply(response -> response.body());
+    public CompletableFuture<ThreadSubscriberListResponse> listSubscribers(String id, RequestOptions requestOptions) {
+        return this.rawClient.listSubscribers(id, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public CompletableFuture<DeleteThreadsIdReactionsResponse> removeYourReactionFromThread(
-            String id, DeleteThreadsIdReactionsRequest request) {
-        return this.rawClient.removeYourReactionFromThread(id, request).thenApply(response -> response.body());
+    public CompletableFuture<ThreadSubscriberListResponse> listSubscribers(
+            String id, ListSubscribersThreadsRequest request) {
+        return this.rawClient.listSubscribers(id, request).thenApply(response -> response.body());
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public CompletableFuture<DeleteThreadsIdReactionsResponse> removeYourReactionFromThread(
-            String id, DeleteThreadsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .removeYourReactionFromThread(id, request, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<ThreadSubscriberListResponse> listSubscribers(
+            String id, ListSubscribersThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listSubscribers(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdReactionsSubIdResponse> getAReactionFromThread(String id, String subId) {
-        return this.rawClient.getAReactionFromThread(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveSubscriberThreadsResponse> retrieveSubscriber(String id, String subId) {
+        return this.rawClient.retrieveSubscriber(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdReactionsSubIdResponse> getAReactionFromThread(
+    public CompletableFuture<RetrieveSubscriberThreadsResponse> retrieveSubscriber(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAReactionFromThread(id, subId, requestOptions).thenApply(response -> response.body());
+        return this.rawClient.retrieveSubscriber(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdReactionsSubIdResponse> getAReactionFromThread(
-            String id, String subId, GetThreadsIdReactionsSubIdRequest request) {
-        return this.rawClient.getAReactionFromThread(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveSubscriberThreadsResponse> retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberThreadsRequest request) {
+        return this.rawClient.retrieveSubscriber(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdReactionsSubIdResponse> getAReactionFromThread(
-            String id, String subId, GetThreadsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<RetrieveSubscriberThreadsResponse> retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberThreadsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAReactionFromThread(id, subId, request, requestOptions)
+                .retrieveSubscriber(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdReactionsSubIdResponse> deleteAReactionFromThread(String id, String subId) {
-        return this.rawClient.deleteAReactionFromThread(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteSubscriber(String id, String subId) {
+        return this.rawClient.deleteSubscriber(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdReactionsSubIdResponse> deleteAReactionFromThread(
-            String id, String subId, RequestOptions requestOptions) {
+    public CompletableFuture<SuccessResponse> deleteSubscriber(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteSubscriber(id, subId, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteSubscriber(
+            String id, String subId, DeleteSubscriberThreadsRequest request) {
+        return this.rawClient.deleteSubscriber(id, subId, request).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<SuccessResponse> deleteSubscriber(
+            String id, String subId, DeleteSubscriberThreadsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .deleteAReactionFromThread(id, subId, requestOptions)
+                .deleteSubscriber(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdReactionsSubIdResponse> deleteAReactionFromThread(
-            String id, String subId, DeleteThreadsIdReactionsSubIdRequest request) {
-        return this.rawClient.deleteAReactionFromThread(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> retrievePoll(String id) {
+        return this.rawClient.retrievePoll(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteThreadsIdReactionsSubIdResponse> deleteAReactionFromThread(
-            String id, String subId, DeleteThreadsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReactionFromThread(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> retrievePoll(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrievePoll(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersResponse> listThreadSubscribers(String id) {
-        return this.rawClient.listThreadSubscribers(id).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> retrievePoll(String id, RetrievePollThreadsRequest request) {
+        return this.rawClient.retrievePoll(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersResponse> listThreadSubscribers(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.listThreadSubscribers(id, requestOptions).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> retrievePoll(
+            String id, RetrievePollThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrievePoll(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersResponse> listThreadSubscribers(
-            String id, GetThreadsIdSubscribersRequest request) {
-        return this.rawClient.listThreadSubscribers(id, request).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> createPoll(String id, CreatePollThreadsRequest request) {
+        return this.rawClient.createPoll(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersResponse> listThreadSubscribers(
-            String id, GetThreadsIdSubscribersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listThreadSubscribers(id, request, requestOptions).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> createPoll(
+            String id, CreatePollThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createPoll(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersSubIdResponse> getASubscriberFromThread(String id, String subId) {
-        return this.rawClient.getASubscriberFromThread(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> updatePoll(String id) {
+        return this.rawClient.updatePoll(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersSubIdResponse> getASubscriberFromThread(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .getASubscriberFromThread(id, subId, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> updatePoll(String id, RequestOptions requestOptions) {
+        return this.rawClient.updatePoll(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersSubIdResponse> getASubscriberFromThread(
-            String id, String subId, GetThreadsIdSubscribersSubIdRequest request) {
-        return this.rawClient.getASubscriberFromThread(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> updatePoll(String id, UpdatePollThreadsRequest request) {
+        return this.rawClient.updatePoll(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetThreadsIdSubscribersSubIdResponse> getASubscriberFromThread(
-            String id, String subId, GetThreadsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getASubscriberFromThread(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteThreadsIdSubscribersSubIdResponse> deleteASubscriberFromThread(
-            String id, String subId) {
-        return this.rawClient.deleteASubscriberFromThread(id, subId).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteThreadsIdSubscribersSubIdResponse> deleteASubscriberFromThread(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteASubscriberFromThread(id, subId, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteThreadsIdSubscribersSubIdResponse> deleteASubscriberFromThread(
-            String id, String subId, DeleteThreadsIdSubscribersSubIdRequest request) {
-        return this.rawClient.deleteASubscriberFromThread(id, subId, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<DeleteThreadsIdSubscribersSubIdResponse> deleteASubscriberFromThread(
-            String id, String subId, DeleteThreadsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteASubscriberFromThread(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdPollResponse> getThreadPoll(String id) {
-        return this.rawClient.getThreadPoll(id).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdPollResponse> getThreadPoll(String id, RequestOptions requestOptions) {
-        return this.rawClient.getThreadPoll(id, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdPollResponse> getThreadPoll(String id, GetThreadsIdPollRequest request) {
-        return this.rawClient.getThreadPoll(id, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<GetThreadsIdPollResponse> getThreadPoll(
-            String id, GetThreadsIdPollRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getThreadPoll(id, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PostThreadsIdPollResponse> createThreadPoll(String id, PostThreadsIdPollRequest request) {
-        return this.rawClient.createThreadPoll(id, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PostThreadsIdPollResponse> createThreadPoll(
-            String id, PostThreadsIdPollRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createThreadPoll(id, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PatchThreadsIdPollResponse> updateThreadPoll(String id) {
-        return this.rawClient.updateThreadPoll(id).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PatchThreadsIdPollResponse> updateThreadPoll(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateThreadPoll(id, requestOptions).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PatchThreadsIdPollResponse> updateThreadPoll(
-            String id, PatchThreadsIdPollRequest request) {
-        return this.rawClient.updateThreadPoll(id, request).thenApply(response -> response.body());
-    }
-
-    public CompletableFuture<PatchThreadsIdPollResponse> updateThreadPoll(
-            String id, PatchThreadsIdPollRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateThreadPoll(id, request, requestOptions).thenApply(response -> response.body());
+    public CompletableFuture<ThreadPollResponse> updatePoll(
+            String id, UpdatePollThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.updatePoll(id, request, requestOptions).thenApply(response -> response.body());
     }
 }

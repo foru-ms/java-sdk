@@ -7,24 +7,36 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.foru.ms.api.core.ObjectMappers;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AuthResponse.Builder.class)
 public final class AuthResponse {
+    private final AuthResponseData data;
+
     private final Map<String, Object> additionalProperties;
 
-    private AuthResponse(Map<String, Object> additionalProperties) {
+    private AuthResponse(AuthResponseData data, Map<String, Object> additionalProperties) {
+        this.data = data;
         this.additionalProperties = additionalProperties;
+    }
+
+    @JsonProperty("data")
+    public AuthResponseData getData() {
+        return data;
     }
 
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        return other instanceof AuthResponse;
+        return other instanceof AuthResponse && equalTo((AuthResponse) other);
     }
 
     @JsonAnyGetter
@@ -32,28 +44,59 @@ public final class AuthResponse {
         return this.additionalProperties;
     }
 
+    private boolean equalTo(AuthResponse other) {
+        return data.equals(other.data);
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+        return Objects.hash(this.data);
+    }
+
     @java.lang.Override
     public String toString() {
         return ObjectMappers.stringify(this);
     }
 
-    public static Builder builder() {
+    public static DataStage builder() {
         return new Builder();
     }
 
+    public interface DataStage {
+        _FinalStage data(@NotNull AuthResponseData data);
+
+        Builder from(AuthResponse other);
+    }
+
+    public interface _FinalStage {
+        AuthResponse build();
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
+    public static final class Builder implements DataStage, _FinalStage {
+        private AuthResponseData data;
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
+        @java.lang.Override
         public Builder from(AuthResponse other) {
+            data(other.getData());
             return this;
         }
 
+        @java.lang.Override
+        @JsonSetter("data")
+        public _FinalStage data(@NotNull AuthResponseData data) {
+            this.data = Objects.requireNonNull(data, "data must not be null");
+            return this;
+        }
+
+        @java.lang.Override
         public AuthResponse build() {
-            return new AuthResponse(additionalProperties);
+            return new AuthResponse(data, additionalProperties);
         }
     }
 }

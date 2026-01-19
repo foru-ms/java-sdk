@@ -18,23 +18,23 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.requests.CreatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.CreateReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeleteReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListRepliesPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrievePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrieveReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.UpdatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.types.RetrieveReplyPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.types.UpdatePrivateMessagesResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.PrivateMessageListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyResponse;
+import com.foru.ms.api.types.PrivateMessageResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -55,36 +55,47 @@ public class AsyncRawPrivateMessagesClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesResponse>> listAllPrivateMessages() {
-        return listAllPrivateMessages(GetPrivateMessagesRequest.builder().build());
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageListResponse>> list() {
+        return list(ListPrivateMessagesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesResponse>> listAllPrivateMessages(
-            RequestOptions requestOptions) {
-        return listAllPrivateMessages(GetPrivateMessagesRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageListResponse>> list(RequestOptions requestOptions) {
+        return list(ListPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesResponse>> listAllPrivateMessages(
-            GetPrivateMessagesRequest request) {
-        return listAllPrivateMessages(request, null);
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageListResponse>> list(
+            ListPrivateMessagesRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesResponse>> listAllPrivateMessages(
-            GetPrivateMessagesRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageListResponse>> list(
+            ListPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getQuery().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "query", request.getQuery().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -96,7 +107,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PrivateMessageListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -105,7 +116,7 @@ public class AsyncRawPrivateMessagesClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPrivateMessagesResponse.class),
+                                        responseBodyString, PrivateMessageListResponse.class),
                                 response));
                         return;
                     }
@@ -152,13 +163,19 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPrivateMessagesResponse>> createAPrivateMessage(
-            PostPrivateMessagesRequest request) {
-        return createAPrivateMessage(request, null);
+    /**
+     * Create a new private message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> create(
+            CreatePrivateMessagesRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPrivateMessagesResponse>> createAPrivateMessage(
-            PostPrivateMessagesRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new private message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> create(
+            CreatePrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -181,7 +198,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostPrivateMessagesResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -189,8 +206,7 @@ public class AsyncRawPrivateMessagesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PostPrivateMessagesResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageResponse.class),
                                 response));
                         return;
                     }
@@ -242,22 +258,34 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdResponse>> getAPrivateMessage(String id) {
-        return getAPrivateMessage(id, GetPrivateMessagesIdRequest.builder().build());
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> retrieve(String id) {
+        return retrieve(id, RetrievePrivateMessagesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdResponse>> getAPrivateMessage(
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> retrieve(
             String id, RequestOptions requestOptions) {
-        return getAPrivateMessage(id, GetPrivateMessagesIdRequest.builder().build(), requestOptions);
+        return retrieve(id, RetrievePrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdResponse>> getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request) {
-        return getAPrivateMessage(id, request, null);
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> retrieve(
+            String id, RetrievePrivateMessagesRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdResponse>> getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> retrieve(
+            String id, RetrievePrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -273,7 +301,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PrivateMessageResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -281,8 +309,7 @@ public class AsyncRawPrivateMessagesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPrivateMessagesIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageResponse.class),
                                 response));
                         return;
                     }
@@ -334,25 +361,34 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdResponse>> deleteAPrivateMessage(
-            String id) {
-        return deleteAPrivateMessage(
-                id, DeletePrivateMessagesIdRequest.builder().build());
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeletePrivateMessagesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdResponse>> deleteAPrivateMessage(
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteAPrivateMessage(
-                id, DeletePrivateMessagesIdRequest.builder().build(), requestOptions);
+        return delete(id, DeletePrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdResponse>> deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request) {
-        return deleteAPrivateMessage(id, request, null);
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeletePrivateMessagesRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdResponse>> deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeletePrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -368,7 +404,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -376,8 +412,7 @@ public class AsyncRawPrivateMessagesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeletePrivateMessagesIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -429,25 +464,151 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse>> listPrivateMessageReplies(
-            String id) {
-        return listPrivateMessageReplies(
-                id, GetPrivateMessagesIdRepliesRequest.builder().build());
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePrivateMessagesResponse>> update(String id) {
+        return update(id, UpdatePrivateMessagesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse>> listPrivateMessageReplies(
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePrivateMessagesResponse>> update(
             String id, RequestOptions requestOptions) {
-        return listPrivateMessageReplies(
-                id, GetPrivateMessagesIdRepliesRequest.builder().build(), requestOptions);
+        return update(id, UpdatePrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse>> listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request) {
-        return listPrivateMessageReplies(id, request, null);
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePrivateMessagesResponse>> update(
+            String id, UpdatePrivateMessagesRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse>> listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePrivateMessagesResponse>> update(
+            String id, UpdatePrivateMessagesRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("private-messages")
+                .addPathSegment(id)
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("PATCH", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<ForumClientHttpResponse<UpdatePrivateMessagesResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    if (response.isSuccessful()) {
+                        future.complete(new ForumClientHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(
+                                        responseBodyString, UpdatePrivateMessagesResponse.class),
+                                response));
+                        return;
+                    }
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 402:
+                                future.completeExceptionally(new PaymentRequiredError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 404:
+                                future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 429:
+                                future.completeExceptionally(new TooManyRequestsError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                    future.completeExceptionally(new ForumClientApiException(
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyListResponse>> listReplies(String id) {
+        return listReplies(id, ListRepliesPrivateMessagesRequest.builder().build());
+    }
+
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyListResponse>> listReplies(
+            String id, RequestOptions requestOptions) {
+        return listReplies(id, ListRepliesPrivateMessagesRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyListResponse>> listReplies(
+            String id, ListRepliesPrivateMessagesRequest request) {
+        return listReplies(id, request, null);
+    }
+
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyListResponse>> listReplies(
+            String id, ListRepliesPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -471,8 +632,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -481,7 +641,7 @@ public class AsyncRawPrivateMessagesClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPrivateMessagesIdRepliesResponse.class),
+                                        responseBodyString, PrivateMessageReplyListResponse.class),
                                 response));
                         return;
                     }
@@ -528,14 +688,19 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPrivateMessagesIdRepliesResponse>>
-            createAReplyInPrivateMessage(String id, PostPrivateMessagesIdRepliesRequest request) {
-        return createAReplyInPrivateMessage(id, request, null);
+    /**
+     * Create a Reply in Private Message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyResponse>> createReply(
+            String id, CreateReplyPrivateMessagesRequest request) {
+        return createReply(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPrivateMessagesIdRepliesResponse>>
-            createAReplyInPrivateMessage(
-                    String id, PostPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a Reply in Private Message.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyResponse>> createReply(
+            String id, CreateReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -560,8 +725,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostPrivateMessagesIdRepliesResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PrivateMessageReplyResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -570,7 +734,7 @@ public class AsyncRawPrivateMessagesClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PostPrivateMessagesIdRepliesResponse.class),
+                                        responseBodyString, PrivateMessageReplyResponse.class),
                                 response));
                         return;
                     }
@@ -622,29 +786,25 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse>>
-            getAReplyFromPrivateMessage(String id, String subId) {
-        return getAReplyFromPrivateMessage(
-                id, subId, GetPrivateMessagesIdRepliesSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse>> retrieveReply(
+            String id, String subId) {
+        return retrieveReply(
+                id, subId, RetrieveReplyPrivateMessagesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse>>
-            getAReplyFromPrivateMessage(String id, String subId, RequestOptions requestOptions) {
-        return getAReplyFromPrivateMessage(
-                id, subId, GetPrivateMessagesIdRepliesSubIdRequest.builder().build(), requestOptions);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse>> retrieveReply(
+            String id, String subId, RequestOptions requestOptions) {
+        return retrieveReply(
+                id, subId, RetrieveReplyPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse>>
-            getAReplyFromPrivateMessage(String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request) {
-        return getAReplyFromPrivateMessage(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse>> retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request) {
+        return retrieveReply(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse>>
-            getAReplyFromPrivateMessage(
-                    String id,
-                    String subId,
-                    GetPrivateMessagesIdRepliesSubIdRequest request,
-                    RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse>> retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -662,7 +822,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse>> future =
+        CompletableFuture<ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse>> future =
                 new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
@@ -672,7 +832,7 @@ public class AsyncRawPrivateMessagesClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPrivateMessagesIdRepliesSubIdResponse.class),
+                                        responseBodyString, RetrieveReplyPrivateMessagesResponse.class),
                                 response));
                         return;
                     }
@@ -719,30 +879,24 @@ public class AsyncRawPrivateMessagesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse>>
-            deleteAReplyFromPrivateMessage(String id, String subId) {
-        return deleteAReplyFromPrivateMessage(
-                id, subId, DeletePrivateMessagesIdRepliesSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReply(String id, String subId) {
+        return deleteReply(
+                id, subId, DeleteReplyPrivateMessagesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse>>
-            deleteAReplyFromPrivateMessage(String id, String subId, RequestOptions requestOptions) {
-        return deleteAReplyFromPrivateMessage(
-                id, subId, DeletePrivateMessagesIdRepliesSubIdRequest.builder().build(), requestOptions);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReply(
+            String id, String subId, RequestOptions requestOptions) {
+        return deleteReply(
+                id, subId, DeleteReplyPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse>>
-            deleteAReplyFromPrivateMessage(
-                    String id, String subId, DeletePrivateMessagesIdRepliesSubIdRequest request) {
-        return deleteAReplyFromPrivateMessage(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request) {
+        return deleteReply(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse>>
-            deleteAReplyFromPrivateMessage(
-                    String id,
-                    String subId,
-                    DeletePrivateMessagesIdRepliesSubIdRequest request,
-                    RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -760,8 +914,7 @@ public class AsyncRawPrivateMessagesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -769,8 +922,7 @@ public class AsyncRawPrivateMessagesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeletePrivateMessagesIdRepliesSubIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }

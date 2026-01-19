@@ -5,22 +5,20 @@ package com.foru.ms.api.resources.tags;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.tags.requests.DeleteTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.DeleteTagsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdSubscribersRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsRequest;
-import com.foru.ms.api.resources.tags.requests.PatchTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.PostTagsRequest;
-import com.foru.ms.api.resources.tags.types.DeleteTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.DeleteTagsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdSubscribersResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsResponse;
-import com.foru.ms.api.resources.tags.types.PatchTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.PostTagsResponse;
+import com.foru.ms.api.resources.tags.requests.CreateTagsRequest;
+import com.foru.ms.api.resources.tags.requests.DeleteSubscriberTagsRequest;
+import com.foru.ms.api.resources.tags.requests.DeleteTagsRequest;
+import com.foru.ms.api.resources.tags.requests.ListSubscribersTagsRequest;
+import com.foru.ms.api.resources.tags.requests.ListTagsRequest;
+import com.foru.ms.api.resources.tags.requests.RetrieveSubscriberTagsRequest;
+import com.foru.ms.api.resources.tags.requests.RetrieveTagsRequest;
+import com.foru.ms.api.resources.tags.requests.UpdateTagsRequest;
+import com.foru.ms.api.resources.tags.types.RetrieveSubscriberTagsResponse;
+import com.foru.ms.api.resources.tags.types.UpdateTagsResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.TagListResponse;
+import com.foru.ms.api.types.TagResponse;
+import com.foru.ms.api.types.TagSubscriberListResponse;
 
 public class TagsClient {
     protected final ClientOptions clientOptions;
@@ -39,136 +37,197 @@ public class TagsClient {
         return this.rawClient;
     }
 
-    public GetTagsResponse listAllTags() {
-        return this.rawClient.listAllTags().body();
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public TagListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetTagsResponse listAllTags(RequestOptions requestOptions) {
-        return this.rawClient.listAllTags(requestOptions).body();
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public TagListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetTagsResponse listAllTags(GetTagsRequest request) {
-        return this.rawClient.listAllTags(request).body();
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public TagListResponse list(ListTagsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetTagsResponse listAllTags(GetTagsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllTags(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public TagListResponse list(ListTagsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostTagsResponse createATag(PostTagsRequest request) {
-        return this.rawClient.createATag(request).body();
+    /**
+     * Create a new tag.
+     */
+    public TagResponse create(CreateTagsRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostTagsResponse createATag(PostTagsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createATag(request, requestOptions).body();
+    /**
+     * Create a new tag.
+     */
+    public TagResponse create(CreateTagsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetTagsIdResponse getATag(String id) {
-        return this.rawClient.getATag(id).body();
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public TagResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetTagsIdResponse getATag(String id, RequestOptions requestOptions) {
-        return this.rawClient.getATag(id, requestOptions).body();
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public TagResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetTagsIdResponse getATag(String id, GetTagsIdRequest request) {
-        return this.rawClient.getATag(id, request).body();
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public TagResponse retrieve(String id, RetrieveTagsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetTagsIdResponse getATag(String id, GetTagsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getATag(id, request, requestOptions).body();
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public TagResponse retrieve(String id, RetrieveTagsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteTagsIdResponse deleteATag(String id) {
-        return this.rawClient.deleteATag(id).body();
+    /**
+     * Permanently delete a tag.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteTagsIdResponse deleteATag(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteATag(id, requestOptions).body();
+    /**
+     * Permanently delete a tag.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteTagsIdResponse deleteATag(String id, DeleteTagsIdRequest request) {
-        return this.rawClient.deleteATag(id, request).body();
+    /**
+     * Permanently delete a tag.
+     */
+    public SuccessResponse delete(String id, DeleteTagsRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteTagsIdResponse deleteATag(String id, DeleteTagsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteATag(id, request, requestOptions).body();
+    /**
+     * Permanently delete a tag.
+     */
+    public SuccessResponse delete(String id, DeleteTagsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchTagsIdResponse updateATag(String id) {
-        return this.rawClient.updateATag(id).body();
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public UpdateTagsResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchTagsIdResponse updateATag(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateATag(id, requestOptions).body();
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public UpdateTagsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public PatchTagsIdResponse updateATag(String id, PatchTagsIdRequest request) {
-        return this.rawClient.updateATag(id, request).body();
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public UpdateTagsResponse update(String id, UpdateTagsRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public PatchTagsIdResponse updateATag(String id, PatchTagsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateATag(id, request, requestOptions).body();
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public UpdateTagsResponse update(String id, UpdateTagsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 
-    public GetTagsIdSubscribersResponse listTagSubscribers(String id) {
-        return this.rawClient.listTagSubscribers(id).body();
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public TagSubscriberListResponse listSubscribers(String id) {
+        return this.rawClient.listSubscribers(id).body();
     }
 
-    public GetTagsIdSubscribersResponse listTagSubscribers(String id, RequestOptions requestOptions) {
-        return this.rawClient.listTagSubscribers(id, requestOptions).body();
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public TagSubscriberListResponse listSubscribers(String id, RequestOptions requestOptions) {
+        return this.rawClient.listSubscribers(id, requestOptions).body();
     }
 
-    public GetTagsIdSubscribersResponse listTagSubscribers(String id, GetTagsIdSubscribersRequest request) {
-        return this.rawClient.listTagSubscribers(id, request).body();
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public TagSubscriberListResponse listSubscribers(String id, ListSubscribersTagsRequest request) {
+        return this.rawClient.listSubscribers(id, request).body();
     }
 
-    public GetTagsIdSubscribersResponse listTagSubscribers(
-            String id, GetTagsIdSubscribersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listTagSubscribers(id, request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public TagSubscriberListResponse listSubscribers(
+            String id, ListSubscribersTagsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listSubscribers(id, request, requestOptions).body();
     }
 
-    public GetTagsIdSubscribersSubIdResponse getASubscriberFromTag(String id, String subId) {
-        return this.rawClient.getASubscriberFromTag(id, subId).body();
+    public RetrieveSubscriberTagsResponse retrieveSubscriber(String id, String subId) {
+        return this.rawClient.retrieveSubscriber(id, subId).body();
     }
 
-    public GetTagsIdSubscribersSubIdResponse getASubscriberFromTag(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getASubscriberFromTag(id, subId, requestOptions).body();
+    public RetrieveSubscriberTagsResponse retrieveSubscriber(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveSubscriber(id, subId, requestOptions).body();
     }
 
-    public GetTagsIdSubscribersSubIdResponse getASubscriberFromTag(
-            String id, String subId, GetTagsIdSubscribersSubIdRequest request) {
-        return this.rawClient.getASubscriberFromTag(id, subId, request).body();
+    public RetrieveSubscriberTagsResponse retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberTagsRequest request) {
+        return this.rawClient.retrieveSubscriber(id, subId, request).body();
     }
 
-    public GetTagsIdSubscribersSubIdResponse getASubscriberFromTag(
-            String id, String subId, GetTagsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
+    public RetrieveSubscriberTagsResponse retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberTagsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getASubscriberFromTag(id, subId, request, requestOptions)
+                .retrieveSubscriber(id, subId, request, requestOptions)
                 .body();
     }
 
-    public DeleteTagsIdSubscribersSubIdResponse deleteASubscriberFromTag(String id, String subId) {
-        return this.rawClient.deleteASubscriberFromTag(id, subId).body();
+    public SuccessResponse deleteSubscriber(String id, String subId) {
+        return this.rawClient.deleteSubscriber(id, subId).body();
     }
 
-    public DeleteTagsIdSubscribersSubIdResponse deleteASubscriberFromTag(
-            String id, String subId, RequestOptions requestOptions) {
+    public SuccessResponse deleteSubscriber(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteSubscriber(id, subId, requestOptions).body();
+    }
+
+    public SuccessResponse deleteSubscriber(String id, String subId, DeleteSubscriberTagsRequest request) {
+        return this.rawClient.deleteSubscriber(id, subId, request).body();
+    }
+
+    public SuccessResponse deleteSubscriber(
+            String id, String subId, DeleteSubscriberTagsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .deleteASubscriberFromTag(id, subId, requestOptions)
-                .body();
-    }
-
-    public DeleteTagsIdSubscribersSubIdResponse deleteASubscriberFromTag(
-            String id, String subId, DeleteTagsIdSubscribersSubIdRequest request) {
-        return this.rawClient.deleteASubscriberFromTag(id, subId, request).body();
-    }
-
-    public DeleteTagsIdSubscribersSubIdResponse deleteASubscriberFromTag(
-            String id, String subId, DeleteTagsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteASubscriberFromTag(id, subId, request, requestOptions)
+                .deleteSubscriber(id, subId, request, requestOptions)
                 .body();
     }
 }

@@ -5,22 +5,22 @@ package com.foru.ms.api.resources.privatemessages;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.requests.CreatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.CreateReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeleteReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListRepliesPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrievePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrieveReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.UpdatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.types.RetrieveReplyPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.types.UpdatePrivateMessagesResponse;
+import com.foru.ms.api.types.PrivateMessageListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyResponse;
+import com.foru.ms.api.types.PrivateMessageResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncPrivateMessagesClient {
@@ -40,151 +40,217 @@ public class AsyncPrivateMessagesClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetPrivateMessagesResponse> listAllPrivateMessages() {
-        return this.rawClient.listAllPrivateMessages().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<PrivateMessageListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesResponse> listAllPrivateMessages(RequestOptions requestOptions) {
-        return this.rawClient.listAllPrivateMessages(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<PrivateMessageListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesResponse> listAllPrivateMessages(GetPrivateMessagesRequest request) {
-        return this.rawClient.listAllPrivateMessages(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<PrivateMessageListResponse> list(ListPrivateMessagesRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesResponse> listAllPrivateMessages(
-            GetPrivateMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllPrivateMessages(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public CompletableFuture<PrivateMessageListResponse> list(
+            ListPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostPrivateMessagesResponse> createAPrivateMessage(PostPrivateMessagesRequest request) {
-        return this.rawClient.createAPrivateMessage(request).thenApply(response -> response.body());
+    /**
+     * Create a new private message.
+     */
+    public CompletableFuture<PrivateMessageResponse> create(CreatePrivateMessagesRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostPrivateMessagesResponse> createAPrivateMessage(
-            PostPrivateMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAPrivateMessage(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create a new private message.
+     */
+    public CompletableFuture<PrivateMessageResponse> create(
+            CreatePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdResponse> getAPrivateMessage(String id) {
-        return this.rawClient.getAPrivateMessage(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<PrivateMessageResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdResponse> getAPrivateMessage(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.getAPrivateMessage(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<PrivateMessageResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdResponse> getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request) {
-        return this.rawClient.getAPrivateMessage(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<PrivateMessageResponse> retrieve(String id, RetrievePrivateMessagesRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdResponse> getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAPrivateMessage(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public CompletableFuture<PrivateMessageResponse> retrieve(
+            String id, RetrievePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(String id) {
-        return this.rawClient.deleteAPrivateMessage(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPrivateMessage(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request) {
-        return this.rawClient.deleteAPrivateMessage(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeletePrivateMessagesRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPrivateMessage(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a private message.
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeletePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(String id) {
-        return this.rawClient.listPrivateMessageReplies(id).thenApply(response -> response.body());
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdatePrivateMessagesResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.listPrivateMessageReplies(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdatePrivateMessagesResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request) {
-        return this.rawClient.listPrivateMessageReplies(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdatePrivateMessagesResponse> update(String id, UpdatePrivateMessagesRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .listPrivateMessageReplies(id, request, requestOptions)
-                .thenApply(response -> response.body());
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdatePrivateMessagesResponse> update(
+            String id, UpdatePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostPrivateMessagesIdRepliesResponse> createAReplyInPrivateMessage(
-            String id, PostPrivateMessagesIdRepliesRequest request) {
-        return this.rawClient.createAReplyInPrivateMessage(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<PrivateMessageReplyListResponse> listReplies(String id) {
+        return this.rawClient.listReplies(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostPrivateMessagesIdRepliesResponse> createAReplyInPrivateMessage(
-            String id, PostPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .createAReplyInPrivateMessage(id, request, requestOptions)
-                .thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<PrivateMessageReplyListResponse> listReplies(String id, RequestOptions requestOptions) {
+        return this.rawClient.listReplies(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
-            String id, String subId) {
-        return this.rawClient.getAReplyFromPrivateMessage(id, subId).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<PrivateMessageReplyListResponse> listReplies(
+            String id, ListRepliesPrivateMessagesRequest request) {
+        return this.rawClient.listReplies(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public CompletableFuture<PrivateMessageReplyListResponse> listReplies(
+            String id, ListRepliesPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listReplies(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Create a Reply in Private Message.
+     */
+    public CompletableFuture<PrivateMessageReplyResponse> createReply(
+            String id, CreateReplyPrivateMessagesRequest request) {
+        return this.rawClient.createReply(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Create a Reply in Private Message.
+     */
+    public CompletableFuture<PrivateMessageReplyResponse> createReply(
+            String id, CreateReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createReply(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveReplyPrivateMessagesResponse> retrieveReply(String id, String subId) {
+        return this.rawClient.retrieveReply(id, subId).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveReplyPrivateMessagesResponse> retrieveReply(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAReplyFromPrivateMessage(id, subId, requestOptions)
-                .thenApply(response -> response.body());
+        return this.rawClient.retrieveReply(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
-            String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request) {
-        return this.rawClient.getAReplyFromPrivateMessage(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveReplyPrivateMessagesResponse> retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request) {
+        return this.rawClient.retrieveReply(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
-            String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAReplyFromPrivateMessage(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<RetrieveReplyPrivateMessagesResponse> retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieveReply(id, subId, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id, String subId) {
-        return this.rawClient.deleteAReplyFromPrivateMessage(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteReply(String id, String subId) {
+        return this.rawClient.deleteReply(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReplyFromPrivateMessage(id, subId, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteReply(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteReply(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id, String subId, DeletePrivateMessagesIdRepliesSubIdRequest request) {
-        return this.rawClient.deleteAReplyFromPrivateMessage(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request) {
+        return this.rawClient.deleteReply(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id,
-            String subId,
-            DeletePrivateMessagesIdRepliesSubIdRequest request,
-            RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReplyFromPrivateMessage(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteReply(id, subId, request, requestOptions).thenApply(response -> response.body());
     }
 }

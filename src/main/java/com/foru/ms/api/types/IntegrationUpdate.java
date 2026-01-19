@@ -26,16 +26,20 @@ public final class IntegrationUpdate {
 
     private final Optional<Boolean> active;
 
+    private final Optional<Map<String, Object>> extendedData;
+
     private final Map<String, Object> additionalProperties;
 
     private IntegrationUpdate(
             Optional<String> name,
             Optional<Map<String, Object>> config,
             Optional<Boolean> active,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.config = config;
         this.active = active;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
@@ -63,6 +67,14 @@ public final class IntegrationUpdate {
         return active;
     }
 
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -75,12 +87,15 @@ public final class IntegrationUpdate {
     }
 
     private boolean equalTo(IntegrationUpdate other) {
-        return name.equals(other.name) && config.equals(other.config) && active.equals(other.active);
+        return name.equals(other.name)
+                && config.equals(other.config)
+                && active.equals(other.active)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.config, this.active);
+        return Objects.hash(this.name, this.config, this.active, this.extendedData);
     }
 
     @java.lang.Override
@@ -100,6 +115,8 @@ public final class IntegrationUpdate {
 
         private Optional<Boolean> active = Optional.empty();
 
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -109,6 +126,7 @@ public final class IntegrationUpdate {
             name(other.getName());
             config(other.getConfig());
             active(other.getActive());
+            extendedData(other.getExtendedData());
             return this;
         }
 
@@ -154,8 +172,22 @@ public final class IntegrationUpdate {
             return this;
         }
 
+        /**
+         * <p>Custom extended data</p>
+         */
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public Builder extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
+            return this;
+        }
+
+        public Builder extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
+            return this;
+        }
+
         public IntegrationUpdate build() {
-            return new IntegrationUpdate(name, config, active, additionalProperties);
+            return new IntegrationUpdate(name, config, active, extendedData, additionalProperties);
         }
     }
 }

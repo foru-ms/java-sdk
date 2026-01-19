@@ -18,15 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.reports.requests.DeleteReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsRequest;
-import com.foru.ms.api.resources.reports.requests.PostReportsRequest;
-import com.foru.ms.api.resources.reports.types.DeleteReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsResponse;
-import com.foru.ms.api.resources.reports.types.PostReportsResponse;
+import com.foru.ms.api.resources.reports.requests.CreateReportsRequest;
+import com.foru.ms.api.resources.reports.requests.DeleteReportsRequest;
+import com.foru.ms.api.resources.reports.requests.ListReportsRequest;
+import com.foru.ms.api.resources.reports.requests.RetrieveReportsRequest;
+import com.foru.ms.api.resources.reports.requests.UpdateReportsRequest;
+import com.foru.ms.api.resources.reports.types.UpdateReportsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.ReportListResponse;
+import com.foru.ms.api.types.ReportResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -47,35 +48,54 @@ public class AsyncRawReportsClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsResponse>> listAllReports() {
-        return listAllReports(GetReportsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportListResponse>> list() {
+        return list(ListReportsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsResponse>> listAllReports(
-            RequestOptions requestOptions) {
-        return listAllReports(GetReportsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportListResponse>> list(RequestOptions requestOptions) {
+        return list(ListReportsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsResponse>> listAllReports(GetReportsRequest request) {
-        return listAllReports(request, null);
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportListResponse>> list(ListReportsRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsResponse>> listAllReports(
-            GetReportsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportListResponse>> list(
+            ListReportsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getStatus().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "status", request.getStatus().get(), false);
+        }
+        if (request.getReporterId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "reporterId", request.getReporterId().get(), false);
+        }
+        if (request.getReportedId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "reportedId", request.getReportedId().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -87,7 +107,7 @@ public class AsyncRawReportsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetReportsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<ReportListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -95,7 +115,7 @@ public class AsyncRawReportsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetReportsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ReportListResponse.class),
                                 response));
                         return;
                     }
@@ -142,12 +162,18 @@ public class AsyncRawReportsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostReportsResponse>> createAReport(PostReportsRequest request) {
-        return createAReport(request, null);
+    /**
+     * Create a new report.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportResponse>> create(CreateReportsRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostReportsResponse>> createAReport(
-            PostReportsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new report.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportResponse>> create(
+            CreateReportsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports")
@@ -170,7 +196,7 @@ public class AsyncRawReportsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostReportsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<ReportResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -178,7 +204,7 @@ public class AsyncRawReportsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostReportsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ReportResponse.class),
                                 response));
                         return;
                     }
@@ -230,22 +256,34 @@ public class AsyncRawReportsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsIdResponse>> getAReport(String id) {
-        return getAReport(id, GetReportsIdRequest.builder().build());
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveReportsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsIdResponse>> getAReport(
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportResponse>> retrieve(
             String id, RequestOptions requestOptions) {
-        return getAReport(id, GetReportsIdRequest.builder().build(), requestOptions);
+        return retrieve(id, RetrieveReportsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsIdResponse>> getAReport(
-            String id, GetReportsIdRequest request) {
-        return getAReport(id, request, null);
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportResponse>> retrieve(
+            String id, RetrieveReportsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetReportsIdResponse>> getAReport(
-            String id, GetReportsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<ReportResponse>> retrieve(
+            String id, RetrieveReportsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports")
@@ -261,7 +299,7 @@ public class AsyncRawReportsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetReportsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<ReportResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -269,7 +307,7 @@ public class AsyncRawReportsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetReportsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ReportResponse.class),
                                 response));
                         return;
                     }
@@ -321,22 +359,33 @@ public class AsyncRawReportsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteReportsIdResponse>> deleteAReport(String id) {
-        return deleteAReport(id, DeleteReportsIdRequest.builder().build());
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteReportsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteReportsIdResponse>> deleteAReport(
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteAReport(id, DeleteReportsIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteReportsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteReportsIdResponse>> deleteAReport(
-            String id, DeleteReportsIdRequest request) {
-        return deleteAReport(id, request, null);
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id, DeleteReportsRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteReportsIdResponse>> deleteAReport(
-            String id, DeleteReportsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a report.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteReportsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports")
@@ -352,7 +401,7 @@ public class AsyncRawReportsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteReportsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -360,12 +409,128 @@ public class AsyncRawReportsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteReportsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
                     try {
                         switch (response.code()) {
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 402:
+                                future.completeExceptionally(new PaymentRequiredError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 404:
+                                future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 429:
+                                future.completeExceptionally(new TooManyRequestsError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                    future.completeExceptionally(new ForumClientApiException(
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateReportsResponse>> update(String id) {
+        return update(id, UpdateReportsRequest.builder().build());
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateReportsResponse>> update(
+            String id, RequestOptions requestOptions) {
+        return update(id, UpdateReportsRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateReportsResponse>> update(
+            String id, UpdateReportsRequest request) {
+        return update(id, request, null);
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateReportsResponse>> update(
+            String id, UpdateReportsRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("reports")
+                .addPathSegment(id)
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("PATCH", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<ForumClientHttpResponse<UpdateReportsResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    if (response.isSuccessful()) {
+                        future.complete(new ForumClientHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateReportsResponse.class),
+                                response));
+                        return;
+                    }
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
                             case 401:
                                 future.completeExceptionally(new UnauthorizedError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),

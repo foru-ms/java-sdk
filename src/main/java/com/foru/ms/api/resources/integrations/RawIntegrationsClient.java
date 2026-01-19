@@ -18,17 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.integrations.requests.DeleteIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.GetIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.GetIntegrationsRequest;
-import com.foru.ms.api.resources.integrations.requests.PatchIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.PostIntegrationsRequest;
-import com.foru.ms.api.resources.integrations.types.DeleteIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.GetIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.GetIntegrationsResponse;
-import com.foru.ms.api.resources.integrations.types.PatchIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.PostIntegrationsResponse;
+import com.foru.ms.api.resources.integrations.requests.CreateIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.DeleteIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.ListIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.RetrieveIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.UpdateIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.types.UpdateIntegrationsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.IntegrationListResponse;
+import com.foru.ms.api.types.IntegrationResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -45,34 +44,46 @@ public class RawIntegrationsClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetIntegrationsResponse> listAllIntegrations() {
-        return listAllIntegrations(GetIntegrationsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationListResponse> list() {
+        return list(ListIntegrationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetIntegrationsResponse> listAllIntegrations(RequestOptions requestOptions) {
-        return listAllIntegrations(GetIntegrationsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationListResponse> list(RequestOptions requestOptions) {
+        return list(ListIntegrationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetIntegrationsResponse> listAllIntegrations(GetIntegrationsRequest request) {
-        return listAllIntegrations(request, null);
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationListResponse> list(ListIntegrationsRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetIntegrationsResponse> listAllIntegrations(
-            GetIntegrationsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationListResponse> list(
+            ListIntegrationsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("integrations");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -89,7 +100,7 @@ public class RawIntegrationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetIntegrationsResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, IntegrationListResponse.class),
                         response);
             }
             try {
@@ -118,12 +129,20 @@ public class RawIntegrationsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostIntegrationsResponse> createAnIntegration(PostIntegrationsRequest request) {
-        return createAnIntegration(request, null);
+    /**
+     * Create an new integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationResponse> create(CreateIntegrationsRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostIntegrationsResponse> createAnIntegration(
-            PostIntegrationsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create an new integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationResponse> create(
+            CreateIntegrationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("integrations")
@@ -151,8 +170,7 @@ public class RawIntegrationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostIntegrationsResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, IntegrationResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -183,22 +201,36 @@ public class RawIntegrationsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetIntegrationsIdResponse> getAnIntegration(String id) {
-        return getAnIntegration(id, GetIntegrationsIdRequest.builder().build());
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationResponse> retrieve(String id) {
+        return retrieve(id, RetrieveIntegrationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetIntegrationsIdResponse> getAnIntegration(
-            String id, RequestOptions requestOptions) {
-        return getAnIntegration(id, GetIntegrationsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveIntegrationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetIntegrationsIdResponse> getAnIntegration(
-            String id, GetIntegrationsIdRequest request) {
-        return getAnIntegration(id, request, null);
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationResponse> retrieve(String id, RetrieveIntegrationsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetIntegrationsIdResponse> getAnIntegration(
-            String id, GetIntegrationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<IntegrationResponse> retrieve(
+            String id, RetrieveIntegrationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("integrations")
@@ -219,8 +251,7 @@ public class RawIntegrationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetIntegrationsIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, IntegrationResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -251,22 +282,36 @@ public class RawIntegrationsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteIntegrationsIdResponse> deleteAnIntegration(String id) {
-        return deleteAnIntegration(id, DeleteIntegrationsIdRequest.builder().build());
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteIntegrationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteIntegrationsIdResponse> deleteAnIntegration(
-            String id, RequestOptions requestOptions) {
-        return deleteAnIntegration(id, DeleteIntegrationsIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteIntegrationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteIntegrationsIdResponse> deleteAnIntegration(
-            String id, DeleteIntegrationsIdRequest request) {
-        return deleteAnIntegration(id, request, null);
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteIntegrationsRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteIntegrationsIdResponse> deleteAnIntegration(
-            String id, DeleteIntegrationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteIntegrationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("integrations")
@@ -287,8 +332,7 @@ public class RawIntegrationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteIntegrationsIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -319,22 +363,36 @@ public class RawIntegrationsClient {
         }
     }
 
-    public ForumClientHttpResponse<PatchIntegrationsIdResponse> updateAnIntegration(String id) {
-        return updateAnIntegration(id, PatchIntegrationsIdRequest.builder().build());
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateIntegrationsResponse> update(String id) {
+        return update(id, UpdateIntegrationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<PatchIntegrationsIdResponse> updateAnIntegration(
-            String id, RequestOptions requestOptions) {
-        return updateAnIntegration(id, PatchIntegrationsIdRequest.builder().build(), requestOptions);
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateIntegrationsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateIntegrationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<PatchIntegrationsIdResponse> updateAnIntegration(
-            String id, PatchIntegrationsIdRequest request) {
-        return updateAnIntegration(id, request, null);
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateIntegrationsResponse> update(String id, UpdateIntegrationsRequest request) {
+        return update(id, request, null);
     }
 
-    public ForumClientHttpResponse<PatchIntegrationsIdResponse> updateAnIntegration(
-            String id, PatchIntegrationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateIntegrationsResponse> update(
+            String id, UpdateIntegrationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("integrations")
@@ -363,7 +421,7 @@ public class RawIntegrationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchIntegrationsIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateIntegrationsResponse.class),
                         response);
             }
             try {

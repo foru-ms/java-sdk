@@ -18,21 +18,21 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.requests.PostWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksResponse;
-import com.foru.ms.api.resources.webhooks.types.PostWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.requests.CreateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListDeliveriesWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.UpdateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.types.RetrieveDeliveryWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.types.UpdateWebhooksResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.WebhookDeliveryListResponse;
+import com.foru.ms.api.types.WebhookListResponse;
+import com.foru.ms.api.types.WebhookResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -49,34 +49,46 @@ public class RawWebhooksClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetWebhooksResponse> listAllWebhooks() {
-        return listAllWebhooks(GetWebhooksRequest.builder().build());
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookListResponse> list() {
+        return list(ListWebhooksRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetWebhooksResponse> listAllWebhooks(RequestOptions requestOptions) {
-        return listAllWebhooks(GetWebhooksRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookListResponse> list(RequestOptions requestOptions) {
+        return list(ListWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetWebhooksResponse> listAllWebhooks(GetWebhooksRequest request) {
-        return listAllWebhooks(request, null);
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookListResponse> list(ListWebhooksRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetWebhooksResponse> listAllWebhooks(
-            GetWebhooksRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookListResponse> list(
+            ListWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -93,7 +105,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetWebhooksResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -121,12 +133,20 @@ public class RawWebhooksClient {
         }
     }
 
-    public ForumClientHttpResponse<PostWebhooksResponse> createAWebhook(PostWebhooksRequest request) {
-        return createAWebhook(request, null);
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookResponse> create(CreateWebhooksRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostWebhooksResponse> createAWebhook(
-            PostWebhooksRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookResponse> create(
+            CreateWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -154,7 +174,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostWebhooksResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -185,20 +205,36 @@ public class RawWebhooksClient {
         }
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdResponse> getAWebhook(String id) {
-        return getAWebhook(id, GetWebhooksIdRequest.builder().build());
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookResponse> retrieve(String id) {
+        return retrieve(id, RetrieveWebhooksRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdResponse> getAWebhook(String id, RequestOptions requestOptions) {
-        return getAWebhook(id, GetWebhooksIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdResponse> getAWebhook(String id, GetWebhooksIdRequest request) {
-        return getAWebhook(id, request, null);
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookResponse> retrieve(String id, RetrieveWebhooksRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdResponse> getAWebhook(
-            String id, GetWebhooksIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookResponse> retrieve(
+            String id, RetrieveWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -219,7 +255,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetWebhooksIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -250,21 +286,36 @@ public class RawWebhooksClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdResponse> deleteAWebhook(String id) {
-        return deleteAWebhook(id, DeleteWebhooksIdRequest.builder().build());
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteWebhooksRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdResponse> deleteAWebhook(String id, RequestOptions requestOptions) {
-        return deleteAWebhook(id, DeleteWebhooksIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdResponse> deleteAWebhook(
-            String id, DeleteWebhooksIdRequest request) {
-        return deleteAWebhook(id, request, null);
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteWebhooksRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdResponse> deleteAWebhook(
-            String id, DeleteWebhooksIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -285,8 +336,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteWebhooksIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -317,24 +367,131 @@ public class RawWebhooksClient {
         }
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(String id) {
-        return listWebhookDeliveries(
-                id, GetWebhooksIdDeliveriesRequest.builder().build());
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateWebhooksResponse> update(String id) {
+        return update(id, UpdateWebhooksRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateWebhooksResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateWebhooksRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateWebhooksResponse> update(String id, UpdateWebhooksRequest request) {
+        return update(id, request, null);
+    }
+
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateWebhooksResponse> update(
+            String id, UpdateWebhooksRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("webhooks")
+                .addPathSegment(id)
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("PATCH", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+                return new ForumClientHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateWebhooksResponse.class),
+                        response);
+            }
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 402:
+                        throw new PaymentRequiredError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 429:
+                        throw new TooManyRequestsError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new ForumClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (IOException e) {
+            throw new ForumClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookDeliveryListResponse> listDeliveries(String id) {
+        return listDeliveries(id, ListDeliveriesWebhooksRequest.builder().build());
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookDeliveryListResponse> listDeliveries(
             String id, RequestOptions requestOptions) {
-        return listWebhookDeliveries(
-                id, GetWebhooksIdDeliveriesRequest.builder().build(), requestOptions);
+        return listDeliveries(id, ListDeliveriesWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request) {
-        return listWebhookDeliveries(id, request, null);
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookDeliveryListResponse> listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request) {
+        return listDeliveries(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public ForumClientHttpResponse<WebhookDeliveryListResponse> listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -363,7 +520,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetWebhooksIdDeliveriesResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookDeliveryListResponse.class),
                         response);
             }
             try {
@@ -392,25 +549,24 @@ public class RawWebhooksClient {
         }
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
-            String id, String subId) {
-        return getADeliveryFromWebhook(
-                id, subId, GetWebhooksIdDeliveriesSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse> retrieveDelivery(String id, String subId) {
+        return retrieveDelivery(
+                id, subId, RetrieveDeliveryWebhooksRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
+    public ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse> retrieveDelivery(
             String id, String subId, RequestOptions requestOptions) {
-        return getADeliveryFromWebhook(
-                id, subId, GetWebhooksIdDeliveriesSubIdRequest.builder().build(), requestOptions);
+        return retrieveDelivery(
+                id, subId, RetrieveDeliveryWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request) {
-        return getADeliveryFromWebhook(id, subId, request, null);
+    public ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse> retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request) {
+        return retrieveDelivery(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse> retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -433,8 +589,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, GetWebhooksIdDeliveriesSubIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RetrieveDeliveryWebhooksResponse.class),
                         response);
             }
             try {
@@ -463,25 +618,22 @@ public class RawWebhooksClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId) {
-        return deleteADeliveryFromWebhook(
-                id, subId, DeleteWebhooksIdDeliveriesSubIdRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deleteDelivery(String id, String subId) {
+        return deleteDelivery(id, subId, DeleteDeliveryWebhooksRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
+    public ForumClientHttpResponse<SuccessResponse> deleteDelivery(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteADeliveryFromWebhook(
-                id, subId, DeleteWebhooksIdDeliveriesSubIdRequest.builder().build(), requestOptions);
+        return deleteDelivery(id, subId, DeleteDeliveryWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request) {
-        return deleteADeliveryFromWebhook(id, subId, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request) {
+        return deleteDelivery(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -504,9 +656,7 @@ public class RawWebhooksClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, DeleteWebhooksIdDeliveriesSubIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {

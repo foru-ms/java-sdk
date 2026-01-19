@@ -18,23 +18,23 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.requests.CreatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.CreateReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeleteReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListRepliesPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrievePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrieveReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.UpdatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.types.RetrieveReplyPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.types.UpdatePrivateMessagesResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.PrivateMessageListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyResponse;
+import com.foru.ms.api.types.PrivateMessageResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -51,35 +51,46 @@ public class RawPrivateMessagesClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesResponse> listAllPrivateMessages() {
-        return listAllPrivateMessages(GetPrivateMessagesRequest.builder().build());
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PrivateMessageListResponse> list() {
+        return list(ListPrivateMessagesRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesResponse> listAllPrivateMessages(RequestOptions requestOptions) {
-        return listAllPrivateMessages(GetPrivateMessagesRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PrivateMessageListResponse> list(RequestOptions requestOptions) {
+        return list(ListPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesResponse> listAllPrivateMessages(
-            GetPrivateMessagesRequest request) {
-        return listAllPrivateMessages(request, null);
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PrivateMessageListResponse> list(ListPrivateMessagesRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesResponse> listAllPrivateMessages(
-            GetPrivateMessagesRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PrivateMessageListResponse> list(
+            ListPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getQuery().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "query", request.getQuery().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -96,7 +107,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPrivateMessagesResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageListResponse.class),
                         response);
             }
             try {
@@ -125,13 +136,18 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<PostPrivateMessagesResponse> createAPrivateMessage(
-            PostPrivateMessagesRequest request) {
-        return createAPrivateMessage(request, null);
+    /**
+     * Create a new private message.
+     */
+    public ForumClientHttpResponse<PrivateMessageResponse> create(CreatePrivateMessagesRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostPrivateMessagesResponse> createAPrivateMessage(
-            PostPrivateMessagesRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new private message.
+     */
+    public ForumClientHttpResponse<PrivateMessageResponse> create(
+            CreatePrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -159,7 +175,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostPrivateMessagesResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageResponse.class),
                         response);
             }
             try {
@@ -191,22 +207,32 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdResponse> getAPrivateMessage(String id) {
-        return getAPrivateMessage(id, GetPrivateMessagesIdRequest.builder().build());
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PrivateMessageResponse> retrieve(String id) {
+        return retrieve(id, RetrievePrivateMessagesRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdResponse> getAPrivateMessage(
-            String id, RequestOptions requestOptions) {
-        return getAPrivateMessage(id, GetPrivateMessagesIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PrivateMessageResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrievePrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdResponse> getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request) {
-        return getAPrivateMessage(id, request, null);
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PrivateMessageResponse> retrieve(String id, RetrievePrivateMessagesRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdResponse> getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PrivateMessageResponse> retrieve(
+            String id, RetrievePrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -227,7 +253,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPrivateMessagesIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageResponse.class),
                         response);
             }
             try {
@@ -259,24 +285,32 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(String id) {
-        return deleteAPrivateMessage(
-                id, DeletePrivateMessagesIdRequest.builder().build());
+    /**
+     * Permanently delete a private message.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeletePrivateMessagesRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(
-            String id, RequestOptions requestOptions) {
-        return deleteAPrivateMessage(
-                id, DeletePrivateMessagesIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a private message.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeletePrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request) {
-        return deleteAPrivateMessage(id, request, null);
+    /**
+     * Permanently delete a private message.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeletePrivateMessagesRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdResponse> deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a private message.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeletePrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -297,8 +331,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeletePrivateMessagesIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -329,24 +362,124 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(String id) {
-        return listPrivateMessageReplies(
-                id, GetPrivateMessagesIdRepliesRequest.builder().build());
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePrivateMessagesResponse> update(String id) {
+        return update(id, UpdatePrivateMessagesRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePrivateMessagesResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdatePrivateMessagesRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePrivateMessagesResponse> update(
+            String id, UpdatePrivateMessagesRequest request) {
+        return update(id, request, null);
+    }
+
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePrivateMessagesResponse> update(
+            String id, UpdatePrivateMessagesRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("private-messages")
+                .addPathSegment(id)
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("PATCH", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+                return new ForumClientHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdatePrivateMessagesResponse.class),
+                        response);
+            }
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 402:
+                        throw new PaymentRequiredError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 429:
+                        throw new TooManyRequestsError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new ForumClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (IOException e) {
+            throw new ForumClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public ForumClientHttpResponse<PrivateMessageReplyListResponse> listReplies(String id) {
+        return listReplies(id, ListRepliesPrivateMessagesRequest.builder().build());
+    }
+
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public ForumClientHttpResponse<PrivateMessageReplyListResponse> listReplies(
             String id, RequestOptions requestOptions) {
-        return listPrivateMessageReplies(
-                id, GetPrivateMessagesIdRepliesRequest.builder().build(), requestOptions);
+        return listReplies(id, ListRepliesPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request) {
-        return listPrivateMessageReplies(id, request, null);
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public ForumClientHttpResponse<PrivateMessageReplyListResponse> listReplies(
+            String id, ListRepliesPrivateMessagesRequest request) {
+        return listReplies(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesResponse> listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public ForumClientHttpResponse<PrivateMessageReplyListResponse> listReplies(
+            String id, ListRepliesPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -375,8 +508,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, GetPrivateMessagesIdRepliesResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageReplyListResponse.class),
                         response);
             }
             try {
@@ -405,13 +537,19 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<PostPrivateMessagesIdRepliesResponse> createAReplyInPrivateMessage(
-            String id, PostPrivateMessagesIdRepliesRequest request) {
-        return createAReplyInPrivateMessage(id, request, null);
+    /**
+     * Create a Reply in Private Message.
+     */
+    public ForumClientHttpResponse<PrivateMessageReplyResponse> createReply(
+            String id, CreateReplyPrivateMessagesRequest request) {
+        return createReply(id, request, null);
     }
 
-    public ForumClientHttpResponse<PostPrivateMessagesIdRepliesResponse> createAReplyInPrivateMessage(
-            String id, PostPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a Reply in Private Message.
+     */
+    public ForumClientHttpResponse<PrivateMessageReplyResponse> createReply(
+            String id, CreateReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -441,8 +579,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, PostPrivateMessagesIdRepliesResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PrivateMessageReplyResponse.class),
                         response);
             }
             try {
@@ -474,25 +611,24 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
-            String id, String subId) {
-        return getAReplyFromPrivateMessage(
-                id, subId, GetPrivateMessagesIdRepliesSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse> retrieveReply(String id, String subId) {
+        return retrieveReply(
+                id, subId, RetrieveReplyPrivateMessagesRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
+    public ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse> retrieveReply(
             String id, String subId, RequestOptions requestOptions) {
-        return getAReplyFromPrivateMessage(
-                id, subId, GetPrivateMessagesIdRepliesSubIdRequest.builder().build(), requestOptions);
+        return retrieveReply(
+                id, subId, RetrieveReplyPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
-            String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request) {
-        return getAReplyFromPrivateMessage(id, subId, request, null);
+    public ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse> retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request) {
+        return retrieveReply(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetPrivateMessagesIdRepliesSubIdResponse> getAReplyFromPrivateMessage(
-            String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrieveReplyPrivateMessagesResponse> retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -516,7 +652,7 @@ public class RawPrivateMessagesClient {
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, GetPrivateMessagesIdRepliesSubIdResponse.class),
+                                responseBodyString, RetrieveReplyPrivateMessagesResponse.class),
                         response);
             }
             try {
@@ -545,28 +681,24 @@ public class RawPrivateMessagesClient {
         }
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id, String subId) {
-        return deleteAReplyFromPrivateMessage(
-                id, subId, DeletePrivateMessagesIdRepliesSubIdRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deleteReply(String id, String subId) {
+        return deleteReply(
+                id, subId, DeleteReplyPrivateMessagesRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
+    public ForumClientHttpResponse<SuccessResponse> deleteReply(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteAReplyFromPrivateMessage(
-                id, subId, DeletePrivateMessagesIdRepliesSubIdRequest.builder().build(), requestOptions);
+        return deleteReply(
+                id, subId, DeleteReplyPrivateMessagesRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id, String subId, DeletePrivateMessagesIdRepliesSubIdRequest request) {
-        return deleteAReplyFromPrivateMessage(id, subId, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request) {
+        return deleteReply(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<DeletePrivateMessagesIdRepliesSubIdResponse> deleteAReplyFromPrivateMessage(
-            String id,
-            String subId,
-            DeletePrivateMessagesIdRepliesSubIdRequest request,
-            RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("private-messages")
@@ -589,9 +721,7 @@ public class RawPrivateMessagesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, DeletePrivateMessagesIdRepliesSubIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {

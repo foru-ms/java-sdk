@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.notifications;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.notifications.requests.DeleteNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.GetNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.GetNotificationsRequest;
-import com.foru.ms.api.resources.notifications.requests.PatchNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.PostNotificationsRequest;
-import com.foru.ms.api.resources.notifications.types.DeleteNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.GetNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.GetNotificationsResponse;
-import com.foru.ms.api.resources.notifications.types.PatchNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.PostNotificationsResponse;
+import com.foru.ms.api.resources.notifications.requests.CreateNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.DeleteNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.ListNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.RetrieveNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.UpdateNotificationsRequest;
+import com.foru.ms.api.resources.notifications.types.UpdateNotificationsResponse;
+import com.foru.ms.api.types.NotificationListResponse;
+import com.foru.ms.api.types.NotificationResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class NotificationsClient {
     protected final ClientOptions clientOptions;
@@ -33,80 +32,131 @@ public class NotificationsClient {
         return this.rawClient;
     }
 
-    public GetNotificationsResponse listAllNotifications() {
-        return this.rawClient.listAllNotifications().body();
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public NotificationListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetNotificationsResponse listAllNotifications(RequestOptions requestOptions) {
-        return this.rawClient.listAllNotifications(requestOptions).body();
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public NotificationListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetNotificationsResponse listAllNotifications(GetNotificationsRequest request) {
-        return this.rawClient.listAllNotifications(request).body();
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public NotificationListResponse list(ListNotificationsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetNotificationsResponse listAllNotifications(
-            GetNotificationsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllNotifications(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public NotificationListResponse list(ListNotificationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostNotificationsResponse createANotification(PostNotificationsRequest request) {
-        return this.rawClient.createANotification(request).body();
+    /**
+     * Create a new notification.
+     */
+    public NotificationResponse create(CreateNotificationsRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostNotificationsResponse createANotification(
-            PostNotificationsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createANotification(request, requestOptions).body();
+    /**
+     * Create a new notification.
+     */
+    public NotificationResponse create(CreateNotificationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetNotificationsIdResponse getANotification(String id) {
-        return this.rawClient.getANotification(id).body();
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public NotificationResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetNotificationsIdResponse getANotification(String id, RequestOptions requestOptions) {
-        return this.rawClient.getANotification(id, requestOptions).body();
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public NotificationResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetNotificationsIdResponse getANotification(String id, GetNotificationsIdRequest request) {
-        return this.rawClient.getANotification(id, request).body();
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public NotificationResponse retrieve(String id, RetrieveNotificationsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetNotificationsIdResponse getANotification(
-            String id, GetNotificationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getANotification(id, request, requestOptions).body();
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public NotificationResponse retrieve(
+            String id, RetrieveNotificationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteNotificationsIdResponse deleteANotification(String id) {
-        return this.rawClient.deleteANotification(id).body();
+    /**
+     * Permanently delete a notification.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteNotificationsIdResponse deleteANotification(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteANotification(id, requestOptions).body();
+    /**
+     * Permanently delete a notification.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteNotificationsIdResponse deleteANotification(String id, DeleteNotificationsIdRequest request) {
-        return this.rawClient.deleteANotification(id, request).body();
+    /**
+     * Permanently delete a notification.
+     */
+    public SuccessResponse delete(String id, DeleteNotificationsRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteNotificationsIdResponse deleteANotification(
-            String id, DeleteNotificationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteANotification(id, request, requestOptions).body();
+    /**
+     * Permanently delete a notification.
+     */
+    public SuccessResponse delete(String id, DeleteNotificationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchNotificationsIdResponse updateANotification(String id) {
-        return this.rawClient.updateANotification(id).body();
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public UpdateNotificationsResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchNotificationsIdResponse updateANotification(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateANotification(id, requestOptions).body();
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public UpdateNotificationsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public PatchNotificationsIdResponse updateANotification(String id, PatchNotificationsIdRequest request) {
-        return this.rawClient.updateANotification(id, request).body();
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public UpdateNotificationsResponse update(String id, UpdateNotificationsRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public PatchNotificationsIdResponse updateANotification(
-            String id, PatchNotificationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateANotification(id, request, requestOptions).body();
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public UpdateNotificationsResponse update(
+            String id, UpdateNotificationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 }

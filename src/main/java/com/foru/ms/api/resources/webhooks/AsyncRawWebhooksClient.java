@@ -18,21 +18,21 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.requests.PostWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksResponse;
-import com.foru.ms.api.resources.webhooks.types.PostWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.requests.CreateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListDeliveriesWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.UpdateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.types.RetrieveDeliveryWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.types.UpdateWebhooksResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.WebhookDeliveryListResponse;
+import com.foru.ms.api.types.WebhookListResponse;
+import com.foru.ms.api.types.WebhookResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -53,35 +53,46 @@ public class AsyncRawWebhooksClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksResponse>> listAllWebhooks() {
-        return listAllWebhooks(GetWebhooksRequest.builder().build());
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookListResponse>> list() {
+        return list(ListWebhooksRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksResponse>> listAllWebhooks(
-            RequestOptions requestOptions) {
-        return listAllWebhooks(GetWebhooksRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookListResponse>> list(RequestOptions requestOptions) {
+        return list(ListWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksResponse>> listAllWebhooks(GetWebhooksRequest request) {
-        return listAllWebhooks(request, null);
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookListResponse>> list(ListWebhooksRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksResponse>> listAllWebhooks(
-            GetWebhooksRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookListResponse>> list(
+            ListWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -93,7 +104,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetWebhooksResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<WebhookListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -101,7 +112,7 @@ public class AsyncRawWebhooksClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetWebhooksResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookListResponse.class),
                                 response));
                         return;
                     }
@@ -148,13 +159,20 @@ public class AsyncRawWebhooksClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostWebhooksResponse>> createAWebhook(
-            PostWebhooksRequest request) {
-        return createAWebhook(request, null);
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookResponse>> create(CreateWebhooksRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostWebhooksResponse>> createAWebhook(
-            PostWebhooksRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookResponse>> create(
+            CreateWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -177,7 +195,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostWebhooksResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<WebhookResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -185,7 +203,7 @@ public class AsyncRawWebhooksClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostWebhooksResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookResponse.class),
                                 response));
                         return;
                     }
@@ -237,22 +255,38 @@ public class AsyncRawWebhooksClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdResponse>> getAWebhook(String id) {
-        return getAWebhook(id, GetWebhooksIdRequest.builder().build());
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveWebhooksRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdResponse>> getAWebhook(
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookResponse>> retrieve(
             String id, RequestOptions requestOptions) {
-        return getAWebhook(id, GetWebhooksIdRequest.builder().build(), requestOptions);
+        return retrieve(id, RetrieveWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdResponse>> getAWebhook(
-            String id, GetWebhooksIdRequest request) {
-        return getAWebhook(id, request, null);
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookResponse>> retrieve(
+            String id, RetrieveWebhooksRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdResponse>> getAWebhook(
-            String id, GetWebhooksIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookResponse>> retrieve(
+            String id, RetrieveWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -268,7 +302,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetWebhooksIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<WebhookResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -276,7 +310,7 @@ public class AsyncRawWebhooksClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetWebhooksIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WebhookResponse.class),
                                 response));
                         return;
                     }
@@ -328,22 +362,38 @@ public class AsyncRawWebhooksClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdResponse>> deleteAWebhook(String id) {
-        return deleteAWebhook(id, DeleteWebhooksIdRequest.builder().build());
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteWebhooksRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdResponse>> deleteAWebhook(
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteAWebhook(id, DeleteWebhooksIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdResponse>> deleteAWebhook(
-            String id, DeleteWebhooksIdRequest request) {
-        return deleteAWebhook(id, request, null);
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteWebhooksRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdResponse>> deleteAWebhook(
-            String id, DeleteWebhooksIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -359,7 +409,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -367,7 +417,7 @@ public class AsyncRawWebhooksClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteWebhooksIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -419,25 +469,158 @@ public class AsyncRawWebhooksClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse>> listWebhookDeliveries(
-            String id) {
-        return listWebhookDeliveries(
-                id, GetWebhooksIdDeliveriesRequest.builder().build());
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateWebhooksResponse>> update(String id) {
+        return update(id, UpdateWebhooksRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse>> listWebhookDeliveries(
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateWebhooksResponse>> update(
             String id, RequestOptions requestOptions) {
-        return listWebhookDeliveries(
-                id, GetWebhooksIdDeliveriesRequest.builder().build(), requestOptions);
+        return update(id, UpdateWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse>> listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request) {
-        return listWebhookDeliveries(id, request, null);
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateWebhooksResponse>> update(
+            String id, UpdateWebhooksRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse>> listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateWebhooksResponse>> update(
+            String id, UpdateWebhooksRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("webhooks")
+                .addPathSegment(id)
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("PATCH", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<ForumClientHttpResponse<UpdateWebhooksResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    if (response.isSuccessful()) {
+                        future.complete(new ForumClientHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateWebhooksResponse.class),
+                                response));
+                        return;
+                    }
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 402:
+                                future.completeExceptionally(new PaymentRequiredError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 404:
+                                future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 429:
+                                future.completeExceptionally(new TooManyRequestsError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                    future.completeExceptionally(new ForumClientApiException(
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookDeliveryListResponse>> listDeliveries(String id) {
+        return listDeliveries(id, ListDeliveriesWebhooksRequest.builder().build());
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookDeliveryListResponse>> listDeliveries(
+            String id, RequestOptions requestOptions) {
+        return listDeliveries(id, ListDeliveriesWebhooksRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookDeliveryListResponse>> listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request) {
+        return listDeliveries(id, request, null);
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<WebhookDeliveryListResponse>> listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -461,7 +644,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<WebhookDeliveryListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -470,7 +653,7 @@ public class AsyncRawWebhooksClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetWebhooksIdDeliveriesResponse.class),
+                                        responseBodyString, WebhookDeliveryListResponse.class),
                                 response));
                         return;
                     }
@@ -517,25 +700,25 @@ public class AsyncRawWebhooksClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse>> getADeliveryFromWebhook(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse>> retrieveDelivery(
             String id, String subId) {
-        return getADeliveryFromWebhook(
-                id, subId, GetWebhooksIdDeliveriesSubIdRequest.builder().build());
+        return retrieveDelivery(
+                id, subId, RetrieveDeliveryWebhooksRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse>> getADeliveryFromWebhook(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse>> retrieveDelivery(
             String id, String subId, RequestOptions requestOptions) {
-        return getADeliveryFromWebhook(
-                id, subId, GetWebhooksIdDeliveriesSubIdRequest.builder().build(), requestOptions);
+        return retrieveDelivery(
+                id, subId, RetrieveDeliveryWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse>> getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request) {
-        return getADeliveryFromWebhook(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse>> retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request) {
+        return retrieveDelivery(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse>> getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse>> retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -553,8 +736,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetWebhooksIdDeliveriesSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RetrieveDeliveryWebhooksResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -563,7 +745,7 @@ public class AsyncRawWebhooksClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetWebhooksIdDeliveriesSubIdResponse.class),
+                                        responseBodyString, RetrieveDeliveryWebhooksResponse.class),
                                 response));
                         return;
                     }
@@ -610,29 +792,22 @@ public class AsyncRawWebhooksClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse>>
-            deleteADeliveryFromWebhook(String id, String subId) {
-        return deleteADeliveryFromWebhook(
-                id, subId, DeleteWebhooksIdDeliveriesSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteDelivery(String id, String subId) {
+        return deleteDelivery(id, subId, DeleteDeliveryWebhooksRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse>>
-            deleteADeliveryFromWebhook(String id, String subId, RequestOptions requestOptions) {
-        return deleteADeliveryFromWebhook(
-                id, subId, DeleteWebhooksIdDeliveriesSubIdRequest.builder().build(), requestOptions);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteDelivery(
+            String id, String subId, RequestOptions requestOptions) {
+        return deleteDelivery(id, subId, DeleteDeliveryWebhooksRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse>>
-            deleteADeliveryFromWebhook(String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request) {
-        return deleteADeliveryFromWebhook(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request) {
+        return deleteDelivery(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse>>
-            deleteADeliveryFromWebhook(
-                    String id,
-                    String subId,
-                    DeleteWebhooksIdDeliveriesSubIdRequest request,
-                    RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("webhooks")
@@ -650,8 +825,7 @@ public class AsyncRawWebhooksClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteWebhooksIdDeliveriesSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -659,8 +833,7 @@ public class AsyncRawWebhooksClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeleteWebhooksIdDeliveriesSubIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }

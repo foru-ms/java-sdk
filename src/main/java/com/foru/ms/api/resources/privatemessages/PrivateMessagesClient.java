@@ -5,22 +5,22 @@ package com.foru.ms.api.resources.privatemessages;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRepliesSubIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesIdRequest;
-import com.foru.ms.api.resources.privatemessages.requests.GetPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesIdRepliesRequest;
-import com.foru.ms.api.resources.privatemessages.requests.PostPrivateMessagesRequest;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.DeletePrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdRepliesSubIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesIdResponse;
-import com.foru.ms.api.resources.privatemessages.types.GetPrivateMessagesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesIdRepliesResponse;
-import com.foru.ms.api.resources.privatemessages.types.PostPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.requests.CreatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.CreateReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeletePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.DeleteReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.ListRepliesPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrievePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.RetrieveReplyPrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.requests.UpdatePrivateMessagesRequest;
+import com.foru.ms.api.resources.privatemessages.types.RetrieveReplyPrivateMessagesResponse;
+import com.foru.ms.api.resources.privatemessages.types.UpdatePrivateMessagesResponse;
+import com.foru.ms.api.types.PrivateMessageListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyListResponse;
+import com.foru.ms.api.types.PrivateMessageReplyResponse;
+import com.foru.ms.api.types.PrivateMessageResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class PrivateMessagesClient {
     protected final ClientOptions clientOptions;
@@ -39,144 +39,210 @@ public class PrivateMessagesClient {
         return this.rawClient;
     }
 
-    public GetPrivateMessagesResponse listAllPrivateMessages() {
-        return this.rawClient.listAllPrivateMessages().body();
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public PrivateMessageListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetPrivateMessagesResponse listAllPrivateMessages(RequestOptions requestOptions) {
-        return this.rawClient.listAllPrivateMessages(requestOptions).body();
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public PrivateMessageListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetPrivateMessagesResponse listAllPrivateMessages(GetPrivateMessagesRequest request) {
-        return this.rawClient.listAllPrivateMessages(request).body();
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public PrivateMessageListResponse list(ListPrivateMessagesRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetPrivateMessagesResponse listAllPrivateMessages(
-            GetPrivateMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllPrivateMessages(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of private messages. Use cursor for pagination.
+     */
+    public PrivateMessageListResponse list(ListPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostPrivateMessagesResponse createAPrivateMessage(PostPrivateMessagesRequest request) {
-        return this.rawClient.createAPrivateMessage(request).body();
+    /**
+     * Create a new private message.
+     */
+    public PrivateMessageResponse create(CreatePrivateMessagesRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostPrivateMessagesResponse createAPrivateMessage(
-            PostPrivateMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAPrivateMessage(request, requestOptions).body();
+    /**
+     * Create a new private message.
+     */
+    public PrivateMessageResponse create(CreatePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetPrivateMessagesIdResponse getAPrivateMessage(String id) {
-        return this.rawClient.getAPrivateMessage(id).body();
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public PrivateMessageResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetPrivateMessagesIdResponse getAPrivateMessage(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAPrivateMessage(id, requestOptions).body();
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public PrivateMessageResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetPrivateMessagesIdResponse getAPrivateMessage(String id, GetPrivateMessagesIdRequest request) {
-        return this.rawClient.getAPrivateMessage(id, request).body();
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public PrivateMessageResponse retrieve(String id, RetrievePrivateMessagesRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetPrivateMessagesIdResponse getAPrivateMessage(
-            String id, GetPrivateMessagesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAPrivateMessage(id, request, requestOptions).body();
+    /**
+     * Retrieve a private message by ID or slug (if supported).
+     */
+    public PrivateMessageResponse retrieve(
+            String id, RetrievePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeletePrivateMessagesIdResponse deleteAPrivateMessage(String id) {
-        return this.rawClient.deleteAPrivateMessage(id).body();
+    /**
+     * Permanently delete a private message.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeletePrivateMessagesIdResponse deleteAPrivateMessage(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPrivateMessage(id, requestOptions).body();
+    /**
+     * Permanently delete a private message.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeletePrivateMessagesIdResponse deleteAPrivateMessage(String id, DeletePrivateMessagesIdRequest request) {
-        return this.rawClient.deleteAPrivateMessage(id, request).body();
+    /**
+     * Permanently delete a private message.
+     */
+    public SuccessResponse delete(String id, DeletePrivateMessagesRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeletePrivateMessagesIdResponse deleteAPrivateMessage(
-            String id, DeletePrivateMessagesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPrivateMessage(id, request, requestOptions).body();
+    /**
+     * Permanently delete a private message.
+     */
+    public SuccessResponse delete(String id, DeletePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public GetPrivateMessagesIdRepliesResponse listPrivateMessageReplies(String id) {
-        return this.rawClient.listPrivateMessageReplies(id).body();
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public UpdatePrivateMessagesResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public GetPrivateMessagesIdRepliesResponse listPrivateMessageReplies(String id, RequestOptions requestOptions) {
-        return this.rawClient.listPrivateMessageReplies(id, requestOptions).body();
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public UpdatePrivateMessagesResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public GetPrivateMessagesIdRepliesResponse listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request) {
-        return this.rawClient.listPrivateMessageReplies(id, request).body();
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public UpdatePrivateMessagesResponse update(String id, UpdatePrivateMessagesRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public GetPrivateMessagesIdRepliesResponse listPrivateMessageReplies(
-            String id, GetPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .listPrivateMessageReplies(id, request, requestOptions)
-                .body();
+    /**
+     * Update an existing private message. Only provided fields will be modified.
+     */
+    public UpdatePrivateMessagesResponse update(
+            String id, UpdatePrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 
-    public PostPrivateMessagesIdRepliesResponse createAReplyInPrivateMessage(
-            String id, PostPrivateMessagesIdRepliesRequest request) {
-        return this.rawClient.createAReplyInPrivateMessage(id, request).body();
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public PrivateMessageReplyListResponse listReplies(String id) {
+        return this.rawClient.listReplies(id).body();
     }
 
-    public PostPrivateMessagesIdRepliesResponse createAReplyInPrivateMessage(
-            String id, PostPrivateMessagesIdRepliesRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .createAReplyInPrivateMessage(id, request, requestOptions)
-                .body();
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public PrivateMessageReplyListResponse listReplies(String id, RequestOptions requestOptions) {
+        return this.rawClient.listReplies(id, requestOptions).body();
     }
 
-    public GetPrivateMessagesIdRepliesSubIdResponse getAReplyFromPrivateMessage(String id, String subId) {
-        return this.rawClient.getAReplyFromPrivateMessage(id, subId).body();
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public PrivateMessageReplyListResponse listReplies(String id, ListRepliesPrivateMessagesRequest request) {
+        return this.rawClient.listReplies(id, request).body();
     }
 
-    public GetPrivateMessagesIdRepliesSubIdResponse getAReplyFromPrivateMessage(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAReplyFromPrivateMessage(id, subId, requestOptions)
-                .body();
+    /**
+     * Retrieve a paginated list of replies for Private Message.
+     */
+    public PrivateMessageReplyListResponse listReplies(
+            String id, ListRepliesPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listReplies(id, request, requestOptions).body();
     }
 
-    public GetPrivateMessagesIdRepliesSubIdResponse getAReplyFromPrivateMessage(
-            String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request) {
-        return this.rawClient.getAReplyFromPrivateMessage(id, subId, request).body();
+    /**
+     * Create a Reply in Private Message.
+     */
+    public PrivateMessageReplyResponse createReply(String id, CreateReplyPrivateMessagesRequest request) {
+        return this.rawClient.createReply(id, request).body();
     }
 
-    public GetPrivateMessagesIdRepliesSubIdResponse getAReplyFromPrivateMessage(
-            String id, String subId, GetPrivateMessagesIdRepliesSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getAReplyFromPrivateMessage(id, subId, request, requestOptions)
-                .body();
+    /**
+     * Create a Reply in Private Message.
+     */
+    public PrivateMessageReplyResponse createReply(
+            String id, CreateReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createReply(id, request, requestOptions).body();
     }
 
-    public DeletePrivateMessagesIdRepliesSubIdResponse deleteAReplyFromPrivateMessage(String id, String subId) {
-        return this.rawClient.deleteAReplyFromPrivateMessage(id, subId).body();
+    public RetrieveReplyPrivateMessagesResponse retrieveReply(String id, String subId) {
+        return this.rawClient.retrieveReply(id, subId).body();
     }
 
-    public DeletePrivateMessagesIdRepliesSubIdResponse deleteAReplyFromPrivateMessage(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReplyFromPrivateMessage(id, subId, requestOptions)
-                .body();
+    public RetrieveReplyPrivateMessagesResponse retrieveReply(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveReply(id, subId, requestOptions).body();
     }
 
-    public DeletePrivateMessagesIdRepliesSubIdResponse deleteAReplyFromPrivateMessage(
-            String id, String subId, DeletePrivateMessagesIdRepliesSubIdRequest request) {
-        return this.rawClient.deleteAReplyFromPrivateMessage(id, subId, request).body();
+    public RetrieveReplyPrivateMessagesResponse retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request) {
+        return this.rawClient.retrieveReply(id, subId, request).body();
     }
 
-    public DeletePrivateMessagesIdRepliesSubIdResponse deleteAReplyFromPrivateMessage(
-            String id,
-            String subId,
-            DeletePrivateMessagesIdRepliesSubIdRequest request,
-            RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReplyFromPrivateMessage(id, subId, request, requestOptions)
-                .body();
+    public RetrieveReplyPrivateMessagesResponse retrieveReply(
+            String id, String subId, RetrieveReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieveReply(id, subId, request, requestOptions).body();
+    }
+
+    public SuccessResponse deleteReply(String id, String subId) {
+        return this.rawClient.deleteReply(id, subId).body();
+    }
+
+    public SuccessResponse deleteReply(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteReply(id, subId, requestOptions).body();
+    }
+
+    public SuccessResponse deleteReply(String id, String subId, DeleteReplyPrivateMessagesRequest request) {
+        return this.rawClient.deleteReply(id, subId, request).body();
+    }
+
+    public SuccessResponse deleteReply(
+            String id, String subId, DeleteReplyPrivateMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteReply(id, subId, request, requestOptions).body();
     }
 }

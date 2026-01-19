@@ -5,14 +5,15 @@ package com.foru.ms.api.resources.reports;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.reports.requests.DeleteReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsRequest;
-import com.foru.ms.api.resources.reports.requests.PostReportsRequest;
-import com.foru.ms.api.resources.reports.types.DeleteReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsResponse;
-import com.foru.ms.api.resources.reports.types.PostReportsResponse;
+import com.foru.ms.api.resources.reports.requests.CreateReportsRequest;
+import com.foru.ms.api.resources.reports.requests.DeleteReportsRequest;
+import com.foru.ms.api.resources.reports.requests.ListReportsRequest;
+import com.foru.ms.api.resources.reports.requests.RetrieveReportsRequest;
+import com.foru.ms.api.resources.reports.requests.UpdateReportsRequest;
+import com.foru.ms.api.resources.reports.types.UpdateReportsResponse;
+import com.foru.ms.api.types.ReportListResponse;
+import com.foru.ms.api.types.ReportResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class ReportsClient {
     protected final ClientOptions clientOptions;
@@ -31,60 +32,129 @@ public class ReportsClient {
         return this.rawClient;
     }
 
-    public GetReportsResponse listAllReports() {
-        return this.rawClient.listAllReports().body();
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ReportListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetReportsResponse listAllReports(RequestOptions requestOptions) {
-        return this.rawClient.listAllReports(requestOptions).body();
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ReportListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetReportsResponse listAllReports(GetReportsRequest request) {
-        return this.rawClient.listAllReports(request).body();
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ReportListResponse list(ListReportsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetReportsResponse listAllReports(GetReportsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllReports(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ReportListResponse list(ListReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostReportsResponse createAReport(PostReportsRequest request) {
-        return this.rawClient.createAReport(request).body();
+    /**
+     * Create a new report.
+     */
+    public ReportResponse create(CreateReportsRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostReportsResponse createAReport(PostReportsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAReport(request, requestOptions).body();
+    /**
+     * Create a new report.
+     */
+    public ReportResponse create(CreateReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetReportsIdResponse getAReport(String id) {
-        return this.rawClient.getAReport(id).body();
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ReportResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetReportsIdResponse getAReport(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAReport(id, requestOptions).body();
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ReportResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetReportsIdResponse getAReport(String id, GetReportsIdRequest request) {
-        return this.rawClient.getAReport(id, request).body();
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ReportResponse retrieve(String id, RetrieveReportsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetReportsIdResponse getAReport(String id, GetReportsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAReport(id, request, requestOptions).body();
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ReportResponse retrieve(String id, RetrieveReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteReportsIdResponse deleteAReport(String id) {
-        return this.rawClient.deleteAReport(id).body();
+    /**
+     * Permanently delete a report.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteReportsIdResponse deleteAReport(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAReport(id, requestOptions).body();
+    /**
+     * Permanently delete a report.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteReportsIdResponse deleteAReport(String id, DeleteReportsIdRequest request) {
-        return this.rawClient.deleteAReport(id, request).body();
+    /**
+     * Permanently delete a report.
+     */
+    public SuccessResponse delete(String id, DeleteReportsRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteReportsIdResponse deleteAReport(
-            String id, DeleteReportsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAReport(id, request, requestOptions).body();
+    /**
+     * Permanently delete a report.
+     */
+    public SuccessResponse delete(String id, DeleteReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public UpdateReportsResponse update(String id) {
+        return this.rawClient.update(id).body();
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public UpdateReportsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public UpdateReportsResponse update(String id, UpdateReportsRequest request) {
+        return this.rawClient.update(id, request).body();
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public UpdateReportsResponse update(String id, UpdateReportsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 }

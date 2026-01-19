@@ -18,33 +18,28 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdPostsRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsRequest;
-import com.foru.ms.api.resources.posts.requests.PatchPostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.PostPostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.PostPostsRequest;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdPostsResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsResponse;
-import com.foru.ms.api.resources.posts.types.PatchPostsIdResponse;
-import com.foru.ms.api.resources.posts.types.PostPostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.PostPostsResponse;
+import com.foru.ms.api.resources.posts.requests.CreatePostsRequest;
+import com.foru.ms.api.resources.posts.requests.CreateReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeletePostPostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeletePostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeleteReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListPostsPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListReactionsPostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrievePostPostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrievePostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrieveReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.UpdatePostsRequest;
+import com.foru.ms.api.resources.posts.types.RetrievePostPostsResponse;
+import com.foru.ms.api.resources.posts.types.RetrieveReactionPostsResponse;
+import com.foru.ms.api.resources.posts.types.UpdatePostsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.PostListResponse;
+import com.foru.ms.api.types.PostPostListResponse;
+import com.foru.ms.api.types.PostReactionListResponse;
+import com.foru.ms.api.types.PostReactionResponse;
+import com.foru.ms.api.types.PostResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -65,34 +60,58 @@ public class AsyncRawPostsClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsResponse>> listAllPosts() {
-        return listAllPosts(GetPostsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostListResponse>> list() {
+        return list(ListPostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsResponse>> listAllPosts(RequestOptions requestOptions) {
-        return listAllPosts(GetPostsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostListResponse>> list(RequestOptions requestOptions) {
+        return list(ListPostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsResponse>> listAllPosts(GetPostsRequest request) {
-        return listAllPosts(request, null);
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostListResponse>> list(ListPostsRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsResponse>> listAllPosts(
-            GetPostsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostListResponse>> list(
+            ListPostsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getUserId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "userId", request.getUserId().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
+        }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getType().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "type", request.getType().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -104,7 +123,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPostsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PostListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -112,7 +131,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostListResponse.class),
                                 response));
                         return;
                     }
@@ -159,12 +178,18 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPostsResponse>> createAPost(PostPostsRequest request) {
-        return createAPost(request, null);
+    /**
+     * Create a new post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostResponse>> create(CreatePostsRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPostsResponse>> createAPost(
-            PostPostsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostResponse>> create(
+            CreatePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -187,7 +212,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostPostsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PostResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -195,8 +220,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostPostsResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostResponse.class), response));
                         return;
                     }
                     try {
@@ -247,22 +271,32 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdResponse>> getAPost(String id) {
-        return getAPost(id, GetPostsIdRequest.builder().build());
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostResponse>> retrieve(String id) {
+        return retrieve(id, RetrievePostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdResponse>> getAPost(
-            String id, RequestOptions requestOptions) {
-        return getAPost(id, GetPostsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostResponse>> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrievePostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdResponse>> getAPost(
-            String id, GetPostsIdRequest request) {
-        return getAPost(id, request, null);
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostResponse>> retrieve(String id, RetrievePostsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdResponse>> getAPost(
-            String id, GetPostsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostResponse>> retrieve(
+            String id, RetrievePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -278,7 +312,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPostsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PostResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -286,8 +320,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostResponse.class), response));
                         return;
                     }
                     try {
@@ -338,22 +371,33 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdResponse>> deleteAPost(String id) {
-        return deleteAPost(id, DeletePostsIdRequest.builder().build());
+    /**
+     * Permanently delete a post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeletePostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdResponse>> deleteAPost(
+    /**
+     * Permanently delete a post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteAPost(id, DeletePostsIdRequest.builder().build(), requestOptions);
+        return delete(id, DeletePostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdResponse>> deleteAPost(
-            String id, DeletePostsIdRequest request) {
-        return deleteAPost(id, request, null);
+    /**
+     * Permanently delete a post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id, DeletePostsRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdResponse>> deleteAPost(
-            String id, DeletePostsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeletePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -369,7 +413,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeletePostsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -377,7 +421,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeletePostsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -429,22 +473,34 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchPostsIdResponse>> updateAPost(String id) {
-        return updateAPost(id, PatchPostsIdRequest.builder().build());
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePostsResponse>> update(String id) {
+        return update(id, UpdatePostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchPostsIdResponse>> updateAPost(
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePostsResponse>> update(
             String id, RequestOptions requestOptions) {
-        return updateAPost(id, PatchPostsIdRequest.builder().build(), requestOptions);
+        return update(id, UpdatePostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchPostsIdResponse>> updateAPost(
-            String id, PatchPostsIdRequest request) {
-        return updateAPost(id, request, null);
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePostsResponse>> update(
+            String id, UpdatePostsRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchPostsIdResponse>> updateAPost(
-            String id, PatchPostsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdatePostsResponse>> update(
+            String id, UpdatePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -468,7 +524,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PatchPostsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UpdatePostsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -476,7 +532,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchPostsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdatePostsResponse.class),
                                 response));
                         return;
                     }
@@ -533,34 +589,50 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsResponse>> listPostReactions(String id) {
-        return listPostReactions(id, GetPostsIdReactionsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostReactionListResponse>> listReactions(String id) {
+        return listReactions(id, ListReactionsPostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsResponse>> listPostReactions(
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostReactionListResponse>> listReactions(
             String id, RequestOptions requestOptions) {
-        return listPostReactions(id, GetPostsIdReactionsRequest.builder().build(), requestOptions);
+        return listReactions(id, ListReactionsPostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsResponse>> listPostReactions(
-            String id, GetPostsIdReactionsRequest request) {
-        return listPostReactions(id, request, null);
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostReactionListResponse>> listReactions(
+            String id, ListReactionsPostsRequest request) {
+        return listReactions(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsResponse>> listPostReactions(
-            String id, GetPostsIdReactionsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostReactionListResponse>> listReactions(
+            String id, ListReactionsPostsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
                 .addPathSegment(id)
                 .addPathSegments("reactions");
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
         if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "cursor", request.getCursor().get(), false);
         }
-        if (request.getLimit().isPresent()) {
+        if (request.getType().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
+                    httpUrl, "type", request.getType().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -572,7 +644,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PostReactionListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -580,8 +652,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPostsIdReactionsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostReactionListResponse.class),
                                 response));
                         return;
                     }
@@ -628,13 +699,19 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPostsIdReactionsResponse>> createAReactionInPost(
-            String id, PostPostsIdReactionsRequest request) {
-        return createAReactionInPost(id, request, null);
+    /**
+     * Create a Reaction in Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostReactionResponse>> createReaction(
+            String id, CreateReactionPostsRequest request) {
+        return createReaction(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostPostsIdReactionsResponse>> createAReactionInPost(
-            String id, PostPostsIdReactionsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a Reaction in Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostReactionResponse>> createReaction(
+            String id, CreateReactionPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -659,7 +736,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostPostsIdReactionsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PostReactionResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -667,8 +744,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PostPostsIdReactionsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostReactionResponse.class),
                                 response));
                         return;
                     }
@@ -720,42 +796,28 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsResponse>> removeYourReactionFromPost(
-            String id) {
-        return removeYourReactionFromPost(
-                id, DeletePostsIdReactionsRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReaction(String id, String subId) {
+        return deleteReaction(id, subId, DeleteReactionPostsRequest.builder().build());
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsResponse>> removeYourReactionFromPost(
-            String id, RequestOptions requestOptions) {
-        return removeYourReactionFromPost(
-                id, DeletePostsIdReactionsRequest.builder().build(), requestOptions);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReaction(
+            String id, String subId, RequestOptions requestOptions) {
+        return deleteReaction(id, subId, DeleteReactionPostsRequest.builder().build(), requestOptions);
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsResponse>> removeYourReactionFromPost(
-            String id, DeletePostsIdReactionsRequest request) {
-        return removeYourReactionFromPost(id, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReaction(
+            String id, String subId, DeleteReactionPostsRequest request) {
+        return deleteReaction(id, subId, request, null);
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsResponse>> removeYourReactionFromPost(
-            String id, DeletePostsIdReactionsRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteReaction(
+            String id, String subId, DeleteReactionPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
                 .addPathSegment(id)
                 .addPathSegments("reactions")
+                .addPathSegment(subId)
                 .build();
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl)
@@ -767,7 +829,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -775,8 +837,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeletePostsIdReactionsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -823,25 +884,25 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse>> getAReactionFromPost(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReactionPostsResponse>> retrieveReaction(
             String id, String subId) {
-        return getAReactionFromPost(
-                id, subId, GetPostsIdReactionsSubIdRequest.builder().build());
+        return retrieveReaction(
+                id, subId, RetrieveReactionPostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse>> getAReactionFromPost(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReactionPostsResponse>> retrieveReaction(
             String id, String subId, RequestOptions requestOptions) {
-        return getAReactionFromPost(
-                id, subId, GetPostsIdReactionsSubIdRequest.builder().build(), requestOptions);
+        return retrieveReaction(
+                id, subId, RetrieveReactionPostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse>> getAReactionFromPost(
-            String id, String subId, GetPostsIdReactionsSubIdRequest request) {
-        return getAReactionFromPost(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReactionPostsResponse>> retrieveReaction(
+            String id, String subId, RetrieveReactionPostsRequest request) {
+        return retrieveReaction(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse>> getAReactionFromPost(
-            String id, String subId, GetPostsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrieveReactionPostsResponse>> retrieveReaction(
+            String id, String subId, RetrieveReactionPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -859,7 +920,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RetrieveReactionPostsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -868,7 +929,7 @@ public class AsyncRawPostsClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPostsIdReactionsSubIdResponse.class),
+                                        responseBodyString, RetrieveReactionPostsResponse.class),
                                 response));
                         return;
                     }
@@ -915,127 +976,62 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse>> deleteAReactionFromPost(
-            String id, String subId) {
-        return deleteAReactionFromPost(
-                id, subId, DeletePostsIdReactionsSubIdRequest.builder().build());
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostPostListResponse>> listPosts(String id) {
+        return listPosts(id, ListPostsPostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse>> deleteAReactionFromPost(
-            String id, String subId, RequestOptions requestOptions) {
-        return deleteAReactionFromPost(
-                id, subId, DeletePostsIdReactionsSubIdRequest.builder().build(), requestOptions);
-    }
-
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse>> deleteAReactionFromPost(
-            String id, String subId, DeletePostsIdReactionsSubIdRequest request) {
-        return deleteAReactionFromPost(id, subId, request, null);
-    }
-
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse>> deleteAReactionFromPost(
-            String id, String subId, DeletePostsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("posts")
-                .addPathSegment(id)
-                .addPathSegments("reactions")
-                .addPathSegment(subId)
-                .build();
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
-                .method("DELETE", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        CompletableFuture<ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse>> future =
-                new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeletePostsIdReactionsSubIdResponse.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new ForumClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (IOException e) {
-                    future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new ForumClientException("Network error executing HTTP request", e));
-            }
-        });
-        return future;
-    }
-
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsResponse>> listPostPosts(String id) {
-        return listPostPosts(id, GetPostsIdPostsRequest.builder().build());
-    }
-
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsResponse>> listPostPosts(
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostPostListResponse>> listPosts(
             String id, RequestOptions requestOptions) {
-        return listPostPosts(id, GetPostsIdPostsRequest.builder().build(), requestOptions);
+        return listPosts(id, ListPostsPostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsResponse>> listPostPosts(
-            String id, GetPostsIdPostsRequest request) {
-        return listPostPosts(id, request, null);
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostPostListResponse>> listPosts(
+            String id, ListPostsPostsRequest request) {
+        return listPosts(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsResponse>> listPostPosts(
-            String id, GetPostsIdPostsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public CompletableFuture<ForumClientHttpResponse<PostPostListResponse>> listPosts(
+            String id, ListPostsPostsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
                 .addPathSegment(id)
                 .addPathSegments("posts");
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
         if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "cursor", request.getCursor().get(), false);
         }
-        if (request.getLimit().isPresent()) {
+        if (request.getUserId().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
+                    httpUrl, "userId", request.getUserId().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
+        }
+        if (request.getSearch().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getType().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "type", request.getType().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -1047,7 +1043,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<PostPostListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -1055,7 +1051,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdPostsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostPostListResponse.class),
                                 response));
                         return;
                     }
@@ -1102,23 +1098,22 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsSubIdResponse>> getAPostFromPost(
-            String id, String subId) {
-        return getAPostFromPost(id, subId, GetPostsIdPostsSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<RetrievePostPostsResponse>> retrievePost(String id, String subId) {
+        return retrievePost(id, subId, RetrievePostPostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsSubIdResponse>> getAPostFromPost(
+    public CompletableFuture<ForumClientHttpResponse<RetrievePostPostsResponse>> retrievePost(
             String id, String subId, RequestOptions requestOptions) {
-        return getAPostFromPost(id, subId, GetPostsIdPostsSubIdRequest.builder().build(), requestOptions);
+        return retrievePost(id, subId, RetrievePostPostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsSubIdResponse>> getAPostFromPost(
-            String id, String subId, GetPostsIdPostsSubIdRequest request) {
-        return getAPostFromPost(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrievePostPostsResponse>> retrievePost(
+            String id, String subId, RetrievePostPostsRequest request) {
+        return retrievePost(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsSubIdResponse>> getAPostFromPost(
-            String id, String subId, GetPostsIdPostsSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrievePostPostsResponse>> retrievePost(
+            String id, String subId, RetrievePostPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -1136,7 +1131,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetPostsIdPostsSubIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RetrievePostPostsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -1145,7 +1140,7 @@ public class AsyncRawPostsClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetPostsIdPostsSubIdResponse.class),
+                                        responseBodyString, RetrievePostPostsResponse.class),
                                 response));
                         return;
                     }
@@ -1192,25 +1187,22 @@ public class AsyncRawPostsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse>> deleteAPostFromPost(
-            String id, String subId) {
-        return deleteAPostFromPost(
-                id, subId, DeletePostsIdPostsSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deletePost(String id, String subId) {
+        return deletePost(id, subId, DeletePostPostsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse>> deleteAPostFromPost(
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deletePost(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteAPostFromPost(
-                id, subId, DeletePostsIdPostsSubIdRequest.builder().build(), requestOptions);
+        return deletePost(id, subId, DeletePostPostsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse>> deleteAPostFromPost(
-            String id, String subId, DeletePostsIdPostsSubIdRequest request) {
-        return deleteAPostFromPost(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deletePost(
+            String id, String subId, DeletePostPostsRequest request) {
+        return deletePost(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse>> deleteAPostFromPost(
-            String id, String subId, DeletePostsIdPostsSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deletePost(
+            String id, String subId, DeletePostPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -1228,7 +1220,7 @@ public class AsyncRawPostsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -1236,8 +1228,7 @@ public class AsyncRawPostsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeletePostsIdPostsSubIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }

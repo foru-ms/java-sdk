@@ -16,109 +16,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = RoleResponse.Builder.class)
 public final class RoleResponse {
-    private final String name;
-
-    private final Optional<String> slug;
-
-    private final Optional<String> description;
-
-    private final Optional<String> color;
-
-    private final Optional<Map<String, Object>> extendedData;
-
-    private final String id;
-
-    private final String createdAt;
-
-    private final String updatedAt;
+    private final Optional<RoleResponseData> data;
 
     private final Map<String, Object> additionalProperties;
 
-    private RoleResponse(
-            String name,
-            Optional<String> slug,
-            Optional<String> description,
-            Optional<String> color,
-            Optional<Map<String, Object>> extendedData,
-            String id,
-            String createdAt,
-            String updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.slug = slug;
-        this.description = description;
-        this.color = color;
-        this.extendedData = extendedData;
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    private RoleResponse(Optional<RoleResponseData> data, Map<String, Object> additionalProperties) {
+        this.data = data;
         this.additionalProperties = additionalProperties;
     }
 
-    /**
-     * @return Role name
-     */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return Role slug (unique identifier)
-     */
-    @JsonProperty("slug")
-    public Optional<String> getSlug() {
-        return slug;
-    }
-
-    /**
-     * @return Role description
-     */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
-    }
-
-    /**
-     * @return Role color hex
-     */
-    @JsonProperty("color")
-    public Optional<String> getColor() {
-        return color;
-    }
-
-    /**
-     * @return Extended data
-     */
-    @JsonProperty("extendedData")
-    public Optional<Map<String, Object>> getExtendedData() {
-        return extendedData;
-    }
-
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @return Role creation timestamp
-     */
-    @JsonProperty("createdAt")
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * @return Role last update timestamp
-     */
-    @JsonProperty("updatedAt")
-    public String getUpdatedAt() {
-        return updatedAt;
+    @JsonProperty("data")
+    public Optional<RoleResponseData> getData() {
+        return data;
     }
 
     @java.lang.Override
@@ -133,27 +46,12 @@ public final class RoleResponse {
     }
 
     private boolean equalTo(RoleResponse other) {
-        return name.equals(other.name)
-                && slug.equals(other.slug)
-                && description.equals(other.description)
-                && color.equals(other.color)
-                && extendedData.equals(other.extendedData)
-                && id.equals(other.id)
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+        return data.equals(other.data);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.name,
-                this.slug,
-                this.description,
-                this.color,
-                this.extendedData,
-                this.id,
-                this.createdAt,
-                this.updatedAt);
+        return Objects.hash(this.data);
     }
 
     @java.lang.Override
@@ -161,232 +59,37 @@ public final class RoleResponse {
         return ObjectMappers.stringify(this);
     }
 
-    public static NameStage builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public interface NameStage {
-        /**
-         * <p>Role name</p>
-         */
-        IdStage name(@NotNull String name);
-
-        Builder from(RoleResponse other);
-    }
-
-    public interface IdStage {
-        CreatedAtStage id(@NotNull String id);
-    }
-
-    public interface CreatedAtStage {
-        /**
-         * <p>Role creation timestamp</p>
-         */
-        UpdatedAtStage createdAt(@NotNull String createdAt);
-    }
-
-    public interface UpdatedAtStage {
-        /**
-         * <p>Role last update timestamp</p>
-         */
-        _FinalStage updatedAt(@NotNull String updatedAt);
-    }
-
-    public interface _FinalStage {
-        RoleResponse build();
-
-        /**
-         * <p>Role slug (unique identifier)</p>
-         */
-        _FinalStage slug(Optional<String> slug);
-
-        _FinalStage slug(String slug);
-
-        /**
-         * <p>Role description</p>
-         */
-        _FinalStage description(Optional<String> description);
-
-        _FinalStage description(String description);
-
-        /**
-         * <p>Role color hex</p>
-         */
-        _FinalStage color(Optional<String> color);
-
-        _FinalStage color(String color);
-
-        /**
-         * <p>Extended data</p>
-         */
-        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
-
-        _FinalStage extendedData(Map<String, Object> extendedData);
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, IdStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
-        private String name;
-
-        private String id;
-
-        private String createdAt;
-
-        private String updatedAt;
-
-        private Optional<Map<String, Object>> extendedData = Optional.empty();
-
-        private Optional<String> color = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<String> slug = Optional.empty();
+    public static final class Builder {
+        private Optional<RoleResponseData> data = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
-        @java.lang.Override
         public Builder from(RoleResponse other) {
-            name(other.getName());
-            slug(other.getSlug());
-            description(other.getDescription());
-            color(other.getColor());
-            extendedData(other.getExtendedData());
-            id(other.getId());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
+            data(other.getData());
             return this;
         }
 
-        /**
-         * <p>Role name</p>
-         * <p>Role name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public IdStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
+        @JsonSetter(value = "data", nulls = Nulls.SKIP)
+        public Builder data(Optional<RoleResponseData> data) {
+            this.data = data;
             return this;
         }
 
-        @java.lang.Override
-        @JsonSetter("id")
-        public CreatedAtStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
+        public Builder data(RoleResponseData data) {
+            this.data = Optional.ofNullable(data);
             return this;
         }
 
-        /**
-         * <p>Role creation timestamp</p>
-         * <p>Role creation timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("createdAt")
-        public UpdatedAtStage createdAt(@NotNull String createdAt) {
-            this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Role last update timestamp</p>
-         * <p>Role last update timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("updatedAt")
-        public _FinalStage updatedAt(@NotNull String updatedAt) {
-            this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Extended data</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage extendedData(Map<String, Object> extendedData) {
-            this.extendedData = Optional.ofNullable(extendedData);
-            return this;
-        }
-
-        /**
-         * <p>Extended data</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
-        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
-            this.extendedData = extendedData;
-            return this;
-        }
-
-        /**
-         * <p>Role color hex</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage color(String color) {
-            this.color = Optional.ofNullable(color);
-            return this;
-        }
-
-        /**
-         * <p>Role color hex</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "color", nulls = Nulls.SKIP)
-        public _FinalStage color(Optional<String> color) {
-            this.color = color;
-            return this;
-        }
-
-        /**
-         * <p>Role description</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Role description</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public _FinalStage description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        /**
-         * <p>Role slug (unique identifier)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage slug(String slug) {
-            this.slug = Optional.ofNullable(slug);
-            return this;
-        }
-
-        /**
-         * <p>Role slug (unique identifier)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "slug", nulls = Nulls.SKIP)
-        public _FinalStage slug(Optional<String> slug) {
-            this.slug = slug;
-            return this;
-        }
-
-        @java.lang.Override
         public RoleResponse build() {
-            return new RoleResponse(
-                    name, slug, description, color, extendedData, id, createdAt, updatedAt, additionalProperties);
+            return new RoleResponse(data, additionalProperties);
         }
     }
 }

@@ -5,26 +5,25 @@ package com.foru.ms.api.resources.users;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersRequest;
-import com.foru.ms.api.resources.users.requests.PatchUsersIdRequest;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersResponse;
-import com.foru.ms.api.resources.users.types.PatchUsersIdResponse;
+import com.foru.ms.api.resources.users.requests.CreateUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowersUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveUsersRequest;
+import com.foru.ms.api.resources.users.requests.UpdateUsersRequest;
+import com.foru.ms.api.resources.users.types.RetrieveFollowerUsersResponse;
+import com.foru.ms.api.resources.users.types.RetrieveFollowingUsersResponse;
+import com.foru.ms.api.resources.users.types.UpdateUsersResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.UserFollowerListResponse;
+import com.foru.ms.api.types.UserFollowingListResponse;
+import com.foru.ms.api.types.UserListResponse;
+import com.foru.ms.api.types.UserResponse;
 
 public class UsersClient {
     protected final ClientOptions clientOptions;
@@ -43,187 +42,263 @@ public class UsersClient {
         return this.rawClient;
     }
 
-    public GetUsersResponse listAllUsers() {
-        return this.rawClient.listAllUsers().body();
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public UserListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetUsersResponse listAllUsers(RequestOptions requestOptions) {
-        return this.rawClient.listAllUsers(requestOptions).body();
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public UserListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetUsersResponse listAllUsers(GetUsersRequest request) {
-        return this.rawClient.listAllUsers(request).body();
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public UserListResponse list(ListUsersRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetUsersResponse listAllUsers(GetUsersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllUsers(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public UserListResponse list(ListUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public GetUsersIdResponse getAUser(String id) {
-        return this.rawClient.getAUser(id).body();
+    /**
+     * Create a new user.
+     */
+    public UserResponse create(CreateUsersRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public GetUsersIdResponse getAUser(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAUser(id, requestOptions).body();
+    /**
+     * Create a new user.
+     */
+    public UserResponse create(CreateUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetUsersIdResponse getAUser(String id, GetUsersIdRequest request) {
-        return this.rawClient.getAUser(id, request).body();
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public UserResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetUsersIdResponse getAUser(String id, GetUsersIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAUser(id, request, requestOptions).body();
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public UserResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public DeleteUsersIdResponse deleteAUser(String id) {
-        return this.rawClient.deleteAUser(id).body();
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public UserResponse retrieve(String id, RetrieveUsersRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public DeleteUsersIdResponse deleteAUser(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAUser(id, requestOptions).body();
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public UserResponse retrieve(String id, RetrieveUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteUsersIdResponse deleteAUser(String id, DeleteUsersIdRequest request) {
-        return this.rawClient.deleteAUser(id, request).body();
+    /**
+     * Permanently delete a user.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteUsersIdResponse deleteAUser(String id, DeleteUsersIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAUser(id, request, requestOptions).body();
+    /**
+     * Permanently delete a user.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public PatchUsersIdResponse updateAUser(String id) {
-        return this.rawClient.updateAUser(id).body();
+    /**
+     * Permanently delete a user.
+     */
+    public SuccessResponse delete(String id, DeleteUsersRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public PatchUsersIdResponse updateAUser(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAUser(id, requestOptions).body();
+    /**
+     * Permanently delete a user.
+     */
+    public SuccessResponse delete(String id, DeleteUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchUsersIdResponse updateAUser(String id, PatchUsersIdRequest request) {
-        return this.rawClient.updateAUser(id, request).body();
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public UpdateUsersResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchUsersIdResponse updateAUser(String id, PatchUsersIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAUser(id, request, requestOptions).body();
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public UpdateUsersResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public GetUsersIdFollowersResponse listUserFollowers(String id) {
-        return this.rawClient.listUserFollowers(id).body();
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public UpdateUsersResponse update(String id, UpdateUsersRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public GetUsersIdFollowersResponse listUserFollowers(String id, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowers(id, requestOptions).body();
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public UpdateUsersResponse update(String id, UpdateUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 
-    public GetUsersIdFollowersResponse listUserFollowers(String id, GetUsersIdFollowersRequest request) {
-        return this.rawClient.listUserFollowers(id, request).body();
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public UserFollowerListResponse listFollowers(String id) {
+        return this.rawClient.listFollowers(id).body();
     }
 
-    public GetUsersIdFollowersResponse listUserFollowers(
-            String id, GetUsersIdFollowersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowers(id, request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public UserFollowerListResponse listFollowers(String id, RequestOptions requestOptions) {
+        return this.rawClient.listFollowers(id, requestOptions).body();
     }
 
-    public GetUsersIdFollowersSubIdResponse getAFollowerFromUser(String id, String subId) {
-        return this.rawClient.getAFollowerFromUser(id, subId).body();
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public UserFollowerListResponse listFollowers(String id, ListFollowersUsersRequest request) {
+        return this.rawClient.listFollowers(id, request).body();
     }
 
-    public GetUsersIdFollowersSubIdResponse getAFollowerFromUser(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAFollowerFromUser(id, subId, requestOptions).body();
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public UserFollowerListResponse listFollowers(
+            String id, ListFollowersUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listFollowers(id, request, requestOptions).body();
     }
 
-    public GetUsersIdFollowersSubIdResponse getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request) {
-        return this.rawClient.getAFollowerFromUser(id, subId, request).body();
+    public RetrieveFollowerUsersResponse retrieveFollower(String id, String subId) {
+        return this.rawClient.retrieveFollower(id, subId).body();
     }
 
-    public GetUsersIdFollowersSubIdResponse getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public RetrieveFollowerUsersResponse retrieveFollower(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveFollower(id, subId, requestOptions).body();
+    }
+
+    public RetrieveFollowerUsersResponse retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request) {
+        return this.rawClient.retrieveFollower(id, subId, request).body();
+    }
+
+    public RetrieveFollowerUsersResponse retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAFollowerFromUser(id, subId, request, requestOptions)
+                .retrieveFollower(id, subId, request, requestOptions)
                 .body();
     }
 
-    public DeleteUsersIdFollowersSubIdResponse deleteAFollowerFromUser(String id, String subId) {
-        return this.rawClient.deleteAFollowerFromUser(id, subId).body();
+    public SuccessResponse deleteFollower(String id, String subId) {
+        return this.rawClient.deleteFollower(id, subId).body();
     }
 
-    public DeleteUsersIdFollowersSubIdResponse deleteAFollowerFromUser(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.deleteAFollowerFromUser(id, subId, requestOptions).body();
+    public SuccessResponse deleteFollower(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteFollower(id, subId, requestOptions).body();
     }
 
-    public DeleteUsersIdFollowersSubIdResponse deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request) {
-        return this.rawClient.deleteAFollowerFromUser(id, subId, request).body();
+    public SuccessResponse deleteFollower(String id, String subId, DeleteFollowerUsersRequest request) {
+        return this.rawClient.deleteFollower(id, subId, request).body();
     }
 
-    public DeleteUsersIdFollowersSubIdResponse deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public SuccessResponse deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteFollower(id, subId, request, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public UserFollowingListResponse listFollowing(String id) {
+        return this.rawClient.listFollowing(id).body();
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public UserFollowingListResponse listFollowing(String id, RequestOptions requestOptions) {
+        return this.rawClient.listFollowing(id, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public UserFollowingListResponse listFollowing(String id, ListFollowingUsersRequest request) {
+        return this.rawClient.listFollowing(id, request).body();
+    }
+
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public UserFollowingListResponse listFollowing(
+            String id, ListFollowingUsersRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listFollowing(id, request, requestOptions).body();
+    }
+
+    public RetrieveFollowingUsersResponse retrieveFollowing(String id, String subId) {
+        return this.rawClient.retrieveFollowing(id, subId).body();
+    }
+
+    public RetrieveFollowingUsersResponse retrieveFollowing(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveFollowing(id, subId, requestOptions).body();
+    }
+
+    public RetrieveFollowingUsersResponse retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request) {
+        return this.rawClient.retrieveFollowing(id, subId, request).body();
+    }
+
+    public RetrieveFollowingUsersResponse retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .deleteAFollowerFromUser(id, subId, request, requestOptions)
+                .retrieveFollowing(id, subId, request, requestOptions)
                 .body();
     }
 
-    public GetUsersIdFollowingResponse listUserFollowing(String id) {
-        return this.rawClient.listUserFollowing(id).body();
+    public SuccessResponse deleteFollowing(String id, String subId) {
+        return this.rawClient.deleteFollowing(id, subId).body();
     }
 
-    public GetUsersIdFollowingResponse listUserFollowing(String id, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowing(id, requestOptions).body();
+    public SuccessResponse deleteFollowing(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteFollowing(id, subId, requestOptions).body();
     }
 
-    public GetUsersIdFollowingResponse listUserFollowing(String id, GetUsersIdFollowingRequest request) {
-        return this.rawClient.listUserFollowing(id, request).body();
+    public SuccessResponse deleteFollowing(String id, String subId, DeleteFollowingUsersRequest request) {
+        return this.rawClient.deleteFollowing(id, subId, request).body();
     }
 
-    public GetUsersIdFollowingResponse listUserFollowing(
-            String id, GetUsersIdFollowingRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listUserFollowing(id, request, requestOptions).body();
-    }
-
-    public GetUsersIdFollowingSubIdResponse getAFollowingFromUser(String id, String subId) {
-        return this.rawClient.getAFollowingFromUser(id, subId).body();
-    }
-
-    public GetUsersIdFollowingSubIdResponse getAFollowingFromUser(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAFollowingFromUser(id, subId, requestOptions).body();
-    }
-
-    public GetUsersIdFollowingSubIdResponse getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request) {
-        return this.rawClient.getAFollowingFromUser(id, subId, request).body();
-    }
-
-    public GetUsersIdFollowingSubIdResponse getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
+    public SuccessResponse deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAFollowingFromUser(id, subId, request, requestOptions)
-                .body();
-    }
-
-    public DeleteUsersIdFollowingSubIdResponse deleteAFollowingFromUser(String id, String subId) {
-        return this.rawClient.deleteAFollowingFromUser(id, subId).body();
-    }
-
-    public DeleteUsersIdFollowingSubIdResponse deleteAFollowingFromUser(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAFollowingFromUser(id, subId, requestOptions)
-                .body();
-    }
-
-    public DeleteUsersIdFollowingSubIdResponse deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request) {
-        return this.rawClient.deleteAFollowingFromUser(id, subId, request).body();
-    }
-
-    public DeleteUsersIdFollowingSubIdResponse deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAFollowingFromUser(id, subId, request, requestOptions)
+                .deleteFollowing(id, subId, request, requestOptions)
                 .body();
     }
 }

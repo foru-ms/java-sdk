@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.roles;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.roles.requests.DeleteRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.GetRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.GetRolesRequest;
-import com.foru.ms.api.resources.roles.requests.PatchRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.PostRolesRequest;
-import com.foru.ms.api.resources.roles.types.DeleteRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.GetRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.GetRolesResponse;
-import com.foru.ms.api.resources.roles.types.PatchRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.PostRolesResponse;
+import com.foru.ms.api.resources.roles.requests.CreateRolesRequest;
+import com.foru.ms.api.resources.roles.requests.DeleteRolesRequest;
+import com.foru.ms.api.resources.roles.requests.ListRolesRequest;
+import com.foru.ms.api.resources.roles.requests.RetrieveRolesRequest;
+import com.foru.ms.api.resources.roles.requests.UpdateRolesRequest;
+import com.foru.ms.api.resources.roles.types.UpdateRolesResponse;
+import com.foru.ms.api.types.RoleListResponse;
+import com.foru.ms.api.types.RoleResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class RolesClient {
     protected final ClientOptions clientOptions;
@@ -33,75 +32,129 @@ public class RolesClient {
         return this.rawClient;
     }
 
-    public GetRolesResponse listAllRoles() {
-        return this.rawClient.listAllRoles().body();
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public RoleListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetRolesResponse listAllRoles(RequestOptions requestOptions) {
-        return this.rawClient.listAllRoles(requestOptions).body();
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public RoleListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetRolesResponse listAllRoles(GetRolesRequest request) {
-        return this.rawClient.listAllRoles(request).body();
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public RoleListResponse list(ListRolesRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetRolesResponse listAllRoles(GetRolesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllRoles(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public RoleListResponse list(ListRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostRolesResponse createARole(PostRolesRequest request) {
-        return this.rawClient.createARole(request).body();
+    /**
+     * Create a new role.
+     */
+    public RoleResponse create(CreateRolesRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostRolesResponse createARole(PostRolesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createARole(request, requestOptions).body();
+    /**
+     * Create a new role.
+     */
+    public RoleResponse create(CreateRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetRolesIdResponse getARole(String id) {
-        return this.rawClient.getARole(id).body();
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public RoleResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetRolesIdResponse getARole(String id, RequestOptions requestOptions) {
-        return this.rawClient.getARole(id, requestOptions).body();
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public RoleResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetRolesIdResponse getARole(String id, GetRolesIdRequest request) {
-        return this.rawClient.getARole(id, request).body();
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public RoleResponse retrieve(String id, RetrieveRolesRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetRolesIdResponse getARole(String id, GetRolesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getARole(id, request, requestOptions).body();
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public RoleResponse retrieve(String id, RetrieveRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteRolesIdResponse deleteARole(String id) {
-        return this.rawClient.deleteARole(id).body();
+    /**
+     * Permanently delete a role.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteRolesIdResponse deleteARole(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteARole(id, requestOptions).body();
+    /**
+     * Permanently delete a role.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteRolesIdResponse deleteARole(String id, DeleteRolesIdRequest request) {
-        return this.rawClient.deleteARole(id, request).body();
+    /**
+     * Permanently delete a role.
+     */
+    public SuccessResponse delete(String id, DeleteRolesRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteRolesIdResponse deleteARole(String id, DeleteRolesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteARole(id, request, requestOptions).body();
+    /**
+     * Permanently delete a role.
+     */
+    public SuccessResponse delete(String id, DeleteRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchRolesIdResponse updateARole(String id) {
-        return this.rawClient.updateARole(id).body();
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public UpdateRolesResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchRolesIdResponse updateARole(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateARole(id, requestOptions).body();
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public UpdateRolesResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public PatchRolesIdResponse updateARole(String id, PatchRolesIdRequest request) {
-        return this.rawClient.updateARole(id, request).body();
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public UpdateRolesResponse update(String id, UpdateRolesRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public PatchRolesIdResponse updateARole(String id, PatchRolesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateARole(id, request, requestOptions).body();
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public UpdateRolesResponse update(String id, UpdateRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 }

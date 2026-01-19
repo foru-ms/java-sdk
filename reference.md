@@ -1,8 +1,22 @@
 # Reference
 ## Auth
-<details><summary><code>client.auth.register(request) -> PostAuthRegisterResponse</code></summary>
+<details><summary><code>client.auth.register(request) -> RegisterResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -14,7 +28,7 @@
 
 ```java
 client.auth().register(
-    PostAuthRegisterRequest
+    RegisterAuthRequest
         .builder()
         .username("username")
         .email("email")
@@ -95,9 +109,23 @@ client.auth().register(
 </dl>
 </details>
 
-<details><summary><code>client.auth.login(request) -> PostAuthLoginResponse</code></summary>
+<details><summary><code>client.auth.login(request) -> LoginResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -109,7 +137,7 @@ client.auth().register(
 
 ```java
 client.auth().login(
-    PostAuthLoginRequest
+    LoginAuthRequest
         .builder()
         .login("login")
         .password("password")
@@ -149,7 +177,7 @@ client.auth().login(
 </dl>
 </details>
 
-<details><summary><code>client.auth.getCurrentUser() -> GetAuthMeResponse</code></summary>
+<details><summary><code>client.auth.me() -> MeResponse</code></summary>
 <dl>
 <dd>
 
@@ -162,7 +190,7 @@ client.auth().login(
 <dd>
 
 ```java
-client.auth().getCurrentUser();
+client.auth().me();
 ```
 </dd>
 </dl>
@@ -174,9 +202,23 @@ client.auth().getCurrentUser();
 </dl>
 </details>
 
-<details><summary><code>client.auth.requestPasswordReset(request) -> PostAuthForgotPasswordResponse</code></summary>
+<details><summary><code>client.auth.forgotPassword(request) -> ForgotPasswordResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Request a password reset email. Requires API key for instance identification.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -187,8 +229,8 @@ client.auth().getCurrentUser();
 <dd>
 
 ```java
-client.auth().requestPasswordReset(
-    PostAuthForgotPasswordRequest
+client.auth().forgotPassword(
+    ForgotPasswordAuthRequest
         .builder()
         .email("email")
         .build()
@@ -219,9 +261,23 @@ client.auth().requestPasswordReset(
 </dl>
 </details>
 
-<details><summary><code>client.auth.resetPassword(request) -> PostAuthResetPasswordResponse</code></summary>
+<details><summary><code>client.auth.resetPassword(request) -> ResetPasswordResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reset password using a reset token. Requires API key for instance identification.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -233,7 +289,7 @@ client.auth().requestPasswordReset(
 
 ```java
 client.auth().resetPassword(
-    PostAuthResetPasswordRequest
+    ResetPasswordAuthRequest
         .builder()
         .password("password")
         .build()
@@ -288,8 +344,8 @@ client.auth().resetPassword(
 </dl>
 </details>
 
-## Tags
-<details><summary><code>client.tags.listAllTags() -> GetTagsResponse</code></summary>
+## Search
+<details><summary><code>client.search.search() -> SearchSearchResponse</code></summary>
 <dl>
 <dd>
 
@@ -302,8 +358,48 @@ client.auth().resetPassword(
 <dd>
 
 ```java
-client.tags().listAllTags(
-    GetTagsRequest
+client.search().search();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Tags
+<details><summary><code>client.tags.list() -> TagListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of tags. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tags().list(
+    ListTagsRequest
         .builder()
         .build()
 );
@@ -321,7 +417,7 @@ client.tags().listAllTags(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -329,7 +425,7 @@ client.tags().listAllTags(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -337,7 +433,7 @@ client.tags().listAllTags(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**search:** `Optional<String>` — Search tags by name or description
     
 </dd>
 </dl>
@@ -349,9 +445,23 @@ client.tags().listAllTags(
 </dl>
 </details>
 
-<details><summary><code>client.tags.createATag(request) -> PostTagsResponse</code></summary>
+<details><summary><code>client.tags.create(request) -> TagResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new tag.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -362,8 +472,8 @@ client.tags().listAllTags(
 <dd>
 
 ```java
-client.tags().createATag(
-    PostTagsRequest
+client.tags().create(
+    CreateTagsRequest
         .builder()
         .name("name")
         .build()
@@ -426,9 +536,23 @@ client.tags().createATag(
 </dl>
 </details>
 
-<details><summary><code>client.tags.getATag(id) -> GetTagsIdResponse</code></summary>
+<details><summary><code>client.tags.retrieve(id) -> TagResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a tag by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -439,9 +563,9 @@ client.tags().createATag(
 <dd>
 
 ```java
-client.tags().getATag(
+client.tags().retrieve(
     "id",
-    GetTagsIdRequest
+    RetrieveTagsRequest
         .builder()
         .build()
 );
@@ -459,7 +583,7 @@ client.tags().getATag(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Tag ID
     
 </dd>
 </dl>
@@ -471,9 +595,23 @@ client.tags().getATag(
 </dl>
 </details>
 
-<details><summary><code>client.tags.deleteATag(id) -> DeleteTagsIdResponse</code></summary>
+<details><summary><code>client.tags.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a tag.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -484,9 +622,9 @@ client.tags().getATag(
 <dd>
 
 ```java
-client.tags().deleteATag(
+client.tags().delete(
     "id",
-    DeleteTagsIdRequest
+    DeleteTagsRequest
         .builder()
         .build()
 );
@@ -504,7 +642,7 @@ client.tags().deleteATag(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Tag ID
     
 </dd>
 </dl>
@@ -516,9 +654,23 @@ client.tags().deleteATag(
 </dl>
 </details>
 
-<details><summary><code>client.tags.updateATag(id, request) -> PatchTagsIdResponse</code></summary>
+<details><summary><code>client.tags.update(id, request) -> UpdateTagsResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing tag. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -529,9 +681,9 @@ client.tags().deleteATag(
 <dd>
 
 ```java
-client.tags().updateATag(
+client.tags().update(
     "id",
-    PatchTagsIdRequest
+    UpdateTagsRequest
         .builder()
         .build()
 );
@@ -549,7 +701,7 @@ client.tags().updateATag(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Tag ID
     
 </dd>
 </dl>
@@ -601,9 +753,23 @@ client.tags().updateATag(
 </dl>
 </details>
 
-<details><summary><code>client.tags.listTagSubscribers(id) -> GetTagsIdSubscribersResponse</code></summary>
+<details><summary><code>client.tags.listSubscribers(id) -> TagSubscriberListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of subscribers for Tag.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -614,9 +780,9 @@ client.tags().updateATag(
 <dd>
 
 ```java
-client.tags().listTagSubscribers(
+client.tags().listSubscribers(
     "id",
-    GetTagsIdSubscribersRequest
+    ListSubscribersTagsRequest
         .builder()
         .build()
 );
@@ -642,7 +808,7 @@ client.tags().listTagSubscribers(
 <dl>
 <dd>
 
-**cursor:** `Optional<String>` — Pagination cursor
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -650,7 +816,7 @@ client.tags().listTagSubscribers(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -662,7 +828,7 @@ client.tags().listTagSubscribers(
 </dl>
 </details>
 
-<details><summary><code>client.tags.getASubscriberFromTag(id, subId) -> GetTagsIdSubscribersSubIdResponse</code></summary>
+<details><summary><code>client.tags.retrieveSubscriber(id, subId) -> RetrieveSubscriberTagsResponse</code></summary>
 <dl>
 <dd>
 
@@ -675,10 +841,10 @@ client.tags().listTagSubscribers(
 <dd>
 
 ```java
-client.tags().getASubscriberFromTag(
+client.tags().retrieveSubscriber(
     "id",
     "subId",
-    GetTagsIdSubscribersSubIdRequest
+    RetrieveSubscriberTagsRequest
         .builder()
         .build()
 );
@@ -716,7 +882,7 @@ client.tags().getASubscriberFromTag(
 </dl>
 </details>
 
-<details><summary><code>client.tags.deleteASubscriberFromTag(id, subId) -> DeleteTagsIdSubscribersSubIdResponse</code></summary>
+<details><summary><code>client.tags.deleteSubscriber(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -729,10 +895,10 @@ client.tags().getASubscriberFromTag(
 <dd>
 
 ```java
-client.tags().deleteASubscriberFromTag(
+client.tags().deleteSubscriber(
     "id",
     "subId",
-    DeleteTagsIdSubscribersSubIdRequest
+    DeleteSubscriberTagsRequest
         .builder()
         .build()
 );
@@ -771,9 +937,23 @@ client.tags().deleteASubscriberFromTag(
 </details>
 
 ## Threads
-<details><summary><code>client.threads.listAllThreads() -> GetThreadsResponse</code></summary>
+<details><summary><code>client.threads.list() -> ThreadListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of threads. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -784,8 +964,8 @@ client.tags().deleteASubscriberFromTag(
 <dd>
 
 ```java
-client.threads().listAllThreads(
-    GetThreadsRequest
+client.threads().list(
+    ListThreadsRequest
         .builder()
         .build()
 );
@@ -803,7 +983,7 @@ client.threads().listAllThreads(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -811,7 +991,7 @@ client.threads().listAllThreads(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -819,7 +999,31 @@ client.threads().listAllThreads(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**search:** `Optional<String>` — Search term for title
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tagId:** `Optional<String>` — Filter by tag ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userId:** `Optional<String>` — Filter by author ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `Optional<ListThreadsRequestSort>` — Sort criteria
     
 </dd>
 </dl>
@@ -831,9 +1035,23 @@ client.threads().listAllThreads(
 </dl>
 </details>
 
-<details><summary><code>client.threads.createAThread(request) -> PostThreadsResponse</code></summary>
+<details><summary><code>client.threads.create(request) -> ThreadResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new thread.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -844,8 +1062,8 @@ client.threads().listAllThreads(
 <dd>
 
 ```java
-client.threads().createAThread(
-    PostThreadsRequest
+client.threads().create(
+    CreateThreadsRequest
         .builder()
         .title("title")
         .body("body")
@@ -897,7 +1115,31 @@ client.threads().createAThread(
 <dl>
 <dd>
 
-**poll:** `Optional<PostThreadsRequestPoll>` — Poll data
+**poll:** `Optional<CreateThreadsRequestPoll>` — Poll data
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**locked:** `Optional<Boolean>` — Lock thread on creation
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pinned:** `Optional<Boolean>` — Pin thread on creation
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
     
 </dd>
 </dl>
@@ -909,9 +1151,23 @@ client.threads().createAThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.getAThread(id) -> GetThreadsIdResponse</code></summary>
+<details><summary><code>client.threads.retrieve(id) -> ThreadResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a thread by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -922,9 +1178,9 @@ client.threads().createAThread(
 <dd>
 
 ```java
-client.threads().getAThread(
+client.threads().retrieve(
     "id",
-    GetThreadsIdRequest
+    RetrieveThreadsRequest
         .builder()
         .build()
 );
@@ -942,7 +1198,7 @@ client.threads().getAThread(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Thread ID
     
 </dd>
 </dl>
@@ -954,9 +1210,23 @@ client.threads().getAThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.deleteAThread(id) -> DeleteThreadsIdResponse</code></summary>
+<details><summary><code>client.threads.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a thread.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -967,9 +1237,9 @@ client.threads().getAThread(
 <dd>
 
 ```java
-client.threads().deleteAThread(
+client.threads().delete(
     "id",
-    DeleteThreadsIdRequest
+    DeleteThreadsRequest
         .builder()
         .build()
 );
@@ -987,7 +1257,7 @@ client.threads().deleteAThread(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Thread ID
     
 </dd>
 </dl>
@@ -999,9 +1269,23 @@ client.threads().deleteAThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.updateAThread(id, request) -> PatchThreadsIdResponse</code></summary>
+<details><summary><code>client.threads.update(id, request) -> UpdateThreadsResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing thread. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -1012,9 +1296,9 @@ client.threads().deleteAThread(
 <dd>
 
 ```java
-client.threads().updateAThread(
+client.threads().update(
     "id",
-    PatchThreadsIdRequest
+    UpdateThreadsRequest
         .builder()
         .build()
 );
@@ -1032,7 +1316,7 @@ client.threads().updateAThread(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Thread ID
     
 </dd>
 </dl>
@@ -1092,9 +1376,23 @@ client.threads().updateAThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.listThreadPosts(id) -> GetThreadsIdPostsResponse</code></summary>
+<details><summary><code>client.threads.listPosts(id) -> ThreadPostListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of posts for Thread.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -1105,9 +1403,9 @@ client.threads().updateAThread(
 <dd>
 
 ```java
-client.threads().listThreadPosts(
+client.threads().listPosts(
     "id",
-    GetThreadsIdPostsRequest
+    ListPostsThreadsRequest
         .builder()
         .build()
 );
@@ -1133,7 +1431,7 @@ client.threads().listThreadPosts(
 <dl>
 <dd>
 
-**cursor:** `Optional<String>` — Pagination cursor
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -1141,7 +1439,39 @@ client.threads().listThreadPosts(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**cursor:** `Optional<String>` — Cursor for pagination
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userId:** `Optional<String>` — Filter posts by author ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `Optional<ListPostsThreadsRequestSort>` — Sort posts by creation time
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `Optional<String>` — Search within post body
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<ListPostsThreadsRequestType>` — Filter by interaction type
     
 </dd>
 </dl>
@@ -1153,7 +1483,7 @@ client.threads().listThreadPosts(
 </dl>
 </details>
 
-<details><summary><code>client.threads.getAPostFromThread(id, subId) -> GetThreadsIdPostsSubIdResponse</code></summary>
+<details><summary><code>client.threads.retrievePost(id, subId) -> RetrievePostThreadsResponse</code></summary>
 <dl>
 <dd>
 
@@ -1166,10 +1496,10 @@ client.threads().listThreadPosts(
 <dd>
 
 ```java
-client.threads().getAPostFromThread(
+client.threads().retrievePost(
     "id",
     "subId",
-    GetThreadsIdPostsSubIdRequest
+    RetrievePostThreadsRequest
         .builder()
         .build()
 );
@@ -1207,7 +1537,7 @@ client.threads().getAPostFromThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.deleteAPostFromThread(id, subId) -> DeleteThreadsIdPostsSubIdResponse</code></summary>
+<details><summary><code>client.threads.deletePost(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -1220,10 +1550,10 @@ client.threads().getAPostFromThread(
 <dd>
 
 ```java
-client.threads().deleteAPostFromThread(
+client.threads().deletePost(
     "id",
     "subId",
-    DeleteThreadsIdPostsSubIdRequest
+    DeletePostThreadsRequest
         .builder()
         .build()
 );
@@ -1261,9 +1591,23 @@ client.threads().deleteAPostFromThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.listThreadReactions(id) -> GetThreadsIdReactionsResponse</code></summary>
+<details><summary><code>client.threads.listReactions(id) -> ThreadReactionListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of reactions for Thread.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -1274,9 +1618,9 @@ client.threads().deleteAPostFromThread(
 <dd>
 
 ```java
-client.threads().listThreadReactions(
+client.threads().listReactions(
     "id",
-    GetThreadsIdReactionsRequest
+    ListReactionsThreadsRequest
         .builder()
         .build()
 );
@@ -1302,7 +1646,7 @@ client.threads().listThreadReactions(
 <dl>
 <dd>
 
-**cursor:** `Optional<String>` — Pagination cursor
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -1310,7 +1654,15 @@ client.threads().listThreadReactions(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**cursor:** `Optional<String>` — Cursor for pagination
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<ListReactionsThreadsRequestType>` — Filter by reaction type
     
 </dd>
 </dl>
@@ -1322,9 +1674,23 @@ client.threads().listThreadReactions(
 </dl>
 </details>
 
-<details><summary><code>client.threads.createAReactionInThread(id, request) -> PostThreadsIdReactionsResponse</code></summary>
+<details><summary><code>client.threads.createReaction(id, request) -> ThreadReactionResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a Reaction in Thread.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -1335,11 +1701,11 @@ client.threads().listThreadReactions(
 <dd>
 
 ```java
-client.threads().createAReactionInThread(
+client.threads().createReaction(
     "id",
-    PostThreadsIdReactionsRequest
+    CreateReactionThreadsRequest
         .builder()
-        .type(PostThreadsIdReactionsRequestType.LIKE)
+        .type(CreateReactionThreadsRequestType.LIKE)
         .build()
 );
 ```
@@ -1364,7 +1730,7 @@ client.threads().createAReactionInThread(
 <dl>
 <dd>
 
-**type:** `PostThreadsIdReactionsRequestType` — Type of reaction
+**type:** `CreateReactionThreadsRequestType` — Type of reaction
     
 </dd>
 </dl>
@@ -1392,7 +1758,115 @@ client.threads().createAReactionInThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.removeYourReactionFromThread(id) -> DeleteThreadsIdReactionsResponse</code></summary>
+<details><summary><code>client.threads.deleteReaction(id, subId) -> SuccessResponse</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.threads().deleteReaction(
+    "id",
+    "subId",
+    DeleteReactionThreadsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Thread ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subId:** `String` — Reaction ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.threads.retrieveReaction(id, subId) -> RetrieveReactionThreadsResponse</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.threads().retrieveReaction(
+    "id",
+    "subId",
+    RetrieveReactionThreadsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Thread ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subId:** `String` — Reaction ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.threads.listSubscribers(id) -> ThreadSubscriberListResponse</code></summary>
 <dl>
 <dd>
 
@@ -1404,7 +1878,7 @@ client.threads().createAReactionInThread(
 <dl>
 <dd>
 
-Removes the authenticated user's reaction. No subId needed.
+Retrieve a paginated list of subscribers for Thread.
 </dd>
 </dl>
 </dd>
@@ -1419,9 +1893,9 @@ Removes the authenticated user's reaction. No subId needed.
 <dd>
 
 ```java
-client.threads().removeYourReactionFromThread(
+client.threads().listSubscribers(
     "id",
-    DeleteThreadsIdReactionsRequest
+    ListSubscribersThreadsRequest
         .builder()
         .build()
 );
@@ -1443,6 +1917,22 @@ client.threads().removeYourReactionFromThread(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Items per page (max 75)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `Optional<String>` — Cursor for pagination
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -1451,7 +1941,7 @@ client.threads().removeYourReactionFromThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.getAReactionFromThread(id, subId) -> GetThreadsIdReactionsSubIdResponse</code></summary>
+<details><summary><code>client.threads.retrieveSubscriber(id, subId) -> RetrieveSubscriberThreadsResponse</code></summary>
 <dl>
 <dd>
 
@@ -1464,179 +1954,10 @@ client.threads().removeYourReactionFromThread(
 <dd>
 
 ```java
-client.threads().getAReactionFromThread(
+client.threads().retrieveSubscriber(
     "id",
     "subId",
-    GetThreadsIdReactionsSubIdRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Thread ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**subId:** `String` — Reaction ID
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.threads.deleteAReactionFromThread(id, subId) -> DeleteThreadsIdReactionsSubIdResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.threads().deleteAReactionFromThread(
-    "id",
-    "subId",
-    DeleteThreadsIdReactionsSubIdRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Thread ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**subId:** `String` — Reaction ID
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.threads.listThreadSubscribers(id) -> GetThreadsIdSubscribersResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.threads().listThreadSubscribers(
-    "id",
-    GetThreadsIdSubscribersRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Thread ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `Optional<String>` — Pagination cursor
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `Optional<Integer>` — Items per page
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.threads.getASubscriberFromThread(id, subId) -> GetThreadsIdSubscribersSubIdResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.threads().getASubscriberFromThread(
-    "id",
-    "subId",
-    GetThreadsIdSubscribersSubIdRequest
+    RetrieveSubscriberThreadsRequest
         .builder()
         .build()
 );
@@ -1674,7 +1995,7 @@ client.threads().getASubscriberFromThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.deleteASubscriberFromThread(id, subId) -> DeleteThreadsIdSubscribersSubIdResponse</code></summary>
+<details><summary><code>client.threads.deleteSubscriber(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -1687,10 +2008,10 @@ client.threads().getASubscriberFromThread(
 <dd>
 
 ```java
-client.threads().deleteASubscriberFromThread(
+client.threads().deleteSubscriber(
     "id",
     "subId",
-    DeleteThreadsIdSubscribersSubIdRequest
+    DeleteSubscriberThreadsRequest
         .builder()
         .build()
 );
@@ -1728,7 +2049,7 @@ client.threads().deleteASubscriberFromThread(
 </dl>
 </details>
 
-<details><summary><code>client.threads.getThreadPoll(id) -> GetThreadsIdPollResponse</code></summary>
+<details><summary><code>client.threads.retrievePoll(id) -> ThreadPollResponse</code></summary>
 <dl>
 <dd>
 
@@ -1741,9 +2062,9 @@ client.threads().deleteASubscriberFromThread(
 <dd>
 
 ```java
-client.threads().getThreadPoll(
+client.threads().retrievePoll(
     "id",
-    GetThreadsIdPollRequest
+    RetrievePollThreadsRequest
         .builder()
         .build()
 );
@@ -1773,7 +2094,7 @@ client.threads().getThreadPoll(
 </dl>
 </details>
 
-<details><summary><code>client.threads.createThreadPoll(id, request) -> PostThreadsIdPollResponse</code></summary>
+<details><summary><code>client.threads.createPoll(id, request) -> ThreadPollResponse</code></summary>
 <dl>
 <dd>
 
@@ -1786,14 +2107,14 @@ client.threads().getThreadPoll(
 <dd>
 
 ```java
-client.threads().createThreadPoll(
+client.threads().createPoll(
     "id",
-    PostThreadsIdPollRequest
+    CreatePollThreadsRequest
         .builder()
         .title("title")
         .options(
             Arrays.asList(
-                PostThreadsIdPollRequestOptionsItem
+                CreatePollThreadsRequestOptionsItem
                     .builder()
                     .title("title")
                     .build()
@@ -1831,7 +2152,7 @@ client.threads().createThreadPoll(
 <dl>
 <dd>
 
-**options:** `List<PostThreadsIdPollRequestOptionsItem>` — Poll options (2-20)
+**options:** `List<CreatePollThreadsRequestOptionsItem>` — Poll options (2-20)
     
 </dd>
 </dl>
@@ -1859,7 +2180,7 @@ client.threads().createThreadPoll(
 </dl>
 </details>
 
-<details><summary><code>client.threads.updateThreadPoll(id, request) -> PatchThreadsIdPollResponse</code></summary>
+<details><summary><code>client.threads.updatePoll(id, request) -> ThreadPollResponse</code></summary>
 <dl>
 <dd>
 
@@ -1872,9 +2193,9 @@ client.threads().createThreadPoll(
 <dd>
 
 ```java
-client.threads().updateThreadPoll(
+client.threads().updatePoll(
     "id",
-    PatchThreadsIdPollRequest
+    UpdatePollThreadsRequest
         .builder()
         .build()
 );
@@ -1937,9 +2258,23 @@ client.threads().updateThreadPoll(
 </details>
 
 ## Posts
-<details><summary><code>client.posts.listAllPosts() -> GetPostsResponse</code></summary>
+<details><summary><code>client.posts.list() -> PostListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of posts. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -1950,8 +2285,8 @@ client.threads().updateThreadPoll(
 <dd>
 
 ```java
-client.posts().listAllPosts(
-    GetPostsRequest
+client.posts().list(
+    ListPostsRequest
         .builder()
         .build()
 );
@@ -1969,7 +2304,7 @@ client.posts().listAllPosts(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -1977,7 +2312,7 @@ client.posts().listAllPosts(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -1985,7 +2320,31 @@ client.posts().listAllPosts(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**userId:** `Optional<String>` — Filter posts by author ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `Optional<ListPostsRequestSort>` — Sort posts by creation time
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `Optional<String>` — Search within post body
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<ListPostsRequestType>` — Filter by interaction type
     
 </dd>
 </dl>
@@ -1997,9 +2356,23 @@ client.posts().listAllPosts(
 </dl>
 </details>
 
-<details><summary><code>client.posts.createAPost(request) -> PostPostsResponse</code></summary>
+<details><summary><code>client.posts.create(request) -> PostResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new post.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2010,8 +2383,8 @@ client.posts().listAllPosts(
 <dd>
 
 ```java
-client.posts().createAPost(
-    PostPostsRequest
+client.posts().create(
+    CreatePostsRequest
         .builder()
         .threadId("threadId")
         .body("body")
@@ -2075,9 +2448,23 @@ client.posts().createAPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.getAPost(id) -> GetPostsIdResponse</code></summary>
+<details><summary><code>client.posts.retrieve(id) -> PostResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a post by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2088,9 +2475,9 @@ client.posts().createAPost(
 <dd>
 
 ```java
-client.posts().getAPost(
+client.posts().retrieve(
     "id",
-    GetPostsIdRequest
+    RetrievePostsRequest
         .builder()
         .build()
 );
@@ -2108,7 +2495,7 @@ client.posts().getAPost(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Post ID
     
 </dd>
 </dl>
@@ -2120,9 +2507,23 @@ client.posts().getAPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.deleteAPost(id) -> DeletePostsIdResponse</code></summary>
+<details><summary><code>client.posts.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a post.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2133,9 +2534,9 @@ client.posts().getAPost(
 <dd>
 
 ```java
-client.posts().deleteAPost(
+client.posts().delete(
     "id",
-    DeletePostsIdRequest
+    DeletePostsRequest
         .builder()
         .build()
 );
@@ -2153,7 +2554,7 @@ client.posts().deleteAPost(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Post ID
     
 </dd>
 </dl>
@@ -2165,9 +2566,23 @@ client.posts().deleteAPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.updateAPost(id, request) -> PatchPostsIdResponse</code></summary>
+<details><summary><code>client.posts.update(id, request) -> UpdatePostsResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing post. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2178,9 +2593,9 @@ client.posts().deleteAPost(
 <dd>
 
 ```java
-client.posts().updateAPost(
+client.posts().update(
     "id",
-    PatchPostsIdRequest
+    UpdatePostsRequest
         .builder()
         .build()
 );
@@ -2198,7 +2613,7 @@ client.posts().updateAPost(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Post ID
     
 </dd>
 </dl>
@@ -2242,9 +2657,23 @@ client.posts().updateAPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.listPostReactions(id) -> GetPostsIdReactionsResponse</code></summary>
+<details><summary><code>client.posts.listReactions(id) -> PostReactionListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of reactions for Post.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2255,9 +2684,9 @@ client.posts().updateAPost(
 <dd>
 
 ```java
-client.posts().listPostReactions(
+client.posts().listReactions(
     "id",
-    GetPostsIdReactionsRequest
+    ListReactionsPostsRequest
         .builder()
         .build()
 );
@@ -2283,7 +2712,7 @@ client.posts().listPostReactions(
 <dl>
 <dd>
 
-**cursor:** `Optional<String>` — Pagination cursor
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -2291,7 +2720,15 @@ client.posts().listPostReactions(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**cursor:** `Optional<String>` — Cursor for pagination
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<ListReactionsPostsRequestType>` — Filter by reaction type
     
 </dd>
 </dl>
@@ -2303,9 +2740,23 @@ client.posts().listPostReactions(
 </dl>
 </details>
 
-<details><summary><code>client.posts.createAReactionInPost(id, request) -> PostPostsIdReactionsResponse</code></summary>
+<details><summary><code>client.posts.createReaction(id, request) -> PostReactionResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a Reaction in Post.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2316,11 +2767,11 @@ client.posts().listPostReactions(
 <dd>
 
 ```java
-client.posts().createAReactionInPost(
+client.posts().createReaction(
     "id",
-    PostPostsIdReactionsRequest
+    CreateReactionPostsRequest
         .builder()
-        .type(PostPostsIdReactionsRequestType.LIKE)
+        .type(CreateReactionPostsRequestType.LIKE)
         .build()
 );
 ```
@@ -2345,7 +2796,7 @@ client.posts().createAReactionInPost(
 <dl>
 <dd>
 
-**type:** `PostPostsIdReactionsRequestType` — Type of reaction
+**type:** `CreateReactionPostsRequestType` — Type of reaction
     
 </dd>
 </dl>
@@ -2373,7 +2824,115 @@ client.posts().createAReactionInPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.removeYourReactionFromPost(id) -> DeletePostsIdReactionsResponse</code></summary>
+<details><summary><code>client.posts.deleteReaction(id, subId) -> SuccessResponse</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.posts().deleteReaction(
+    "id",
+    "subId",
+    DeleteReactionPostsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Post ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subId:** `String` — Reaction ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.posts.retrieveReaction(id, subId) -> RetrieveReactionPostsResponse</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.posts().retrieveReaction(
+    "id",
+    "subId",
+    RetrieveReactionPostsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Post ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subId:** `String` — Reaction ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.posts.listPosts(id) -> PostPostListResponse</code></summary>
 <dl>
 <dd>
 
@@ -2385,7 +2944,7 @@ client.posts().createAReactionInPost(
 <dl>
 <dd>
 
-Removes the authenticated user's reaction. No subId needed.
+Retrieve a paginated list of posts for Post.
 </dd>
 </dl>
 </dd>
@@ -2400,9 +2959,9 @@ Removes the authenticated user's reaction. No subId needed.
 <dd>
 
 ```java
-client.posts().removeYourReactionFromPost(
+client.posts().listPosts(
     "id",
-    DeletePostsIdReactionsRequest
+    ListPostsPostsRequest
         .builder()
         .build()
 );
@@ -2424,6 +2983,54 @@ client.posts().removeYourReactionFromPost(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Items per page (max 75)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `Optional<String>` — Cursor for pagination
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userId:** `Optional<String>` — Filter posts by author ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `Optional<ListPostsPostsRequestSort>` — Sort posts by creation time
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `Optional<String>` — Search within post body
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<ListPostsPostsRequestType>` — Filter by interaction type
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -2432,7 +3039,7 @@ client.posts().removeYourReactionFromPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.getAReactionFromPost(id, subId) -> GetPostsIdReactionsSubIdResponse</code></summary>
+<details><summary><code>client.posts.retrievePost(id, subId) -> RetrievePostPostsResponse</code></summary>
 <dl>
 <dd>
 
@@ -2445,179 +3052,10 @@ client.posts().removeYourReactionFromPost(
 <dd>
 
 ```java
-client.posts().getAReactionFromPost(
+client.posts().retrievePost(
     "id",
     "subId",
-    GetPostsIdReactionsSubIdRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Post ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**subId:** `String` — Reaction ID
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.posts.deleteAReactionFromPost(id, subId) -> DeletePostsIdReactionsSubIdResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.posts().deleteAReactionFromPost(
-    "id",
-    "subId",
-    DeletePostsIdReactionsSubIdRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Post ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**subId:** `String` — Reaction ID
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.posts.listPostPosts(id) -> GetPostsIdPostsResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.posts().listPostPosts(
-    "id",
-    GetPostsIdPostsRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Post ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `Optional<String>` — Pagination cursor
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `Optional<Integer>` — Items per page
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.posts.getAPostFromPost(id, subId) -> GetPostsIdPostsSubIdResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.posts().getAPostFromPost(
-    "id",
-    "subId",
-    GetPostsIdPostsSubIdRequest
+    RetrievePostPostsRequest
         .builder()
         .build()
 );
@@ -2655,7 +3093,7 @@ client.posts().getAPostFromPost(
 </dl>
 </details>
 
-<details><summary><code>client.posts.deleteAPostFromPost(id, subId) -> DeletePostsIdPostsSubIdResponse</code></summary>
+<details><summary><code>client.posts.deletePost(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -2668,10 +3106,10 @@ client.posts().getAPostFromPost(
 <dd>
 
 ```java
-client.posts().deleteAPostFromPost(
+client.posts().deletePost(
     "id",
     "subId",
-    DeletePostsIdPostsSubIdRequest
+    DeletePostPostsRequest
         .builder()
         .build()
 );
@@ -2709,10 +3147,24 @@ client.posts().deleteAPostFromPost(
 </dl>
 </details>
 
-## PrivateMessages
-<details><summary><code>client.privateMessages.listAllPrivateMessages() -> GetPrivateMessagesResponse</code></summary>
+## Private Messages
+<details><summary><code>client.privateMessages.list() -> PrivateMessageListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of private messages. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2723,8 +3175,8 @@ client.posts().deleteAPostFromPost(
 <dd>
 
 ```java
-client.privateMessages().listAllPrivateMessages(
-    GetPrivateMessagesRequest
+client.privateMessages().list(
+    ListPrivateMessagesRequest
         .builder()
         .build()
 );
@@ -2742,7 +3194,7 @@ client.privateMessages().listAllPrivateMessages(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -2750,7 +3202,7 @@ client.privateMessages().listAllPrivateMessages(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -2758,7 +3210,7 @@ client.privateMessages().listAllPrivateMessages(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**query:** `Optional<String>` — Search query (title or body)
     
 </dd>
 </dl>
@@ -2770,9 +3222,23 @@ client.privateMessages().listAllPrivateMessages(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.createAPrivateMessage(request) -> PostPrivateMessagesResponse</code></summary>
+<details><summary><code>client.privateMessages.create(request) -> PrivateMessageResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new private message.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2783,8 +3249,8 @@ client.privateMessages().listAllPrivateMessages(
 <dd>
 
 ```java
-client.privateMessages().createAPrivateMessage(
-    PostPrivateMessagesRequest
+client.privateMessages().create(
+    CreatePrivateMessagesRequest
         .builder()
         .recipientId("recipientId")
         .body("body")
@@ -2856,9 +3322,23 @@ client.privateMessages().createAPrivateMessage(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.getAPrivateMessage(id) -> GetPrivateMessagesIdResponse</code></summary>
+<details><summary><code>client.privateMessages.retrieve(id) -> PrivateMessageResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a private message by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2869,9 +3349,9 @@ client.privateMessages().createAPrivateMessage(
 <dd>
 
 ```java
-client.privateMessages().getAPrivateMessage(
+client.privateMessages().retrieve(
     "id",
-    GetPrivateMessagesIdRequest
+    RetrievePrivateMessagesRequest
         .builder()
         .build()
 );
@@ -2889,7 +3369,7 @@ client.privateMessages().getAPrivateMessage(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Private Message ID
     
 </dd>
 </dl>
@@ -2901,9 +3381,23 @@ client.privateMessages().getAPrivateMessage(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.deleteAPrivateMessage(id) -> DeletePrivateMessagesIdResponse</code></summary>
+<details><summary><code>client.privateMessages.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a private message.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2914,9 +3408,9 @@ client.privateMessages().getAPrivateMessage(
 <dd>
 
 ```java
-client.privateMessages().deleteAPrivateMessage(
+client.privateMessages().delete(
     "id",
-    DeletePrivateMessagesIdRequest
+    DeletePrivateMessagesRequest
         .builder()
         .build()
 );
@@ -2934,7 +3428,7 @@ client.privateMessages().deleteAPrivateMessage(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Private Message ID
     
 </dd>
 </dl>
@@ -2946,9 +3440,23 @@ client.privateMessages().deleteAPrivateMessage(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.listPrivateMessageReplies(id) -> GetPrivateMessagesIdRepliesResponse</code></summary>
+<details><summary><code>client.privateMessages.update(id, request) -> UpdatePrivateMessagesResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing private message. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -2959,9 +3467,92 @@ client.privateMessages().deleteAPrivateMessage(
 <dd>
 
 ```java
-client.privateMessages().listPrivateMessageReplies(
+client.privateMessages().update(
     "id",
-    GetPrivateMessagesIdRepliesRequest
+    UpdatePrivateMessagesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Private Message ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**body:** `Optional<String>` — Message content
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Optional<String>` — Message status (read, unread, archived)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Extended data
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.privateMessages.listReplies(id) -> PrivateMessageReplyListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of replies for Private Message.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.privateMessages().listReplies(
+    "id",
+    ListRepliesPrivateMessagesRequest
         .builder()
         .build()
 );
@@ -2995,7 +3586,7 @@ client.privateMessages().listPrivateMessageReplies(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -3007,9 +3598,23 @@ client.privateMessages().listPrivateMessageReplies(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.createAReplyInPrivateMessage(id, request) -> PostPrivateMessagesIdRepliesResponse</code></summary>
+<details><summary><code>client.privateMessages.createReply(id, request) -> PrivateMessageReplyResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a Reply in Private Message.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3020,9 +3625,9 @@ client.privateMessages().listPrivateMessageReplies(
 <dd>
 
 ```java
-client.privateMessages().createAReplyInPrivateMessage(
+client.privateMessages().createReply(
     "id",
-    PostPrivateMessagesIdRepliesRequest
+    CreateReplyPrivateMessagesRequest
         .builder()
         .recipientId("recipientId")
         .body("body")
@@ -3102,7 +3707,7 @@ client.privateMessages().createAReplyInPrivateMessage(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.getAReplyFromPrivateMessage(id, subId) -> GetPrivateMessagesIdRepliesSubIdResponse</code></summary>
+<details><summary><code>client.privateMessages.retrieveReply(id, subId) -> RetrieveReplyPrivateMessagesResponse</code></summary>
 <dl>
 <dd>
 
@@ -3115,10 +3720,10 @@ client.privateMessages().createAReplyInPrivateMessage(
 <dd>
 
 ```java
-client.privateMessages().getAReplyFromPrivateMessage(
+client.privateMessages().retrieveReply(
     "id",
     "subId",
-    GetPrivateMessagesIdRepliesSubIdRequest
+    RetrieveReplyPrivateMessagesRequest
         .builder()
         .build()
 );
@@ -3156,7 +3761,7 @@ client.privateMessages().getAReplyFromPrivateMessage(
 </dl>
 </details>
 
-<details><summary><code>client.privateMessages.deleteAReplyFromPrivateMessage(id, subId) -> DeletePrivateMessagesIdRepliesSubIdResponse</code></summary>
+<details><summary><code>client.privateMessages.deleteReply(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -3169,10 +3774,10 @@ client.privateMessages().getAReplyFromPrivateMessage(
 <dd>
 
 ```java
-client.privateMessages().deleteAReplyFromPrivateMessage(
+client.privateMessages().deleteReply(
     "id",
     "subId",
-    DeletePrivateMessagesIdRepliesSubIdRequest
+    DeleteReplyPrivateMessagesRequest
         .builder()
         .build()
 );
@@ -3211,9 +3816,23 @@ client.privateMessages().deleteAReplyFromPrivateMessage(
 </details>
 
 ## Users
-<details><summary><code>client.users.listAllUsers() -> GetUsersResponse</code></summary>
+<details><summary><code>client.users.list() -> UserListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of users. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3224,8 +3843,8 @@ client.privateMessages().deleteAReplyFromPrivateMessage(
 <dd>
 
 ```java
-client.users().listAllUsers(
-    GetUsersRequest
+client.users().list(
+    ListUsersRequest
         .builder()
         .build()
 );
@@ -3243,7 +3862,7 @@ client.users().listAllUsers(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -3251,7 +3870,7 @@ client.users().listAllUsers(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -3259,7 +3878,15 @@ client.users().listAllUsers(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**search:** `Optional<String>` — Search by username or display name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `Optional<ListUsersRequestSort>` — Sort by creation date
     
 </dd>
 </dl>
@@ -3271,9 +3898,23 @@ client.users().listAllUsers(
 </dl>
 </details>
 
-<details><summary><code>client.users.getAUser(id) -> GetUsersIdResponse</code></summary>
+<details><summary><code>client.users.create(request) -> UserResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new user.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3284,10 +3925,10 @@ client.users().listAllUsers(
 <dd>
 
 ```java
-client.users().getAUser(
-    "id",
-    GetUsersIdRequest
+client.users().create(
+    CreateUsersRequest
         .builder()
+        .username("username")
         .build()
 );
 ```
@@ -3304,7 +3945,71 @@ client.users().getAUser(
 <dl>
 <dd>
 
-**id:** `String` 
+**username:** `String` — Username (letters, numbers, underscores, hyphens)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `Optional<String>` — Email address
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**password:** `Optional<String>` — Password (min 8 chars)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**displayName:** `Optional<String>` — Display name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bio:** `Optional<String>` — User bio
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**signature:** `Optional<String>` — Forum signature
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**url:** `Optional<String>` — Website URL
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**roles:** `Optional<List<String>>` — Role slugs to assign
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
     
 </dd>
 </dl>
@@ -3316,9 +4021,23 @@ client.users().getAUser(
 </dl>
 </details>
 
-<details><summary><code>client.users.deleteAUser(id) -> DeleteUsersIdResponse</code></summary>
+<details><summary><code>client.users.retrieve(id) -> UserResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a user by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3329,9 +4048,9 @@ client.users().getAUser(
 <dd>
 
 ```java
-client.users().deleteAUser(
+client.users().retrieve(
     "id",
-    DeleteUsersIdRequest
+    RetrieveUsersRequest
         .builder()
         .build()
 );
@@ -3349,7 +4068,7 @@ client.users().deleteAUser(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — User ID
     
 </dd>
 </dl>
@@ -3361,9 +4080,23 @@ client.users().deleteAUser(
 </dl>
 </details>
 
-<details><summary><code>client.users.updateAUser(id, request) -> PatchUsersIdResponse</code></summary>
+<details><summary><code>client.users.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a user.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3374,9 +4107,9 @@ client.users().deleteAUser(
 <dd>
 
 ```java
-client.users().updateAUser(
+client.users().delete(
     "id",
-    PatchUsersIdRequest
+    DeleteUsersRequest
         .builder()
         .build()
 );
@@ -3394,7 +4127,66 @@ client.users().updateAUser(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — User ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.users.update(id, request) -> UpdateUsersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing user. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.users().update(
+    "id",
+    UpdateUsersRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — User ID
     
 </dd>
 </dl>
@@ -3478,9 +4270,23 @@ client.users().updateAUser(
 </dl>
 </details>
 
-<details><summary><code>client.users.listUserFollowers(id) -> GetUsersIdFollowersResponse</code></summary>
+<details><summary><code>client.users.listFollowers(id) -> UserFollowerListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of followers for User.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3491,9 +4297,9 @@ client.users().updateAUser(
 <dd>
 
 ```java
-client.users().listUserFollowers(
+client.users().listFollowers(
     "id",
-    GetUsersIdFollowersRequest
+    ListFollowersUsersRequest
         .builder()
         .build()
 );
@@ -3519,7 +4325,7 @@ client.users().listUserFollowers(
 <dl>
 <dd>
 
-**cursor:** `Optional<String>` — Pagination cursor
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -3527,7 +4333,7 @@ client.users().listUserFollowers(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -3539,7 +4345,7 @@ client.users().listUserFollowers(
 </dl>
 </details>
 
-<details><summary><code>client.users.getAFollowerFromUser(id, subId) -> GetUsersIdFollowersSubIdResponse</code></summary>
+<details><summary><code>client.users.retrieveFollower(id, subId) -> RetrieveFollowerUsersResponse</code></summary>
 <dl>
 <dd>
 
@@ -3552,10 +4358,10 @@ client.users().listUserFollowers(
 <dd>
 
 ```java
-client.users().getAFollowerFromUser(
+client.users().retrieveFollower(
     "id",
     "subId",
-    GetUsersIdFollowersSubIdRequest
+    RetrieveFollowerUsersRequest
         .builder()
         .build()
 );
@@ -3593,7 +4399,7 @@ client.users().getAFollowerFromUser(
 </dl>
 </details>
 
-<details><summary><code>client.users.deleteAFollowerFromUser(id, subId) -> DeleteUsersIdFollowersSubIdResponse</code></summary>
+<details><summary><code>client.users.deleteFollower(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -3606,10 +4412,10 @@ client.users().getAFollowerFromUser(
 <dd>
 
 ```java
-client.users().deleteAFollowerFromUser(
+client.users().deleteFollower(
     "id",
     "subId",
-    DeleteUsersIdFollowersSubIdRequest
+    DeleteFollowerUsersRequest
         .builder()
         .build()
 );
@@ -3647,9 +4453,23 @@ client.users().deleteAFollowerFromUser(
 </dl>
 </details>
 
-<details><summary><code>client.users.listUserFollowing(id) -> GetUsersIdFollowingResponse</code></summary>
+<details><summary><code>client.users.listFollowing(id) -> UserFollowingListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of following for User.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3660,9 +4480,9 @@ client.users().deleteAFollowerFromUser(
 <dd>
 
 ```java
-client.users().listUserFollowing(
+client.users().listFollowing(
     "id",
-    GetUsersIdFollowingRequest
+    ListFollowingUsersRequest
         .builder()
         .build()
 );
@@ -3688,7 +4508,7 @@ client.users().listUserFollowing(
 <dl>
 <dd>
 
-**cursor:** `Optional<String>` — Pagination cursor
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -3696,7 +4516,7 @@ client.users().listUserFollowing(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -3708,7 +4528,7 @@ client.users().listUserFollowing(
 </dl>
 </details>
 
-<details><summary><code>client.users.getAFollowingFromUser(id, subId) -> GetUsersIdFollowingSubIdResponse</code></summary>
+<details><summary><code>client.users.retrieveFollowing(id, subId) -> RetrieveFollowingUsersResponse</code></summary>
 <dl>
 <dd>
 
@@ -3721,10 +4541,10 @@ client.users().listUserFollowing(
 <dd>
 
 ```java
-client.users().getAFollowingFromUser(
+client.users().retrieveFollowing(
     "id",
     "subId",
-    GetUsersIdFollowingSubIdRequest
+    RetrieveFollowingUsersRequest
         .builder()
         .build()
 );
@@ -3762,7 +4582,7 @@ client.users().getAFollowingFromUser(
 </dl>
 </details>
 
-<details><summary><code>client.users.deleteAFollowingFromUser(id, subId) -> DeleteUsersIdFollowingSubIdResponse</code></summary>
+<details><summary><code>client.users.deleteFollowing(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -3775,10 +4595,10 @@ client.users().getAFollowingFromUser(
 <dd>
 
 ```java
-client.users().deleteAFollowingFromUser(
+client.users().deleteFollowing(
     "id",
     "subId",
-    DeleteUsersIdFollowingSubIdRequest
+    DeleteFollowingUsersRequest
         .builder()
         .build()
 );
@@ -3817,9 +4637,23 @@ client.users().deleteAFollowingFromUser(
 </details>
 
 ## Roles
-<details><summary><code>client.roles.listAllRoles() -> GetRolesResponse</code></summary>
+<details><summary><code>client.roles.list() -> RoleListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of roles. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3830,8 +4664,8 @@ client.users().deleteAFollowingFromUser(
 <dd>
 
 ```java
-client.roles().listAllRoles(
-    GetRolesRequest
+client.roles().list(
+    ListRolesRequest
         .builder()
         .build()
 );
@@ -3849,7 +4683,7 @@ client.roles().listAllRoles(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -3857,7 +4691,7 @@ client.roles().listAllRoles(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -3865,7 +4699,15 @@ client.roles().listAllRoles(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**search:** `Optional<String>` — Search by name or slug
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `Optional<ListRolesRequestSort>` — Sort order
     
 </dd>
 </dl>
@@ -3877,9 +4719,23 @@ client.roles().listAllRoles(
 </dl>
 </details>
 
-<details><summary><code>client.roles.createARole(request) -> PostRolesResponse</code></summary>
+<details><summary><code>client.roles.create(request) -> RoleResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new role.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3890,8 +4746,8 @@ client.roles().listAllRoles(
 <dd>
 
 ```java
-client.roles().createARole(
-    PostRolesRequest
+client.roles().create(
+    CreateRolesRequest
         .builder()
         .name("name")
         .build()
@@ -3954,9 +4810,23 @@ client.roles().createARole(
 </dl>
 </details>
 
-<details><summary><code>client.roles.getARole(id) -> GetRolesIdResponse</code></summary>
+<details><summary><code>client.roles.retrieve(id) -> RoleResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a role by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -3967,9 +4837,9 @@ client.roles().createARole(
 <dd>
 
 ```java
-client.roles().getARole(
+client.roles().retrieve(
     "id",
-    GetRolesIdRequest
+    RetrieveRolesRequest
         .builder()
         .build()
 );
@@ -3987,7 +4857,7 @@ client.roles().getARole(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Role ID
     
 </dd>
 </dl>
@@ -3999,9 +4869,23 @@ client.roles().getARole(
 </dl>
 </details>
 
-<details><summary><code>client.roles.deleteARole(id) -> DeleteRolesIdResponse</code></summary>
+<details><summary><code>client.roles.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a role.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4012,9 +4896,9 @@ client.roles().getARole(
 <dd>
 
 ```java
-client.roles().deleteARole(
+client.roles().delete(
     "id",
-    DeleteRolesIdRequest
+    DeleteRolesRequest
         .builder()
         .build()
 );
@@ -4032,7 +4916,7 @@ client.roles().deleteARole(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Role ID
     
 </dd>
 </dl>
@@ -4044,9 +4928,23 @@ client.roles().deleteARole(
 </dl>
 </details>
 
-<details><summary><code>client.roles.updateARole(id, request) -> PatchRolesIdResponse</code></summary>
+<details><summary><code>client.roles.update(id, request) -> UpdateRolesResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing role. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4057,9 +4955,9 @@ client.roles().deleteARole(
 <dd>
 
 ```java
-client.roles().updateARole(
+client.roles().update(
     "id",
-    PatchRolesIdRequest
+    UpdateRolesRequest
         .builder()
         .build()
 );
@@ -4077,7 +4975,7 @@ client.roles().updateARole(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Role ID
     
 </dd>
 </dl>
@@ -4130,9 +5028,23 @@ client.roles().updateARole(
 </details>
 
 ## Reports
-<details><summary><code>client.reports.listAllReports() -> GetReportsResponse</code></summary>
+<details><summary><code>client.reports.list() -> ReportListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of reports. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4143,8 +5055,8 @@ client.roles().updateARole(
 <dd>
 
 ```java
-client.reports().listAllReports(
-    GetReportsRequest
+client.reports().list(
+    ListReportsRequest
         .builder()
         .build()
 );
@@ -4162,7 +5074,7 @@ client.reports().listAllReports(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -4170,7 +5082,7 @@ client.reports().listAllReports(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -4178,7 +5090,23 @@ client.reports().listAllReports(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**status:** `Optional<String>` — Filter by status
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reporterId:** `Optional<String>` — Filter by reporter ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reportedId:** `Optional<String>` — Filter by reported user ID
     
 </dd>
 </dl>
@@ -4190,9 +5118,23 @@ client.reports().listAllReports(
 </dl>
 </details>
 
-<details><summary><code>client.reports.createAReport(request) -> PostReportsResponse</code></summary>
+<details><summary><code>client.reports.create(request) -> ReportResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new report.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4203,8 +5145,8 @@ client.reports().listAllReports(
 <dd>
 
 ```java
-client.reports().createAReport(
-    PostReportsRequest
+client.reports().create(
+    CreateReportsRequest
         .builder()
         .type("type")
         .build()
@@ -4224,6 +5166,14 @@ client.reports().createAReport(
 <dd>
 
 **type:** `String` — Report type (e.g. spam, abuse)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Optional<String>` — Report status (default: pending)
     
 </dd>
 </dl>
@@ -4275,48 +5225,11 @@ client.reports().createAReport(
     
 </dd>
 </dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.reports.getAReport(id) -> GetReportsIdResponse</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
 
 <dl>
 <dd>
 
-<dl>
-<dd>
-
-```java
-client.reports().getAReport(
-    "id",
-    GetReportsIdRequest
-        .builder()
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` 
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
     
 </dd>
 </dl>
@@ -4328,9 +5241,23 @@ client.reports().getAReport(
 </dl>
 </details>
 
-<details><summary><code>client.reports.deleteAReport(id) -> DeleteReportsIdResponse</code></summary>
+<details><summary><code>client.reports.retrieve(id) -> ReportResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a report by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4341,9 +5268,9 @@ client.reports().getAReport(
 <dd>
 
 ```java
-client.reports().deleteAReport(
+client.reports().retrieve(
     "id",
-    DeleteReportsIdRequest
+    RetrieveReportsRequest
         .builder()
         .build()
 );
@@ -4361,7 +5288,149 @@ client.reports().deleteAReport(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Report ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.reports.delete(id) -> SuccessResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a report.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.reports().delete(
+    "id",
+    DeleteReportsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Report ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.reports.update(id, request) -> UpdateReportsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing report. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.reports().update(
+    "id",
+    UpdateReportsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Report ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Optional<String>` — Report status (pending, reviewed, resolved, dismissed)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` — Updated description or admin notes
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
     
 </dd>
 </dl>
@@ -4374,9 +5443,23 @@ client.reports().deleteAReport(
 </details>
 
 ## Notifications
-<details><summary><code>client.notifications.listAllNotifications() -> GetNotificationsResponse</code></summary>
+<details><summary><code>client.notifications.list() -> NotificationListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of notifications. Use cursor for pagination.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4387,8 +5470,8 @@ client.reports().deleteAReport(
 <dd>
 
 ```java
-client.notifications().listAllNotifications(
-    GetNotificationsRequest
+client.notifications().list(
+    ListNotificationsRequest
         .builder()
         .build()
 );
@@ -4406,7 +5489,7 @@ client.notifications().listAllNotifications(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -4414,7 +5497,7 @@ client.notifications().listAllNotifications(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -4422,7 +5505,15 @@ client.notifications().listAllNotifications(
 <dl>
 <dd>
 
-**search:** `Optional<String>` 
+**status:** `Optional<ListNotificationsRequestStatus>` — Filter by notification status
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userId:** `Optional<String>` — Filter by recipient user ID (admin only)
     
 </dd>
 </dl>
@@ -4434,9 +5525,23 @@ client.notifications().listAllNotifications(
 </dl>
 </details>
 
-<details><summary><code>client.notifications.createANotification(request) -> PostNotificationsResponse</code></summary>
+<details><summary><code>client.notifications.create(request) -> NotificationResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new notification.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4447,8 +5552,8 @@ client.notifications().listAllNotifications(
 <dd>
 
 ```java
-client.notifications().createANotification(
-    PostNotificationsRequest
+client.notifications().create(
+    CreateNotificationsRequest
         .builder()
         .userId("userId")
         .type("type")
@@ -4524,7 +5629,7 @@ client.notifications().createANotification(
 <dl>
 <dd>
 
-**status:** `Optional<PostNotificationsRequestStatus>` — Initial notification status
+**status:** `Optional<CreateNotificationsRequestStatus>` — Initial notification status
     
 </dd>
 </dl>
@@ -4544,9 +5649,23 @@ client.notifications().createANotification(
 </dl>
 </details>
 
-<details><summary><code>client.notifications.getANotification(id) -> GetNotificationsIdResponse</code></summary>
+<details><summary><code>client.notifications.retrieve(id) -> NotificationResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a notification by ID or slug (if supported).
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4557,9 +5676,9 @@ client.notifications().createANotification(
 <dd>
 
 ```java
-client.notifications().getANotification(
+client.notifications().retrieve(
     "id",
-    GetNotificationsIdRequest
+    RetrieveNotificationsRequest
         .builder()
         .build()
 );
@@ -4577,7 +5696,7 @@ client.notifications().getANotification(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Notification ID
     
 </dd>
 </dl>
@@ -4589,9 +5708,23 @@ client.notifications().getANotification(
 </dl>
 </details>
 
-<details><summary><code>client.notifications.deleteANotification(id) -> DeleteNotificationsIdResponse</code></summary>
+<details><summary><code>client.notifications.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a notification.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4602,9 +5735,9 @@ client.notifications().getANotification(
 <dd>
 
 ```java
-client.notifications().deleteANotification(
+client.notifications().delete(
     "id",
-    DeleteNotificationsIdRequest
+    DeleteNotificationsRequest
         .builder()
         .build()
 );
@@ -4622,7 +5755,7 @@ client.notifications().deleteANotification(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Notification ID
     
 </dd>
 </dl>
@@ -4634,9 +5767,23 @@ client.notifications().deleteANotification(
 </dl>
 </details>
 
-<details><summary><code>client.notifications.updateANotification(id, request) -> PatchNotificationsIdResponse</code></summary>
+<details><summary><code>client.notifications.update(id, request) -> UpdateNotificationsResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing notification. Only provided fields will be modified.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4647,9 +5794,9 @@ client.notifications().deleteANotification(
 <dd>
 
 ```java
-client.notifications().updateANotification(
+client.notifications().update(
     "id",
-    PatchNotificationsIdRequest
+    UpdateNotificationsRequest
         .builder()
         .build()
 );
@@ -4667,7 +5814,7 @@ client.notifications().updateANotification(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Notification ID
     
 </dd>
 </dl>
@@ -4675,7 +5822,7 @@ client.notifications().updateANotification(
 <dl>
 <dd>
 
-**status:** `Optional<PatchNotificationsIdRequestStatus>` — Notification status
+**status:** `Optional<UpdateNotificationsRequestStatus>` — Notification status
     
 </dd>
 </dl>
@@ -4696,9 +5843,25 @@ client.notifications().updateANotification(
 </details>
 
 ## Webhooks
-<details><summary><code>client.webhooks.listAllWebhooks() -> GetWebhooksResponse</code></summary>
+<details><summary><code>client.webhooks.list() -> WebhookListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of webhooks. Use cursor for pagination.
+
+**Requires feature: webhooks**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4709,8 +5872,8 @@ client.notifications().updateANotification(
 <dd>
 
 ```java
-client.webhooks().listAllWebhooks(
-    GetWebhooksRequest
+client.webhooks().list(
+    ListWebhooksRequest
         .builder()
         .build()
 );
@@ -4728,7 +5891,7 @@ client.webhooks().listAllWebhooks(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -4736,15 +5899,7 @@ client.webhooks().listAllWebhooks(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**search:** `Optional<String>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -4756,9 +5911,25 @@ client.webhooks().listAllWebhooks(
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.createAWebhook(request) -> PostWebhooksResponse</code></summary>
+<details><summary><code>client.webhooks.create(request) -> WebhookResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new webhook.
+
+**Requires feature: webhooks**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4769,8 +5940,8 @@ client.webhooks().listAllWebhooks(
 <dd>
 
 ```java
-client.webhooks().createAWebhook(
-    PostWebhooksRequest
+client.webhooks().create(
+    CreateWebhooksRequest
         .builder()
         .name("name")
         .url("url")
@@ -4821,6 +5992,22 @@ client.webhooks().createAWebhook(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**active:** `Optional<Boolean>` — Whether webhook is active
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -4829,9 +6016,25 @@ client.webhooks().createAWebhook(
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.getAWebhook(id) -> GetWebhooksIdResponse</code></summary>
+<details><summary><code>client.webhooks.retrieve(id) -> WebhookResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a webhook by ID or slug (if supported).
+
+**Requires feature: webhooks**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4842,9 +6045,9 @@ client.webhooks().createAWebhook(
 <dd>
 
 ```java
-client.webhooks().getAWebhook(
+client.webhooks().retrieve(
     "id",
-    GetWebhooksIdRequest
+    RetrieveWebhooksRequest
         .builder()
         .build()
 );
@@ -4862,7 +6065,7 @@ client.webhooks().getAWebhook(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Webhook ID
     
 </dd>
 </dl>
@@ -4874,9 +6077,25 @@ client.webhooks().getAWebhook(
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.deleteAWebhook(id) -> DeleteWebhooksIdResponse</code></summary>
+<details><summary><code>client.webhooks.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete a webhook.
+
+**Requires feature: webhooks**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4887,9 +6106,9 @@ client.webhooks().getAWebhook(
 <dd>
 
 ```java
-client.webhooks().deleteAWebhook(
+client.webhooks().delete(
     "id",
-    DeleteWebhooksIdRequest
+    DeleteWebhooksRequest
         .builder()
         .build()
 );
@@ -4907,7 +6126,7 @@ client.webhooks().deleteAWebhook(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Webhook ID
     
 </dd>
 </dl>
@@ -4919,9 +6138,25 @@ client.webhooks().deleteAWebhook(
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.listWebhookDeliveries(id) -> GetWebhooksIdDeliveriesResponse</code></summary>
+<details><summary><code>client.webhooks.update(id, request) -> UpdateWebhooksResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing webhook. Only provided fields will be modified.
+
+**Requires feature: webhooks**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -4932,9 +6167,118 @@ client.webhooks().deleteAWebhook(
 <dd>
 
 ```java
-client.webhooks().listWebhookDeliveries(
+client.webhooks().update(
     "id",
-    GetWebhooksIdDeliveriesRequest
+    UpdateWebhooksRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Webhook ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `Optional<String>` — Webhook name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**url:** `Optional<String>` — Target URL
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Optional<List<String>>` — Event types to trigger on
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**secret:** `Optional<String>` — New secret
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**active:** `Optional<Boolean>` — Enable/disable webhook
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.webhooks.listDeliveries(id) -> WebhookDeliveryListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of deliveries for Webhook.
+
+**Requires feature: webhooks**
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.webhooks().listDeliveries(
+    "id",
+    ListDeliveriesWebhooksRequest
         .builder()
         .build()
 );
@@ -4968,7 +6312,7 @@ client.webhooks().listWebhookDeliveries(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` — Items per page
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -4980,7 +6324,7 @@ client.webhooks().listWebhookDeliveries(
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.getADeliveryFromWebhook(id, subId) -> GetWebhooksIdDeliveriesSubIdResponse</code></summary>
+<details><summary><code>client.webhooks.retrieveDelivery(id, subId) -> RetrieveDeliveryWebhooksResponse</code></summary>
 <dl>
 <dd>
 
@@ -4993,10 +6337,10 @@ client.webhooks().listWebhookDeliveries(
 <dd>
 
 ```java
-client.webhooks().getADeliveryFromWebhook(
+client.webhooks().retrieveDelivery(
     "id",
     "subId",
-    GetWebhooksIdDeliveriesSubIdRequest
+    RetrieveDeliveryWebhooksRequest
         .builder()
         .build()
 );
@@ -5034,7 +6378,7 @@ client.webhooks().getADeliveryFromWebhook(
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.deleteADeliveryFromWebhook(id, subId) -> DeleteWebhooksIdDeliveriesSubIdResponse</code></summary>
+<details><summary><code>client.webhooks.deleteDelivery(id, subId) -> SuccessResponse</code></summary>
 <dl>
 <dd>
 
@@ -5047,10 +6391,10 @@ client.webhooks().getADeliveryFromWebhook(
 <dd>
 
 ```java
-client.webhooks().deleteADeliveryFromWebhook(
+client.webhooks().deleteDelivery(
     "id",
     "subId",
-    DeleteWebhooksIdDeliveriesSubIdRequest
+    DeleteDeliveryWebhooksRequest
         .builder()
         .build()
 );
@@ -5089,9 +6433,25 @@ client.webhooks().deleteADeliveryFromWebhook(
 </details>
 
 ## Integrations
-<details><summary><code>client.integrations.listAllIntegrations() -> GetIntegrationsResponse</code></summary>
+<details><summary><code>client.integrations.list() -> IntegrationListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of integrations. Use cursor for pagination.
+
+**Requires feature: integrations**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5102,8 +6462,8 @@ client.webhooks().deleteADeliveryFromWebhook(
 <dd>
 
 ```java
-client.integrations().listAllIntegrations(
-    GetIntegrationsRequest
+client.integrations().list(
+    ListIntegrationsRequest
         .builder()
         .build()
 );
@@ -5121,7 +6481,7 @@ client.integrations().listAllIntegrations(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -5129,15 +6489,7 @@ client.integrations().listAllIntegrations(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**search:** `Optional<String>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -5149,9 +6501,25 @@ client.integrations().listAllIntegrations(
 </dl>
 </details>
 
-<details><summary><code>client.integrations.createAnIntegration(request) -> PostIntegrationsResponse</code></summary>
+<details><summary><code>client.integrations.create(request) -> IntegrationResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create an new integration.
+
+**Requires feature: integrations**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5162,10 +6530,11 @@ client.integrations().listAllIntegrations(
 <dd>
 
 ```java
-client.integrations().createAnIntegration(
-    PostIntegrationsRequest
+client.integrations().create(
+    CreateIntegrationsRequest
         .builder()
         .type("type")
+        .name("name")
         .config(
             new HashMap<String, Object>() {{
                 put("key", "value");
@@ -5187,7 +6556,15 @@ client.integrations().createAnIntegration(
 <dl>
 <dd>
 
-**type:** `String` — Integration type (e.g. slack, discord)
+**type:** `String` — Integration type (e.g. SLACK, DISCORD)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — Integration name
     
 </dd>
 </dl>
@@ -5203,7 +6580,15 @@ client.integrations().createAnIntegration(
 <dl>
 <dd>
 
-**enabled:** `Optional<Boolean>` 
+**active:** `Optional<Boolean>` — Whether integration is active
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
     
 </dd>
 </dl>
@@ -5215,9 +6600,25 @@ client.integrations().createAnIntegration(
 </dl>
 </details>
 
-<details><summary><code>client.integrations.getAnIntegration(id) -> GetIntegrationsIdResponse</code></summary>
+<details><summary><code>client.integrations.retrieve(id) -> IntegrationResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve an integration by ID or slug (if supported).
+
+**Requires feature: integrations**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5228,9 +6629,9 @@ client.integrations().createAnIntegration(
 <dd>
 
 ```java
-client.integrations().getAnIntegration(
+client.integrations().retrieve(
     "id",
-    GetIntegrationsIdRequest
+    RetrieveIntegrationsRequest
         .builder()
         .build()
 );
@@ -5248,7 +6649,7 @@ client.integrations().getAnIntegration(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Integration ID
     
 </dd>
 </dl>
@@ -5260,9 +6661,25 @@ client.integrations().getAnIntegration(
 </dl>
 </details>
 
-<details><summary><code>client.integrations.deleteAnIntegration(id) -> DeleteIntegrationsIdResponse</code></summary>
+<details><summary><code>client.integrations.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete an integration.
+
+**Requires feature: integrations**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5273,9 +6690,9 @@ client.integrations().getAnIntegration(
 <dd>
 
 ```java
-client.integrations().deleteAnIntegration(
+client.integrations().delete(
     "id",
-    DeleteIntegrationsIdRequest
+    DeleteIntegrationsRequest
         .builder()
         .build()
 );
@@ -5293,7 +6710,7 @@ client.integrations().deleteAnIntegration(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Integration ID
     
 </dd>
 </dl>
@@ -5305,9 +6722,25 @@ client.integrations().deleteAnIntegration(
 </dl>
 </details>
 
-<details><summary><code>client.integrations.updateAnIntegration(id, request) -> PatchIntegrationsIdResponse</code></summary>
+<details><summary><code>client.integrations.update(id, request) -> UpdateIntegrationsResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing integration. Only provided fields will be modified.
+
+**Requires feature: integrations**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5318,9 +6751,9 @@ client.integrations().deleteAnIntegration(
 <dd>
 
 ```java
-client.integrations().updateAnIntegration(
+client.integrations().update(
     "id",
-    PatchIntegrationsIdRequest
+    UpdateIntegrationsRequest
         .builder()
         .build()
 );
@@ -5338,7 +6771,7 @@ client.integrations().updateAnIntegration(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — Integration ID
     
 </dd>
 </dl>
@@ -5366,6 +6799,14 @@ client.integrations().updateAnIntegration(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -5374,10 +6815,26 @@ client.integrations().updateAnIntegration(
 </dl>
 </details>
 
-## SsOs
-<details><summary><code>client.ssOs.listAllSsOs() -> GetSsoResponse</code></summary>
+## SSOs
+<details><summary><code>client.ssOs.list() -> SsoListResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a paginated list of ssos. Use cursor for pagination.
+
+**Requires feature: sso**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5388,8 +6845,8 @@ client.integrations().updateAnIntegration(
 <dd>
 
 ```java
-client.ssOs().listAllSsOs(
-    GetSsoRequest
+client.ssOs().list(
+    ListSsOsRequest
         .builder()
         .build()
 );
@@ -5407,7 +6864,7 @@ client.ssOs().listAllSsOs(
 <dl>
 <dd>
 
-**page:** `Optional<Integer>` 
+**limit:** `Optional<Integer>` — Items per page (max 75)
     
 </dd>
 </dl>
@@ -5415,15 +6872,7 @@ client.ssOs().listAllSsOs(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**search:** `Optional<String>` 
+**cursor:** `Optional<String>` — Cursor for pagination
     
 </dd>
 </dl>
@@ -5435,9 +6884,25 @@ client.ssOs().listAllSsOs(
 </dl>
 </details>
 
-<details><summary><code>client.ssOs.createAnSso(request) -> PostSsoResponse</code></summary>
+<details><summary><code>client.ssOs.create(request) -> SsoResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create an new sso.
+
+**Requires feature: sso**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5448,16 +6913,16 @@ client.ssOs().listAllSsOs(
 <dd>
 
 ```java
-client.ssOs().createAnSso(
-    PostSsoRequest
+client.ssOs().create(
+    CreateSsOsRequest
         .builder()
-        .name("name")
-        .clientId("clientId")
-        .clientSecret("clientSecret")
-        .issuer("issuer")
-        .authorizationEndpoint("authorizationEndpoint")
-        .tokenEndpoint("tokenEndpoint")
-        .userInfoEndpoint("userInfoEndpoint")
+        .provider(CreateSsOsRequestProvider.OKTA)
+        .domain("domain")
+        .config(
+            new HashMap<String, Object>() {{
+                put("key", "value");
+            }}
+        )
         .build()
 );
 ```
@@ -5474,7 +6939,7 @@ client.ssOs().createAnSso(
 <dl>
 <dd>
 
-**name:** `String` — Provider name (e.g. Google)
+**provider:** `CreateSsOsRequestProvider` — SSO provider type
     
 </dd>
 </dl>
@@ -5482,7 +6947,7 @@ client.ssOs().createAnSso(
 <dl>
 <dd>
 
-**clientId:** `String` 
+**domain:** `String` — Email domain to match (e.g. 'acme.com')
     
 </dd>
 </dl>
@@ -5490,7 +6955,7 @@ client.ssOs().createAnSso(
 <dl>
 <dd>
 
-**clientSecret:** `String` 
+**config:** `Map<String, Object>` — Provider configuration (clientId, issuer, etc.)
     
 </dd>
 </dl>
@@ -5498,7 +6963,7 @@ client.ssOs().createAnSso(
 <dl>
 <dd>
 
-**issuer:** `String` 
+**active:** `Optional<Boolean>` — Whether SSO is active
     
 </dd>
 </dl>
@@ -5506,23 +6971,7 @@ client.ssOs().createAnSso(
 <dl>
 <dd>
 
-**authorizationEndpoint:** `String` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tokenEndpoint:** `String` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**userInfoEndpoint:** `String` 
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
     
 </dd>
 </dl>
@@ -5534,9 +6983,25 @@ client.ssOs().createAnSso(
 </dl>
 </details>
 
-<details><summary><code>client.ssOs.getAnSso(id) -> GetSsoIdResponse</code></summary>
+<details><summary><code>client.ssOs.retrieve(id) -> SsoResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve an sso by ID or slug (if supported).
+
+**Requires feature: sso**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5547,9 +7012,9 @@ client.ssOs().createAnSso(
 <dd>
 
 ```java
-client.ssOs().getAnSso(
+client.ssOs().retrieve(
     "id",
-    GetSsoIdRequest
+    RetrieveSsOsRequest
         .builder()
         .build()
 );
@@ -5567,7 +7032,7 @@ client.ssOs().getAnSso(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — SSO ID
     
 </dd>
 </dl>
@@ -5579,9 +7044,25 @@ client.ssOs().getAnSso(
 </dl>
 </details>
 
-<details><summary><code>client.ssOs.deleteAnSso(id) -> DeleteSsoIdResponse</code></summary>
+<details><summary><code>client.ssOs.delete(id) -> SuccessResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete an sso.
+
+**Requires feature: sso**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5592,9 +7073,9 @@ client.ssOs().getAnSso(
 <dd>
 
 ```java
-client.ssOs().deleteAnSso(
+client.ssOs().delete(
     "id",
-    DeleteSsoIdRequest
+    DeleteSsOsRequest
         .builder()
         .build()
 );
@@ -5612,7 +7093,7 @@ client.ssOs().deleteAnSso(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — SSO ID
     
 </dd>
 </dl>
@@ -5624,9 +7105,25 @@ client.ssOs().deleteAnSso(
 </dl>
 </details>
 
-<details><summary><code>client.ssOs.updateAnSso(id, request) -> PatchSsoIdResponse</code></summary>
+<details><summary><code>client.ssOs.update(id, request) -> UpdateSsOsResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing sso. Only provided fields will be modified.
+
+**Requires feature: sso**
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -5637,9 +7134,9 @@ client.ssOs().deleteAnSso(
 <dd>
 
 ```java
-client.ssOs().updateAnSso(
+client.ssOs().update(
     "id",
-    PatchSsoIdRequest
+    UpdateSsOsRequest
         .builder()
         .build()
 );
@@ -5657,7 +7154,7 @@ client.ssOs().updateAnSso(
 <dl>
 <dd>
 
-**id:** `String` 
+**id:** `String` — SSO ID
     
 </dd>
 </dl>
@@ -5665,7 +7162,7 @@ client.ssOs().updateAnSso(
 <dl>
 <dd>
 
-**name:** `Optional<String>` — Provider name
+**provider:** `Optional<UpdateSsOsRequestProvider>` — SSO provider type
     
 </dd>
 </dl>
@@ -5681,47 +7178,7 @@ client.ssOs().updateAnSso(
 <dl>
 <dd>
 
-**clientId:** `Optional<String>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**clientSecret:** `Optional<String>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**issuer:** `Optional<String>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**authorizationEndpoint:** `Optional<String>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tokenEndpoint:** `Optional<String>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**userInfoEndpoint:** `Optional<String>` 
+**config:** `Optional<Map<String, Object>>` — Provider configuration
     
 </dd>
 </dl>
@@ -5730,6 +7187,1782 @@ client.ssOs().updateAnSso(
 <dd>
 
 **active:** `Optional<Boolean>` — Enable/disable provider
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**extendedData:** `Optional<Map<String, Object>>` — Custom extended data
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Provisioning
+<details><summary><code>client.provisioning.list() -> ListProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve all instances owned by the authenticated user. Use the `handle` query parameter to get a single instance with its API key.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().list(
+    ListProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `Optional<String>` — Optional handle to get a single instance
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.create(request) -> CreateProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new forum instance. Returns the instance details including the API key for accessing the forum API.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().create(
+    CreateInstance
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .name("name")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — Display name for the instance
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` — URL-friendly identifier (slug)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.update(request) -> UpdateProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an instance's name or handle. The `handle` field identifies which instance to update.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().update(
+    UpdateInstance
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` — Current handle to identify the instance
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `Optional<String>` — New display name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**newHandle:** `Optional<String>` — New URL-friendly identifier
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.delete(request) -> DeleteProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete an instance. This action cannot be undone.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().delete(
+    DeleteInstance
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` — Handle of the instance to delete
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.getBilling() -> GetBillingProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve billing and subscription information for an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().getBilling(
+    GetBillingProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.changePlan(request) -> ChangePlanProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Change an instance's subscription plan. Returns a checkout URL for upgrades or a billing portal URL for downgrades.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().changePlan(
+    UpgradeInstance
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .plan(UpgradeInstancePlan.FREE)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan:** `UpgradeInstancePlan` — Target plan
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**isAnnual:** `Optional<Boolean>` — Use annual billing (default: true)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**returnUrl:** `Optional<String>` — URL to return to after checkout/portal
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.regenerateApiKey(request) -> RegenerateApiKeyProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generate a new API key for the instance. The old key will be invalidated.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().regenerateApiKey(
+    RegenerateApiKeyProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.getUsage() -> GetUsageProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve usage statistics for an instance including API requests, storage, and content counts.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().getUsage(
+    GetUsageProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.listTeam() -> ListTeamProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve all team members for an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().listTeam(
+    ListTeamProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.inviteTeam(request) -> InviteTeamProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Invite new team members to an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().inviteTeam(
+    InviteTeamProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .members(
+            Arrays.asList(
+                InviteTeamProvisioningRequestMembersItem
+                    .builder()
+                    .email("email")
+                    .build()
+            )
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**members:** `List<InviteTeamProvisioningRequestMembersItem>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.removeTeamMember(request) -> RemoveTeamMemberProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove a team member from an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().removeTeamMember(
+    RemoveTeamMemberProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .email("email")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.listDomains() -> ListDomainsProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve all custom domains for an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().listDomains(
+    ListDomainsProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.addDomain(request) -> AddDomainProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add a custom domain to an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().addDomain(
+    AddDomainProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .name("name")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — Domain name (e.g., forum.example.com)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subdomain:** `Optional<String>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.removeDomain(request) -> RemoveDomainProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove a custom domain from an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().removeDomain(
+    RemoveDomainProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .name("name")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.exportData(request) -> ExportDataProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Export all data from an instance including threads, posts, users, tags, etc.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().exportData(
+    ExportDataProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.listWebhooks() -> ListWebhooksProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve all webhooks configured for an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().listWebhooks(
+    ListWebhooksProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.createWebhook(request) -> CreateWebhookProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new webhook for an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().createWebhook(
+    CreateWebhookProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .url("url")
+        .events(
+            Arrays.asList("events")
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**url:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `List<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**secret:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**active:** `Optional<Boolean>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.updateWebhook(request) -> UpdateWebhookProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update an existing webhook.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().updateWebhook(
+    UpdateWebhookProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .webhookId("webhookId")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookId:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**url:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Optional<List<String>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**secret:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**active:** `Optional<Boolean>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.deleteWebhook(request) -> DeleteWebhookProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Delete a webhook from an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().deleteWebhook(
+    DeleteWebhookProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .webhookId("webhookId")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.getOwnership() -> GetOwnershipProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve owner and creator information for an instance.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().getOwnership(
+    GetOwnershipProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**handle:** `String` — Instance handle
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.transferOwnership(request) -> TransferOwnershipProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Transfer instance ownership to another user. Only the current owner can transfer ownership.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().transferOwnership(
+    TransferOwnershipProvisioningRequest
+        .builder()
+        .provisioningKey("x-provisioning-key")
+        .handle("handle")
+        .newOwnerEmail("newOwnerEmail")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provisioningKey:** `String` — User provisioning key for platform-level instance management
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**handle:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**newOwnerEmail:** `String` — Email of the new owner
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.register(request) -> RegisterProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new account and receive a provisioning key for API access. Use this key to create and manage instances.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().register(
+    RegisterProvisioningRequest
+        .builder()
+        .email("email")
+        .password("password")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**email:** `String` — Email address for the account
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**password:** `String` — Password (minimum 8 characters)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `Optional<String>` — Display name (optional)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.provisioning.login(request) -> LoginProvisioningResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Login with email and password to retrieve your provisioning key.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.provisioning().login(
+    LoginProvisioningRequest
+        .builder()
+        .email("email")
+        .password("password")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**email:** `String` — Account email
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**password:** `String` — Account password
     
 </dd>
 </dl>

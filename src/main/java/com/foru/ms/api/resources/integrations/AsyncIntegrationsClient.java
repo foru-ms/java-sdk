@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.integrations;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.integrations.requests.DeleteIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.GetIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.GetIntegrationsRequest;
-import com.foru.ms.api.resources.integrations.requests.PatchIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.PostIntegrationsRequest;
-import com.foru.ms.api.resources.integrations.types.DeleteIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.GetIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.GetIntegrationsResponse;
-import com.foru.ms.api.resources.integrations.types.PatchIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.PostIntegrationsResponse;
+import com.foru.ms.api.resources.integrations.requests.CreateIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.DeleteIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.ListIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.RetrieveIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.UpdateIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.types.UpdateIntegrationsResponse;
+import com.foru.ms.api.types.IntegrationListResponse;
+import com.foru.ms.api.types.IntegrationResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncIntegrationsClient {
@@ -34,84 +33,152 @@ public class AsyncIntegrationsClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetIntegrationsResponse> listAllIntegrations() {
-        return this.rawClient.listAllIntegrations().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsResponse> listAllIntegrations(RequestOptions requestOptions) {
-        return this.rawClient.listAllIntegrations(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsResponse> listAllIntegrations(GetIntegrationsRequest request) {
-        return this.rawClient.listAllIntegrations(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationListResponse> list(ListIntegrationsRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsResponse> listAllIntegrations(
-            GetIntegrationsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllIntegrations(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationListResponse> list(
+            ListIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostIntegrationsResponse> createAnIntegration(PostIntegrationsRequest request) {
-        return this.rawClient.createAnIntegration(request).thenApply(response -> response.body());
+    /**
+     * Create an new integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationResponse> create(CreateIntegrationsRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostIntegrationsResponse> createAnIntegration(
-            PostIntegrationsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAnIntegration(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create an new integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationResponse> create(
+            CreateIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsIdResponse> getAnIntegration(String id) {
-        return this.rawClient.getAnIntegration(id).thenApply(response -> response.body());
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsIdResponse> getAnIntegration(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAnIntegration(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsIdResponse> getAnIntegration(String id, GetIntegrationsIdRequest request) {
-        return this.rawClient.getAnIntegration(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationResponse> retrieve(String id, RetrieveIntegrationsRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetIntegrationsIdResponse> getAnIntegration(
-            String id, GetIntegrationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAnIntegration(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<IntegrationResponse> retrieve(
+            String id, RetrieveIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteIntegrationsIdResponse> deleteAnIntegration(String id) {
-        return this.rawClient.deleteAnIntegration(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteIntegrationsIdResponse> deleteAnIntegration(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnIntegration(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteIntegrationsIdResponse> deleteAnIntegration(
-            String id, DeleteIntegrationsIdRequest request) {
-        return this.rawClient.deleteAnIntegration(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteIntegrationsRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteIntegrationsIdResponse> deleteAnIntegration(
-            String id, DeleteIntegrationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnIntegration(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchIntegrationsIdResponse> updateAnIntegration(String id) {
-        return this.rawClient.updateAnIntegration(id).thenApply(response -> response.body());
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<UpdateIntegrationsResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchIntegrationsIdResponse> updateAnIntegration(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAnIntegration(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<UpdateIntegrationsResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchIntegrationsIdResponse> updateAnIntegration(
-            String id, PatchIntegrationsIdRequest request) {
-        return this.rawClient.updateAnIntegration(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<UpdateIntegrationsResponse> update(String id, UpdateIntegrationsRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchIntegrationsIdResponse> updateAnIntegration(
-            String id, PatchIntegrationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAnIntegration(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public CompletableFuture<UpdateIntegrationsResponse> update(
+            String id, UpdateIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 }

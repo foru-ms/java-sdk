@@ -18,17 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.notifications.requests.DeleteNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.GetNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.GetNotificationsRequest;
-import com.foru.ms.api.resources.notifications.requests.PatchNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.PostNotificationsRequest;
-import com.foru.ms.api.resources.notifications.types.DeleteNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.GetNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.GetNotificationsResponse;
-import com.foru.ms.api.resources.notifications.types.PatchNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.PostNotificationsResponse;
+import com.foru.ms.api.resources.notifications.requests.CreateNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.DeleteNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.ListNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.RetrieveNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.UpdateNotificationsRequest;
+import com.foru.ms.api.resources.notifications.types.UpdateNotificationsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.NotificationListResponse;
+import com.foru.ms.api.types.NotificationResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -49,36 +48,50 @@ public class AsyncRawNotificationsClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsResponse>> listAllNotifications() {
-        return listAllNotifications(GetNotificationsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationListResponse>> list() {
+        return list(ListNotificationsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsResponse>> listAllNotifications(
-            RequestOptions requestOptions) {
-        return listAllNotifications(GetNotificationsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationListResponse>> list(RequestOptions requestOptions) {
+        return list(ListNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsResponse>> listAllNotifications(
-            GetNotificationsRequest request) {
-        return listAllNotifications(request, null);
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationListResponse>> list(ListNotificationsRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsResponse>> listAllNotifications(
-            GetNotificationsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationListResponse>> list(
+            ListNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getStatus().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "status", request.getStatus().get(), false);
+        }
+        if (request.getUserId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "userId", request.getUserId().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -90,7 +103,7 @@ public class AsyncRawNotificationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetNotificationsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<NotificationListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -98,7 +111,7 @@ public class AsyncRawNotificationsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetNotificationsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, NotificationListResponse.class),
                                 response));
                         return;
                     }
@@ -145,13 +158,18 @@ public class AsyncRawNotificationsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostNotificationsResponse>> createANotification(
-            PostNotificationsRequest request) {
-        return createANotification(request, null);
+    /**
+     * Create a new notification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationResponse>> create(CreateNotificationsRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostNotificationsResponse>> createANotification(
-            PostNotificationsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new notification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationResponse>> create(
+            CreateNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -174,7 +192,7 @@ public class AsyncRawNotificationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostNotificationsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<NotificationResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -182,8 +200,7 @@ public class AsyncRawNotificationsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PostNotificationsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, NotificationResponse.class),
                                 response));
                         return;
                     }
@@ -235,22 +252,34 @@ public class AsyncRawNotificationsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsIdResponse>> getANotification(String id) {
-        return getANotification(id, GetNotificationsIdRequest.builder().build());
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveNotificationsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsIdResponse>> getANotification(
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationResponse>> retrieve(
             String id, RequestOptions requestOptions) {
-        return getANotification(id, GetNotificationsIdRequest.builder().build(), requestOptions);
+        return retrieve(id, RetrieveNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsIdResponse>> getANotification(
-            String id, GetNotificationsIdRequest request) {
-        return getANotification(id, request, null);
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationResponse>> retrieve(
+            String id, RetrieveNotificationsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetNotificationsIdResponse>> getANotification(
-            String id, GetNotificationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<NotificationResponse>> retrieve(
+            String id, RetrieveNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -266,7 +295,7 @@ public class AsyncRawNotificationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetNotificationsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<NotificationResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -274,8 +303,7 @@ public class AsyncRawNotificationsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetNotificationsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, NotificationResponse.class),
                                 response));
                         return;
                     }
@@ -327,22 +355,34 @@ public class AsyncRawNotificationsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteNotificationsIdResponse>> deleteANotification(String id) {
-        return deleteANotification(id, DeleteNotificationsIdRequest.builder().build());
+    /**
+     * Permanently delete a notification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteNotificationsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteNotificationsIdResponse>> deleteANotification(
+    /**
+     * Permanently delete a notification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteANotification(id, DeleteNotificationsIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteNotificationsIdResponse>> deleteANotification(
-            String id, DeleteNotificationsIdRequest request) {
-        return deleteANotification(id, request, null);
+    /**
+     * Permanently delete a notification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteNotificationsRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteNotificationsIdResponse>> deleteANotification(
-            String id, DeleteNotificationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a notification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -358,7 +398,7 @@ public class AsyncRawNotificationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteNotificationsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -366,8 +406,7 @@ public class AsyncRawNotificationsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeleteNotificationsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -419,22 +458,34 @@ public class AsyncRawNotificationsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchNotificationsIdResponse>> updateANotification(String id) {
-        return updateANotification(id, PatchNotificationsIdRequest.builder().build());
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateNotificationsResponse>> update(String id) {
+        return update(id, UpdateNotificationsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchNotificationsIdResponse>> updateANotification(
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateNotificationsResponse>> update(
             String id, RequestOptions requestOptions) {
-        return updateANotification(id, PatchNotificationsIdRequest.builder().build(), requestOptions);
+        return update(id, UpdateNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchNotificationsIdResponse>> updateANotification(
-            String id, PatchNotificationsIdRequest request) {
-        return updateANotification(id, request, null);
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateNotificationsResponse>> update(
+            String id, UpdateNotificationsRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchNotificationsIdResponse>> updateANotification(
-            String id, PatchNotificationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateNotificationsResponse>> update(
+            String id, UpdateNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -458,7 +509,7 @@ public class AsyncRawNotificationsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PatchNotificationsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UpdateNotificationsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -467,7 +518,7 @@ public class AsyncRawNotificationsClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PatchNotificationsIdResponse.class),
+                                        responseBodyString, UpdateNotificationsResponse.class),
                                 response));
                         return;
                     }

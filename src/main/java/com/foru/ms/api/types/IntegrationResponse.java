@@ -9,90 +9,29 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.foru.ms.api.core.ObjectMappers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = IntegrationResponse.Builder.class)
 public final class IntegrationResponse {
-    private final String id;
-
-    private final IntegrationResponseType type;
-
-    private final String name;
-
-    private final boolean active;
-
-    private final String createdAt;
-
-    private final String updatedAt;
+    private final Optional<IntegrationResponseData> data;
 
     private final Map<String, Object> additionalProperties;
 
-    private IntegrationResponse(
-            String id,
-            IntegrationResponseType type,
-            String name,
-            boolean active,
-            String createdAt,
-            String updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.type = type;
-        this.name = name;
-        this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    private IntegrationResponse(Optional<IntegrationResponseData> data, Map<String, Object> additionalProperties) {
+        this.data = data;
         this.additionalProperties = additionalProperties;
     }
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @return Integration type
-     */
-    @JsonProperty("type")
-    public IntegrationResponseType getType() {
-        return type;
-    }
-
-    /**
-     * @return Integration name
-     */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return Whether integration is active
-     */
-    @JsonProperty("active")
-    public boolean getActive() {
-        return active;
-    }
-
-    /**
-     * @return Integration creation timestamp
-     */
-    @JsonProperty("createdAt")
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * @return Integration last update timestamp
-     */
-    @JsonProperty("updatedAt")
-    public String getUpdatedAt() {
-        return updatedAt;
+    @JsonProperty("data")
+    public Optional<IntegrationResponseData> getData() {
+        return data;
     }
 
     @java.lang.Override
@@ -107,17 +46,12 @@ public final class IntegrationResponse {
     }
 
     private boolean equalTo(IntegrationResponse other) {
-        return id.equals(other.id)
-                && type.equals(other.type)
-                && name.equals(other.name)
-                && active == other.active
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+        return data.equals(other.data);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.id, this.type, this.name, this.active, this.createdAt, this.updatedAt);
+        return Objects.hash(this.data);
     }
 
     @java.lang.Override
@@ -125,156 +59,37 @@ public final class IntegrationResponse {
         return ObjectMappers.stringify(this);
     }
 
-    public static IdStage builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public interface IdStage {
-        TypeStage id(@NotNull String id);
-
-        Builder from(IntegrationResponse other);
-    }
-
-    public interface TypeStage {
-        /**
-         * <p>Integration type</p>
-         */
-        NameStage type(@NotNull IntegrationResponseType type);
-    }
-
-    public interface NameStage {
-        /**
-         * <p>Integration name</p>
-         */
-        ActiveStage name(@NotNull String name);
-    }
-
-    public interface ActiveStage {
-        /**
-         * <p>Whether integration is active</p>
-         */
-        CreatedAtStage active(boolean active);
-    }
-
-    public interface CreatedAtStage {
-        /**
-         * <p>Integration creation timestamp</p>
-         */
-        UpdatedAtStage createdAt(@NotNull String createdAt);
-    }
-
-    public interface UpdatedAtStage {
-        /**
-         * <p>Integration last update timestamp</p>
-         */
-        _FinalStage updatedAt(@NotNull String updatedAt);
-    }
-
-    public interface _FinalStage {
-        IntegrationResponse build();
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements IdStage, TypeStage, NameStage, ActiveStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
-        private String id;
-
-        private IntegrationResponseType type;
-
-        private String name;
-
-        private boolean active;
-
-        private String createdAt;
-
-        private String updatedAt;
+    public static final class Builder {
+        private Optional<IntegrationResponseData> data = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
-        @java.lang.Override
         public Builder from(IntegrationResponse other) {
-            id(other.getId());
-            type(other.getType());
-            name(other.getName());
-            active(other.getActive());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
+            data(other.getData());
             return this;
         }
 
-        @java.lang.Override
-        @JsonSetter("id")
-        public TypeStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
+        @JsonSetter(value = "data", nulls = Nulls.SKIP)
+        public Builder data(Optional<IntegrationResponseData> data) {
+            this.data = data;
             return this;
         }
 
-        /**
-         * <p>Integration type</p>
-         * <p>Integration type</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("type")
-        public NameStage type(@NotNull IntegrationResponseType type) {
-            this.type = Objects.requireNonNull(type, "type must not be null");
+        public Builder data(IntegrationResponseData data) {
+            this.data = Optional.ofNullable(data);
             return this;
         }
 
-        /**
-         * <p>Integration name</p>
-         * <p>Integration name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public ActiveStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Whether integration is active</p>
-         * <p>Whether integration is active</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("active")
-        public CreatedAtStage active(boolean active) {
-            this.active = active;
-            return this;
-        }
-
-        /**
-         * <p>Integration creation timestamp</p>
-         * <p>Integration creation timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("createdAt")
-        public UpdatedAtStage createdAt(@NotNull String createdAt) {
-            this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Integration last update timestamp</p>
-         * <p>Integration last update timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("updatedAt")
-        public _FinalStage updatedAt(@NotNull String updatedAt) {
-            this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
-            return this;
-        }
-
-        @java.lang.Override
         public IntegrationResponse build() {
-            return new IntegrationResponse(id, type, name, active, createdAt, updatedAt, additionalProperties);
+            return new IntegrationResponse(data, additionalProperties);
         }
     }
 }

@@ -10,8 +10,10 @@ import com.foru.ms.api.resources.integrations.IntegrationsClient;
 import com.foru.ms.api.resources.notifications.NotificationsClient;
 import com.foru.ms.api.resources.posts.PostsClient;
 import com.foru.ms.api.resources.privatemessages.PrivateMessagesClient;
+import com.foru.ms.api.resources.provisioning.ProvisioningClient;
 import com.foru.ms.api.resources.reports.ReportsClient;
 import com.foru.ms.api.resources.roles.RolesClient;
+import com.foru.ms.api.resources.search.SearchClient;
 import com.foru.ms.api.resources.ssos.SsOsClient;
 import com.foru.ms.api.resources.tags.TagsClient;
 import com.foru.ms.api.resources.threads.ThreadsClient;
@@ -23,6 +25,8 @@ public class ForumClient {
     protected final ClientOptions clientOptions;
 
     protected final Supplier<AuthClient> authClient;
+
+    protected final Supplier<SearchClient> searchClient;
 
     protected final Supplier<TagsClient> tagsClient;
 
@@ -46,9 +50,12 @@ public class ForumClient {
 
     protected final Supplier<SsOsClient> ssOsClient;
 
+    protected final Supplier<ProvisioningClient> provisioningClient;
+
     public ForumClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.authClient = Suppliers.memoize(() -> new AuthClient(clientOptions));
+        this.searchClient = Suppliers.memoize(() -> new SearchClient(clientOptions));
         this.tagsClient = Suppliers.memoize(() -> new TagsClient(clientOptions));
         this.threadsClient = Suppliers.memoize(() -> new ThreadsClient(clientOptions));
         this.postsClient = Suppliers.memoize(() -> new PostsClient(clientOptions));
@@ -60,10 +67,15 @@ public class ForumClient {
         this.webhooksClient = Suppliers.memoize(() -> new WebhooksClient(clientOptions));
         this.integrationsClient = Suppliers.memoize(() -> new IntegrationsClient(clientOptions));
         this.ssOsClient = Suppliers.memoize(() -> new SsOsClient(clientOptions));
+        this.provisioningClient = Suppliers.memoize(() -> new ProvisioningClient(clientOptions));
     }
 
     public AuthClient auth() {
         return this.authClient.get();
+    }
+
+    public SearchClient search() {
+        return this.searchClient.get();
     }
 
     public TagsClient tags() {
@@ -108,6 +120,10 @@ public class ForumClient {
 
     public SsOsClient ssOs() {
         return this.ssOsClient.get();
+    }
+
+    public ProvisioningClient provisioning() {
+        return this.provisioningClient.get();
     }
 
     public static ForumClientBuilder builder() {

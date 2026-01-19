@@ -18,17 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.roles.requests.DeleteRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.GetRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.GetRolesRequest;
-import com.foru.ms.api.resources.roles.requests.PatchRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.PostRolesRequest;
-import com.foru.ms.api.resources.roles.types.DeleteRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.GetRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.GetRolesResponse;
-import com.foru.ms.api.resources.roles.types.PatchRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.PostRolesResponse;
+import com.foru.ms.api.resources.roles.requests.CreateRolesRequest;
+import com.foru.ms.api.resources.roles.requests.DeleteRolesRequest;
+import com.foru.ms.api.resources.roles.requests.ListRolesRequest;
+import com.foru.ms.api.resources.roles.requests.RetrieveRolesRequest;
+import com.foru.ms.api.resources.roles.requests.UpdateRolesRequest;
+import com.foru.ms.api.resources.roles.types.UpdateRolesResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.RoleListResponse;
+import com.foru.ms.api.types.RoleResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -49,34 +48,50 @@ public class AsyncRawRolesClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesResponse>> listAllRoles() {
-        return listAllRoles(GetRolesRequest.builder().build());
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleListResponse>> list() {
+        return list(ListRolesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesResponse>> listAllRoles(RequestOptions requestOptions) {
-        return listAllRoles(GetRolesRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleListResponse>> list(RequestOptions requestOptions) {
+        return list(ListRolesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesResponse>> listAllRoles(GetRolesRequest request) {
-        return listAllRoles(request, null);
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleListResponse>> list(ListRolesRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesResponse>> listAllRoles(
-            GetRolesRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleListResponse>> list(
+            ListRolesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("roles");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -88,7 +103,7 @@ public class AsyncRawRolesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetRolesResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RoleListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -96,7 +111,7 @@ public class AsyncRawRolesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetRolesResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RoleListResponse.class),
                                 response));
                         return;
                     }
@@ -143,12 +158,18 @@ public class AsyncRawRolesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostRolesResponse>> createARole(PostRolesRequest request) {
-        return createARole(request, null);
+    /**
+     * Create a new role.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleResponse>> create(CreateRolesRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostRolesResponse>> createARole(
-            PostRolesRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new role.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleResponse>> create(
+            CreateRolesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("roles")
@@ -171,7 +192,7 @@ public class AsyncRawRolesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostRolesResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RoleResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -179,8 +200,7 @@ public class AsyncRawRolesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostRolesResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RoleResponse.class), response));
                         return;
                     }
                     try {
@@ -231,22 +251,32 @@ public class AsyncRawRolesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesIdResponse>> getARole(String id) {
-        return getARole(id, GetRolesIdRequest.builder().build());
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveRolesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesIdResponse>> getARole(
-            String id, RequestOptions requestOptions) {
-        return getARole(id, GetRolesIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleResponse>> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveRolesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesIdResponse>> getARole(
-            String id, GetRolesIdRequest request) {
-        return getARole(id, request, null);
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleResponse>> retrieve(String id, RetrieveRolesRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetRolesIdResponse>> getARole(
-            String id, GetRolesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<RoleResponse>> retrieve(
+            String id, RetrieveRolesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("roles")
@@ -262,7 +292,7 @@ public class AsyncRawRolesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetRolesIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RoleResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -270,8 +300,7 @@ public class AsyncRawRolesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetRolesIdResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RoleResponse.class), response));
                         return;
                     }
                     try {
@@ -322,22 +351,33 @@ public class AsyncRawRolesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteRolesIdResponse>> deleteARole(String id) {
-        return deleteARole(id, DeleteRolesIdRequest.builder().build());
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteRolesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteRolesIdResponse>> deleteARole(
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteARole(id, DeleteRolesIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteRolesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteRolesIdResponse>> deleteARole(
-            String id, DeleteRolesIdRequest request) {
-        return deleteARole(id, request, null);
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id, DeleteRolesRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteRolesIdResponse>> deleteARole(
-            String id, DeleteRolesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteRolesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("roles")
@@ -353,7 +393,7 @@ public class AsyncRawRolesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteRolesIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -361,7 +401,7 @@ public class AsyncRawRolesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteRolesIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -413,22 +453,34 @@ public class AsyncRawRolesClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchRolesIdResponse>> updateARole(String id) {
-        return updateARole(id, PatchRolesIdRequest.builder().build());
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateRolesResponse>> update(String id) {
+        return update(id, UpdateRolesRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchRolesIdResponse>> updateARole(
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateRolesResponse>> update(
             String id, RequestOptions requestOptions) {
-        return updateARole(id, PatchRolesIdRequest.builder().build(), requestOptions);
+        return update(id, UpdateRolesRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchRolesIdResponse>> updateARole(
-            String id, PatchRolesIdRequest request) {
-        return updateARole(id, request, null);
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateRolesResponse>> update(
+            String id, UpdateRolesRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchRolesIdResponse>> updateARole(
-            String id, PatchRolesIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateRolesResponse>> update(
+            String id, UpdateRolesRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("roles")
@@ -452,7 +504,7 @@ public class AsyncRawRolesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PatchRolesIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UpdateRolesResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -460,7 +512,7 @@ public class AsyncRawRolesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchRolesIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateRolesResponse.class),
                                 response));
                         return;
                     }

@@ -18,17 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.ssos.requests.DeleteSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoRequest;
-import com.foru.ms.api.resources.ssos.requests.PatchSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.PostSsoRequest;
-import com.foru.ms.api.resources.ssos.types.DeleteSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoResponse;
-import com.foru.ms.api.resources.ssos.types.PatchSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.PostSsoResponse;
+import com.foru.ms.api.resources.ssos.requests.CreateSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.DeleteSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.ListSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.RetrieveSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.UpdateSsOsRequest;
+import com.foru.ms.api.resources.ssos.types.UpdateSsOsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SsoListResponse;
+import com.foru.ms.api.types.SsoResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -45,33 +44,45 @@ public class RawSsOsClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetSsoResponse> listAllSsOs() {
-        return listAllSsOs(GetSsoRequest.builder().build());
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoListResponse> list() {
+        return list(ListSsOsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetSsoResponse> listAllSsOs(RequestOptions requestOptions) {
-        return listAllSsOs(GetSsoRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoListResponse> list(RequestOptions requestOptions) {
+        return list(ListSsOsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetSsoResponse> listAllSsOs(GetSsoRequest request) {
-        return listAllSsOs(request, null);
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoListResponse> list(ListSsOsRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetSsoResponse> listAllSsOs(GetSsoRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoListResponse> list(ListSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -88,7 +99,7 @@ public class RawSsOsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetSsoResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SsoListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -116,11 +127,19 @@ public class RawSsOsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostSsoResponse> createAnSso(PostSsoRequest request) {
-        return createAnSso(request, null);
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoResponse> create(CreateSsOsRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostSsoResponse> createAnSso(PostSsoRequest request, RequestOptions requestOptions) {
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoResponse> create(CreateSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -148,7 +167,7 @@ public class RawSsOsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostSsoResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SsoResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -179,20 +198,36 @@ public class RawSsOsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetSsoIdResponse> getAnSso(String id) {
-        return getAnSso(id, GetSsoIdRequest.builder().build());
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoResponse> retrieve(String id) {
+        return retrieve(id, RetrieveSsOsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetSsoIdResponse> getAnSso(String id, RequestOptions requestOptions) {
-        return getAnSso(id, GetSsoIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveSsOsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetSsoIdResponse> getAnSso(String id, GetSsoIdRequest request) {
-        return getAnSso(id, request, null);
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoResponse> retrieve(String id, RetrieveSsOsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetSsoIdResponse> getAnSso(
-            String id, GetSsoIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SsoResponse> retrieve(
+            String id, RetrieveSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -213,7 +248,7 @@ public class RawSsOsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetSsoIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SsoResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -244,20 +279,36 @@ public class RawSsOsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteSsoIdResponse> deleteAnSso(String id) {
-        return deleteAnSso(id, DeleteSsoIdRequest.builder().build());
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteSsOsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteSsoIdResponse> deleteAnSso(String id, RequestOptions requestOptions) {
-        return deleteAnSso(id, DeleteSsoIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteSsOsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteSsoIdResponse> deleteAnSso(String id, DeleteSsoIdRequest request) {
-        return deleteAnSso(id, request, null);
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteSsOsRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteSsoIdResponse> deleteAnSso(
-            String id, DeleteSsoIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -278,7 +329,7 @@ public class RawSsOsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteSsoIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -309,20 +360,36 @@ public class RawSsOsClient {
         }
     }
 
-    public ForumClientHttpResponse<PatchSsoIdResponse> updateAnSso(String id) {
-        return updateAnSso(id, PatchSsoIdRequest.builder().build());
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateSsOsResponse> update(String id) {
+        return update(id, UpdateSsOsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<PatchSsoIdResponse> updateAnSso(String id, RequestOptions requestOptions) {
-        return updateAnSso(id, PatchSsoIdRequest.builder().build(), requestOptions);
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateSsOsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateSsOsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<PatchSsoIdResponse> updateAnSso(String id, PatchSsoIdRequest request) {
-        return updateAnSso(id, request, null);
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateSsOsResponse> update(String id, UpdateSsOsRequest request) {
+        return update(id, request, null);
     }
 
-    public ForumClientHttpResponse<PatchSsoIdResponse> updateAnSso(
-            String id, PatchSsoIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public ForumClientHttpResponse<UpdateSsOsResponse> update(
+            String id, UpdateSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -351,7 +418,7 @@ public class RawSsOsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchSsoIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateSsOsResponse.class), response);
             }
             try {
                 switch (response.code()) {

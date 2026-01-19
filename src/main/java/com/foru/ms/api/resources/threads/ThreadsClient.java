@@ -5,44 +5,36 @@ package com.foru.ms.api.resources.threads;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdReactionsRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdRequest;
-import com.foru.ms.api.resources.threads.requests.DeleteThreadsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdPollRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdPostsRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdReactionsRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdSubscribersRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.threads.requests.GetThreadsRequest;
-import com.foru.ms.api.resources.threads.requests.PatchThreadsIdPollRequest;
-import com.foru.ms.api.resources.threads.requests.PatchThreadsIdRequest;
-import com.foru.ms.api.resources.threads.requests.PostThreadsIdPollRequest;
-import com.foru.ms.api.resources.threads.requests.PostThreadsIdReactionsRequest;
-import com.foru.ms.api.resources.threads.requests.PostThreadsRequest;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdReactionsResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdResponse;
-import com.foru.ms.api.resources.threads.types.DeleteThreadsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdPollResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdPostsResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdReactionsResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdSubscribersResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.threads.types.GetThreadsResponse;
-import com.foru.ms.api.resources.threads.types.PatchThreadsIdPollResponse;
-import com.foru.ms.api.resources.threads.types.PatchThreadsIdResponse;
-import com.foru.ms.api.resources.threads.types.PostThreadsIdPollResponse;
-import com.foru.ms.api.resources.threads.types.PostThreadsIdReactionsResponse;
-import com.foru.ms.api.resources.threads.types.PostThreadsResponse;
+import com.foru.ms.api.resources.threads.requests.CreatePollThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.CreateReactionThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.CreateThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeletePostThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeleteReactionThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeleteSubscriberThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.DeleteThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListPostsThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListReactionsThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListSubscribersThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.ListThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrievePollThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrievePostThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrieveReactionThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrieveSubscriberThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.RetrieveThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.UpdatePollThreadsRequest;
+import com.foru.ms.api.resources.threads.requests.UpdateThreadsRequest;
+import com.foru.ms.api.resources.threads.types.RetrievePostThreadsResponse;
+import com.foru.ms.api.resources.threads.types.RetrieveReactionThreadsResponse;
+import com.foru.ms.api.resources.threads.types.RetrieveSubscriberThreadsResponse;
+import com.foru.ms.api.resources.threads.types.UpdateThreadsResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.ThreadListResponse;
+import com.foru.ms.api.types.ThreadPollResponse;
+import com.foru.ms.api.types.ThreadPostListResponse;
+import com.foru.ms.api.types.ThreadReactionListResponse;
+import com.foru.ms.api.types.ThreadReactionResponse;
+import com.foru.ms.api.types.ThreadResponse;
+import com.foru.ms.api.types.ThreadSubscriberListResponse;
 
 public class ThreadsClient {
     protected final ClientOptions clientOptions;
@@ -61,345 +53,382 @@ public class ThreadsClient {
         return this.rawClient;
     }
 
-    public GetThreadsResponse listAllThreads() {
-        return this.rawClient.listAllThreads().body();
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public ThreadListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetThreadsResponse listAllThreads(RequestOptions requestOptions) {
-        return this.rawClient.listAllThreads(requestOptions).body();
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public ThreadListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetThreadsResponse listAllThreads(GetThreadsRequest request) {
-        return this.rawClient.listAllThreads(request).body();
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public ThreadListResponse list(ListThreadsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetThreadsResponse listAllThreads(GetThreadsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllThreads(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of threads. Use cursor for pagination.
+     */
+    public ThreadListResponse list(ListThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostThreadsResponse createAThread(PostThreadsRequest request) {
-        return this.rawClient.createAThread(request).body();
+    /**
+     * Create a new thread.
+     */
+    public ThreadResponse create(CreateThreadsRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostThreadsResponse createAThread(PostThreadsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAThread(request, requestOptions).body();
+    /**
+     * Create a new thread.
+     */
+    public ThreadResponse create(CreateThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetThreadsIdResponse getAThread(String id) {
-        return this.rawClient.getAThread(id).body();
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public ThreadResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetThreadsIdResponse getAThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAThread(id, requestOptions).body();
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public ThreadResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetThreadsIdResponse getAThread(String id, GetThreadsIdRequest request) {
-        return this.rawClient.getAThread(id, request).body();
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public ThreadResponse retrieve(String id, RetrieveThreadsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetThreadsIdResponse getAThread(String id, GetThreadsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAThread(id, request, requestOptions).body();
+    /**
+     * Retrieve a thread by ID or slug (if supported).
+     */
+    public ThreadResponse retrieve(String id, RetrieveThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteThreadsIdResponse deleteAThread(String id) {
-        return this.rawClient.deleteAThread(id).body();
+    /**
+     * Permanently delete a thread.
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteThreadsIdResponse deleteAThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAThread(id, requestOptions).body();
+    /**
+     * Permanently delete a thread.
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteThreadsIdResponse deleteAThread(String id, DeleteThreadsIdRequest request) {
-        return this.rawClient.deleteAThread(id, request).body();
+    /**
+     * Permanently delete a thread.
+     */
+    public SuccessResponse delete(String id, DeleteThreadsRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteThreadsIdResponse deleteAThread(
-            String id, DeleteThreadsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAThread(id, request, requestOptions).body();
+    /**
+     * Permanently delete a thread.
+     */
+    public SuccessResponse delete(String id, DeleteThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchThreadsIdResponse updateAThread(String id) {
-        return this.rawClient.updateAThread(id).body();
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public UpdateThreadsResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchThreadsIdResponse updateAThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAThread(id, requestOptions).body();
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public UpdateThreadsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public PatchThreadsIdResponse updateAThread(String id, PatchThreadsIdRequest request) {
-        return this.rawClient.updateAThread(id, request).body();
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public UpdateThreadsResponse update(String id, UpdateThreadsRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public PatchThreadsIdResponse updateAThread(
-            String id, PatchThreadsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAThread(id, request, requestOptions).body();
+    /**
+     * Update an existing thread. Only provided fields will be modified.
+     */
+    public UpdateThreadsResponse update(String id, UpdateThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 
-    public GetThreadsIdPostsResponse listThreadPosts(String id) {
-        return this.rawClient.listThreadPosts(id).body();
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public ThreadPostListResponse listPosts(String id) {
+        return this.rawClient.listPosts(id).body();
     }
 
-    public GetThreadsIdPostsResponse listThreadPosts(String id, RequestOptions requestOptions) {
-        return this.rawClient.listThreadPosts(id, requestOptions).body();
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public ThreadPostListResponse listPosts(String id, RequestOptions requestOptions) {
+        return this.rawClient.listPosts(id, requestOptions).body();
     }
 
-    public GetThreadsIdPostsResponse listThreadPosts(String id, GetThreadsIdPostsRequest request) {
-        return this.rawClient.listThreadPosts(id, request).body();
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public ThreadPostListResponse listPosts(String id, ListPostsThreadsRequest request) {
+        return this.rawClient.listPosts(id, request).body();
     }
 
-    public GetThreadsIdPostsResponse listThreadPosts(
-            String id, GetThreadsIdPostsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listThreadPosts(id, request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of posts for Thread.
+     */
+    public ThreadPostListResponse listPosts(String id, ListPostsThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listPosts(id, request, requestOptions).body();
     }
 
-    public GetThreadsIdPostsSubIdResponse getAPostFromThread(String id, String subId) {
-        return this.rawClient.getAPostFromThread(id, subId).body();
+    public RetrievePostThreadsResponse retrievePost(String id, String subId) {
+        return this.rawClient.retrievePost(id, subId).body();
     }
 
-    public GetThreadsIdPostsSubIdResponse getAPostFromThread(String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAPostFromThread(id, subId, requestOptions).body();
+    public RetrievePostThreadsResponse retrievePost(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrievePost(id, subId, requestOptions).body();
     }
 
-    public GetThreadsIdPostsSubIdResponse getAPostFromThread(
-            String id, String subId, GetThreadsIdPostsSubIdRequest request) {
-        return this.rawClient.getAPostFromThread(id, subId, request).body();
+    public RetrievePostThreadsResponse retrievePost(String id, String subId, RetrievePostThreadsRequest request) {
+        return this.rawClient.retrievePost(id, subId, request).body();
     }
 
-    public GetThreadsIdPostsSubIdResponse getAPostFromThread(
-            String id, String subId, GetThreadsIdPostsSubIdRequest request, RequestOptions requestOptions) {
+    public RetrievePostThreadsResponse retrievePost(
+            String id, String subId, RetrievePostThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrievePost(id, subId, request, requestOptions).body();
+    }
+
+    public SuccessResponse deletePost(String id, String subId) {
+        return this.rawClient.deletePost(id, subId).body();
+    }
+
+    public SuccessResponse deletePost(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deletePost(id, subId, requestOptions).body();
+    }
+
+    public SuccessResponse deletePost(String id, String subId, DeletePostThreadsRequest request) {
+        return this.rawClient.deletePost(id, subId, request).body();
+    }
+
+    public SuccessResponse deletePost(
+            String id, String subId, DeletePostThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deletePost(id, subId, request, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public ThreadReactionListResponse listReactions(String id) {
+        return this.rawClient.listReactions(id).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public ThreadReactionListResponse listReactions(String id, RequestOptions requestOptions) {
+        return this.rawClient.listReactions(id, requestOptions).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public ThreadReactionListResponse listReactions(String id, ListReactionsThreadsRequest request) {
+        return this.rawClient.listReactions(id, request).body();
+    }
+
+    /**
+     * Retrieve a paginated list of reactions for Thread.
+     */
+    public ThreadReactionListResponse listReactions(
+            String id, ListReactionsThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listReactions(id, request, requestOptions).body();
+    }
+
+    /**
+     * Create a Reaction in Thread.
+     */
+    public ThreadReactionResponse createReaction(String id, CreateReactionThreadsRequest request) {
+        return this.rawClient.createReaction(id, request).body();
+    }
+
+    /**
+     * Create a Reaction in Thread.
+     */
+    public ThreadReactionResponse createReaction(
+            String id, CreateReactionThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createReaction(id, request, requestOptions).body();
+    }
+
+    public SuccessResponse deleteReaction(String id, String subId) {
+        return this.rawClient.deleteReaction(id, subId).body();
+    }
+
+    public SuccessResponse deleteReaction(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteReaction(id, subId, requestOptions).body();
+    }
+
+    public SuccessResponse deleteReaction(String id, String subId, DeleteReactionThreadsRequest request) {
+        return this.rawClient.deleteReaction(id, subId, request).body();
+    }
+
+    public SuccessResponse deleteReaction(
+            String id, String subId, DeleteReactionThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteReaction(id, subId, request, requestOptions).body();
+    }
+
+    public RetrieveReactionThreadsResponse retrieveReaction(String id, String subId) {
+        return this.rawClient.retrieveReaction(id, subId).body();
+    }
+
+    public RetrieveReactionThreadsResponse retrieveReaction(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.retrieveReaction(id, subId, requestOptions).body();
+    }
+
+    public RetrieveReactionThreadsResponse retrieveReaction(
+            String id, String subId, RetrieveReactionThreadsRequest request) {
+        return this.rawClient.retrieveReaction(id, subId, request).body();
+    }
+
+    public RetrieveReactionThreadsResponse retrieveReaction(
+            String id, String subId, RetrieveReactionThreadsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAPostFromThread(id, subId, request, requestOptions)
-                .body();
-    }
-
-    public DeleteThreadsIdPostsSubIdResponse deleteAPostFromThread(String id, String subId) {
-        return this.rawClient.deleteAPostFromThread(id, subId).body();
-    }
-
-    public DeleteThreadsIdPostsSubIdResponse deleteAPostFromThread(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.deleteAPostFromThread(id, subId, requestOptions).body();
-    }
-
-    public DeleteThreadsIdPostsSubIdResponse deleteAPostFromThread(
-            String id, String subId, DeleteThreadsIdPostsSubIdRequest request) {
-        return this.rawClient.deleteAPostFromThread(id, subId, request).body();
-    }
-
-    public DeleteThreadsIdPostsSubIdResponse deleteAPostFromThread(
-            String id, String subId, DeleteThreadsIdPostsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAPostFromThread(id, subId, request, requestOptions)
-                .body();
-    }
-
-    public GetThreadsIdReactionsResponse listThreadReactions(String id) {
-        return this.rawClient.listThreadReactions(id).body();
-    }
-
-    public GetThreadsIdReactionsResponse listThreadReactions(String id, RequestOptions requestOptions) {
-        return this.rawClient.listThreadReactions(id, requestOptions).body();
-    }
-
-    public GetThreadsIdReactionsResponse listThreadReactions(String id, GetThreadsIdReactionsRequest request) {
-        return this.rawClient.listThreadReactions(id, request).body();
-    }
-
-    public GetThreadsIdReactionsResponse listThreadReactions(
-            String id, GetThreadsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listThreadReactions(id, request, requestOptions).body();
-    }
-
-    public PostThreadsIdReactionsResponse createAReactionInThread(String id, PostThreadsIdReactionsRequest request) {
-        return this.rawClient.createAReactionInThread(id, request).body();
-    }
-
-    public PostThreadsIdReactionsResponse createAReactionInThread(
-            String id, PostThreadsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .createAReactionInThread(id, request, requestOptions)
+                .retrieveReaction(id, subId, request, requestOptions)
                 .body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public DeleteThreadsIdReactionsResponse removeYourReactionFromThread(String id) {
-        return this.rawClient.removeYourReactionFromThread(id).body();
+    public ThreadSubscriberListResponse listSubscribers(String id) {
+        return this.rawClient.listSubscribers(id).body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public DeleteThreadsIdReactionsResponse removeYourReactionFromThread(String id, RequestOptions requestOptions) {
-        return this.rawClient.removeYourReactionFromThread(id, requestOptions).body();
+    public ThreadSubscriberListResponse listSubscribers(String id, RequestOptions requestOptions) {
+        return this.rawClient.listSubscribers(id, requestOptions).body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public DeleteThreadsIdReactionsResponse removeYourReactionFromThread(
-            String id, DeleteThreadsIdReactionsRequest request) {
-        return this.rawClient.removeYourReactionFromThread(id, request).body();
+    public ThreadSubscriberListResponse listSubscribers(String id, ListSubscribersThreadsRequest request) {
+        return this.rawClient.listSubscribers(id, request).body();
     }
 
     /**
-     * Removes the authenticated user's reaction. No subId needed.
+     * Retrieve a paginated list of subscribers for Thread.
      */
-    public DeleteThreadsIdReactionsResponse removeYourReactionFromThread(
-            String id, DeleteThreadsIdReactionsRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .removeYourReactionFromThread(id, request, requestOptions)
-                .body();
+    public ThreadSubscriberListResponse listSubscribers(
+            String id, ListSubscribersThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listSubscribers(id, request, requestOptions).body();
     }
 
-    public GetThreadsIdReactionsSubIdResponse getAReactionFromThread(String id, String subId) {
-        return this.rawClient.getAReactionFromThread(id, subId).body();
+    public RetrieveSubscriberThreadsResponse retrieveSubscriber(String id, String subId) {
+        return this.rawClient.retrieveSubscriber(id, subId).body();
     }
 
-    public GetThreadsIdReactionsSubIdResponse getAReactionFromThread(
+    public RetrieveSubscriberThreadsResponse retrieveSubscriber(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getAReactionFromThread(id, subId, requestOptions).body();
+        return this.rawClient.retrieveSubscriber(id, subId, requestOptions).body();
     }
 
-    public GetThreadsIdReactionsSubIdResponse getAReactionFromThread(
-            String id, String subId, GetThreadsIdReactionsSubIdRequest request) {
-        return this.rawClient.getAReactionFromThread(id, subId, request).body();
+    public RetrieveSubscriberThreadsResponse retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberThreadsRequest request) {
+        return this.rawClient.retrieveSubscriber(id, subId, request).body();
     }
 
-    public GetThreadsIdReactionsSubIdResponse getAReactionFromThread(
-            String id, String subId, GetThreadsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
+    public RetrieveSubscriberThreadsResponse retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberThreadsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getAReactionFromThread(id, subId, request, requestOptions)
+                .retrieveSubscriber(id, subId, request, requestOptions)
                 .body();
     }
 
-    public DeleteThreadsIdReactionsSubIdResponse deleteAReactionFromThread(String id, String subId) {
-        return this.rawClient.deleteAReactionFromThread(id, subId).body();
+    public SuccessResponse deleteSubscriber(String id, String subId) {
+        return this.rawClient.deleteSubscriber(id, subId).body();
     }
 
-    public DeleteThreadsIdReactionsSubIdResponse deleteAReactionFromThread(
-            String id, String subId, RequestOptions requestOptions) {
+    public SuccessResponse deleteSubscriber(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteSubscriber(id, subId, requestOptions).body();
+    }
+
+    public SuccessResponse deleteSubscriber(String id, String subId, DeleteSubscriberThreadsRequest request) {
+        return this.rawClient.deleteSubscriber(id, subId, request).body();
+    }
+
+    public SuccessResponse deleteSubscriber(
+            String id, String subId, DeleteSubscriberThreadsRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .deleteAReactionFromThread(id, subId, requestOptions)
+                .deleteSubscriber(id, subId, request, requestOptions)
                 .body();
     }
 
-    public DeleteThreadsIdReactionsSubIdResponse deleteAReactionFromThread(
-            String id, String subId, DeleteThreadsIdReactionsSubIdRequest request) {
-        return this.rawClient.deleteAReactionFromThread(id, subId, request).body();
+    public ThreadPollResponse retrievePoll(String id) {
+        return this.rawClient.retrievePoll(id).body();
     }
 
-    public DeleteThreadsIdReactionsSubIdResponse deleteAReactionFromThread(
-            String id, String subId, DeleteThreadsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteAReactionFromThread(id, subId, request, requestOptions)
-                .body();
+    public ThreadPollResponse retrievePoll(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrievePoll(id, requestOptions).body();
     }
 
-    public GetThreadsIdSubscribersResponse listThreadSubscribers(String id) {
-        return this.rawClient.listThreadSubscribers(id).body();
+    public ThreadPollResponse retrievePoll(String id, RetrievePollThreadsRequest request) {
+        return this.rawClient.retrievePoll(id, request).body();
     }
 
-    public GetThreadsIdSubscribersResponse listThreadSubscribers(String id, RequestOptions requestOptions) {
-        return this.rawClient.listThreadSubscribers(id, requestOptions).body();
+    public ThreadPollResponse retrievePoll(
+            String id, RetrievePollThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrievePoll(id, request, requestOptions).body();
     }
 
-    public GetThreadsIdSubscribersResponse listThreadSubscribers(String id, GetThreadsIdSubscribersRequest request) {
-        return this.rawClient.listThreadSubscribers(id, request).body();
+    public ThreadPollResponse createPoll(String id, CreatePollThreadsRequest request) {
+        return this.rawClient.createPoll(id, request).body();
     }
 
-    public GetThreadsIdSubscribersResponse listThreadSubscribers(
-            String id, GetThreadsIdSubscribersRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listThreadSubscribers(id, request, requestOptions).body();
+    public ThreadPollResponse createPoll(String id, CreatePollThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createPoll(id, request, requestOptions).body();
     }
 
-    public GetThreadsIdSubscribersSubIdResponse getASubscriberFromThread(String id, String subId) {
-        return this.rawClient.getASubscriberFromThread(id, subId).body();
+    public ThreadPollResponse updatePoll(String id) {
+        return this.rawClient.updatePoll(id).body();
     }
 
-    public GetThreadsIdSubscribersSubIdResponse getASubscriberFromThread(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .getASubscriberFromThread(id, subId, requestOptions)
-                .body();
+    public ThreadPollResponse updatePoll(String id, RequestOptions requestOptions) {
+        return this.rawClient.updatePoll(id, requestOptions).body();
     }
 
-    public GetThreadsIdSubscribersSubIdResponse getASubscriberFromThread(
-            String id, String subId, GetThreadsIdSubscribersSubIdRequest request) {
-        return this.rawClient.getASubscriberFromThread(id, subId, request).body();
+    public ThreadPollResponse updatePoll(String id, UpdatePollThreadsRequest request) {
+        return this.rawClient.updatePoll(id, request).body();
     }
 
-    public GetThreadsIdSubscribersSubIdResponse getASubscriberFromThread(
-            String id, String subId, GetThreadsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getASubscriberFromThread(id, subId, request, requestOptions)
-                .body();
-    }
-
-    public DeleteThreadsIdSubscribersSubIdResponse deleteASubscriberFromThread(String id, String subId) {
-        return this.rawClient.deleteASubscriberFromThread(id, subId).body();
-    }
-
-    public DeleteThreadsIdSubscribersSubIdResponse deleteASubscriberFromThread(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteASubscriberFromThread(id, subId, requestOptions)
-                .body();
-    }
-
-    public DeleteThreadsIdSubscribersSubIdResponse deleteASubscriberFromThread(
-            String id, String subId, DeleteThreadsIdSubscribersSubIdRequest request) {
-        return this.rawClient.deleteASubscriberFromThread(id, subId, request).body();
-    }
-
-    public DeleteThreadsIdSubscribersSubIdResponse deleteASubscriberFromThread(
-            String id, String subId, DeleteThreadsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteASubscriberFromThread(id, subId, request, requestOptions)
-                .body();
-    }
-
-    public GetThreadsIdPollResponse getThreadPoll(String id) {
-        return this.rawClient.getThreadPoll(id).body();
-    }
-
-    public GetThreadsIdPollResponse getThreadPoll(String id, RequestOptions requestOptions) {
-        return this.rawClient.getThreadPoll(id, requestOptions).body();
-    }
-
-    public GetThreadsIdPollResponse getThreadPoll(String id, GetThreadsIdPollRequest request) {
-        return this.rawClient.getThreadPoll(id, request).body();
-    }
-
-    public GetThreadsIdPollResponse getThreadPoll(
-            String id, GetThreadsIdPollRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getThreadPoll(id, request, requestOptions).body();
-    }
-
-    public PostThreadsIdPollResponse createThreadPoll(String id, PostThreadsIdPollRequest request) {
-        return this.rawClient.createThreadPoll(id, request).body();
-    }
-
-    public PostThreadsIdPollResponse createThreadPoll(
-            String id, PostThreadsIdPollRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createThreadPoll(id, request, requestOptions).body();
-    }
-
-    public PatchThreadsIdPollResponse updateThreadPoll(String id) {
-        return this.rawClient.updateThreadPoll(id).body();
-    }
-
-    public PatchThreadsIdPollResponse updateThreadPoll(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateThreadPoll(id, requestOptions).body();
-    }
-
-    public PatchThreadsIdPollResponse updateThreadPoll(String id, PatchThreadsIdPollRequest request) {
-        return this.rawClient.updateThreadPoll(id, request).body();
-    }
-
-    public PatchThreadsIdPollResponse updateThreadPoll(
-            String id, PatchThreadsIdPollRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateThreadPoll(id, request, requestOptions).body();
+    public ThreadPollResponse updatePoll(String id, UpdatePollThreadsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.updatePoll(id, request, requestOptions).body();
     }
 }

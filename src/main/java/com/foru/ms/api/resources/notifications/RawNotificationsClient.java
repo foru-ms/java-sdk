@@ -18,17 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.notifications.requests.DeleteNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.GetNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.GetNotificationsRequest;
-import com.foru.ms.api.resources.notifications.requests.PatchNotificationsIdRequest;
-import com.foru.ms.api.resources.notifications.requests.PostNotificationsRequest;
-import com.foru.ms.api.resources.notifications.types.DeleteNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.GetNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.GetNotificationsResponse;
-import com.foru.ms.api.resources.notifications.types.PatchNotificationsIdResponse;
-import com.foru.ms.api.resources.notifications.types.PostNotificationsResponse;
+import com.foru.ms.api.resources.notifications.requests.CreateNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.DeleteNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.ListNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.RetrieveNotificationsRequest;
+import com.foru.ms.api.resources.notifications.requests.UpdateNotificationsRequest;
+import com.foru.ms.api.resources.notifications.types.UpdateNotificationsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.NotificationListResponse;
+import com.foru.ms.api.types.NotificationResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -45,34 +44,50 @@ public class RawNotificationsClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetNotificationsResponse> listAllNotifications() {
-        return listAllNotifications(GetNotificationsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<NotificationListResponse> list() {
+        return list(ListNotificationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetNotificationsResponse> listAllNotifications(RequestOptions requestOptions) {
-        return listAllNotifications(GetNotificationsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<NotificationListResponse> list(RequestOptions requestOptions) {
+        return list(ListNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetNotificationsResponse> listAllNotifications(GetNotificationsRequest request) {
-        return listAllNotifications(request, null);
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<NotificationListResponse> list(ListNotificationsRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetNotificationsResponse> listAllNotifications(
-            GetNotificationsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of notifications. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<NotificationListResponse> list(
+            ListNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getStatus().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "status", request.getStatus().get(), false);
+        }
+        if (request.getUserId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "userId", request.getUserId().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -89,7 +104,7 @@ public class RawNotificationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetNotificationsResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, NotificationListResponse.class),
                         response);
             }
             try {
@@ -118,12 +133,18 @@ public class RawNotificationsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostNotificationsResponse> createANotification(PostNotificationsRequest request) {
-        return createANotification(request, null);
+    /**
+     * Create a new notification.
+     */
+    public ForumClientHttpResponse<NotificationResponse> create(CreateNotificationsRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostNotificationsResponse> createANotification(
-            PostNotificationsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new notification.
+     */
+    public ForumClientHttpResponse<NotificationResponse> create(
+            CreateNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -151,8 +172,7 @@ public class RawNotificationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostNotificationsResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, NotificationResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -183,22 +203,32 @@ public class RawNotificationsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetNotificationsIdResponse> getANotification(String id) {
-        return getANotification(id, GetNotificationsIdRequest.builder().build());
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<NotificationResponse> retrieve(String id) {
+        return retrieve(id, RetrieveNotificationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetNotificationsIdResponse> getANotification(
-            String id, RequestOptions requestOptions) {
-        return getANotification(id, GetNotificationsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<NotificationResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetNotificationsIdResponse> getANotification(
-            String id, GetNotificationsIdRequest request) {
-        return getANotification(id, request, null);
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<NotificationResponse> retrieve(String id, RetrieveNotificationsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetNotificationsIdResponse> getANotification(
-            String id, GetNotificationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a notification by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<NotificationResponse> retrieve(
+            String id, RetrieveNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -219,8 +249,7 @@ public class RawNotificationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetNotificationsIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, NotificationResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -251,22 +280,32 @@ public class RawNotificationsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteNotificationsIdResponse> deleteANotification(String id) {
-        return deleteANotification(id, DeleteNotificationsIdRequest.builder().build());
+    /**
+     * Permanently delete a notification.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteNotificationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteNotificationsIdResponse> deleteANotification(
-            String id, RequestOptions requestOptions) {
-        return deleteANotification(id, DeleteNotificationsIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a notification.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteNotificationsIdResponse> deleteANotification(
-            String id, DeleteNotificationsIdRequest request) {
-        return deleteANotification(id, request, null);
+    /**
+     * Permanently delete a notification.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteNotificationsRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteNotificationsIdResponse> deleteANotification(
-            String id, DeleteNotificationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a notification.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -287,8 +326,7 @@ public class RawNotificationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteNotificationsIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -319,22 +357,32 @@ public class RawNotificationsClient {
         }
     }
 
-    public ForumClientHttpResponse<PatchNotificationsIdResponse> updateANotification(String id) {
-        return updateANotification(id, PatchNotificationsIdRequest.builder().build());
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateNotificationsResponse> update(String id) {
+        return update(id, UpdateNotificationsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<PatchNotificationsIdResponse> updateANotification(
-            String id, RequestOptions requestOptions) {
-        return updateANotification(id, PatchNotificationsIdRequest.builder().build(), requestOptions);
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateNotificationsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateNotificationsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<PatchNotificationsIdResponse> updateANotification(
-            String id, PatchNotificationsIdRequest request) {
-        return updateANotification(id, request, null);
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateNotificationsResponse> update(String id, UpdateNotificationsRequest request) {
+        return update(id, request, null);
     }
 
-    public ForumClientHttpResponse<PatchNotificationsIdResponse> updateANotification(
-            String id, PatchNotificationsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing notification. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateNotificationsResponse> update(
+            String id, UpdateNotificationsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("notifications")
@@ -363,7 +411,7 @@ public class RawNotificationsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchNotificationsIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateNotificationsResponse.class),
                         response);
             }
             try {

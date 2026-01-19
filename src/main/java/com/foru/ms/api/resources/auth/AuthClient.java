@@ -5,15 +5,15 @@ package com.foru.ms.api.resources.auth;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.auth.requests.PostAuthForgotPasswordRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthLoginRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthRegisterRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthResetPasswordRequest;
-import com.foru.ms.api.resources.auth.types.GetAuthMeResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthForgotPasswordResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthLoginResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthRegisterResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthResetPasswordResponse;
+import com.foru.ms.api.resources.auth.requests.ForgotPasswordAuthRequest;
+import com.foru.ms.api.resources.auth.requests.LoginAuthRequest;
+import com.foru.ms.api.resources.auth.requests.RegisterAuthRequest;
+import com.foru.ms.api.resources.auth.requests.ResetPasswordAuthRequest;
+import com.foru.ms.api.types.ForgotPasswordResponse;
+import com.foru.ms.api.types.LoginResponse;
+import com.foru.ms.api.types.MeResponse;
+import com.foru.ms.api.types.RegisterResponse;
+import com.foru.ms.api.types.ResetPasswordResponse;
 
 public class AuthClient {
     protected final ClientOptions clientOptions;
@@ -32,45 +32,67 @@ public class AuthClient {
         return this.rawClient;
     }
 
-    public PostAuthRegisterResponse register(PostAuthRegisterRequest request) {
+    /**
+     * Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public RegisterResponse register(RegisterAuthRequest request) {
         return this.rawClient.register(request).body();
     }
 
-    public PostAuthRegisterResponse register(PostAuthRegisterRequest request, RequestOptions requestOptions) {
+    /**
+     * Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public RegisterResponse register(RegisterAuthRequest request, RequestOptions requestOptions) {
         return this.rawClient.register(request, requestOptions).body();
     }
 
-    public PostAuthLoginResponse login(PostAuthLoginRequest request) {
+    /**
+     * Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public LoginResponse login(LoginAuthRequest request) {
         return this.rawClient.login(request).body();
     }
 
-    public PostAuthLoginResponse login(PostAuthLoginRequest request, RequestOptions requestOptions) {
+    /**
+     * Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public LoginResponse login(LoginAuthRequest request, RequestOptions requestOptions) {
         return this.rawClient.login(request, requestOptions).body();
     }
 
-    public GetAuthMeResponse getCurrentUser() {
-        return this.rawClient.getCurrentUser().body();
+    public MeResponse me() {
+        return this.rawClient.me().body();
     }
 
-    public GetAuthMeResponse getCurrentUser(RequestOptions requestOptions) {
-        return this.rawClient.getCurrentUser(requestOptions).body();
+    public MeResponse me(RequestOptions requestOptions) {
+        return this.rawClient.me(requestOptions).body();
     }
 
-    public PostAuthForgotPasswordResponse requestPasswordReset(PostAuthForgotPasswordRequest request) {
-        return this.rawClient.requestPasswordReset(request).body();
+    /**
+     * Request a password reset email. Requires API key for instance identification.
+     */
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordAuthRequest request) {
+        return this.rawClient.forgotPassword(request).body();
     }
 
-    public PostAuthForgotPasswordResponse requestPasswordReset(
-            PostAuthForgotPasswordRequest request, RequestOptions requestOptions) {
-        return this.rawClient.requestPasswordReset(request, requestOptions).body();
+    /**
+     * Request a password reset email. Requires API key for instance identification.
+     */
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordAuthRequest request, RequestOptions requestOptions) {
+        return this.rawClient.forgotPassword(request, requestOptions).body();
     }
 
-    public PostAuthResetPasswordResponse resetPassword(PostAuthResetPasswordRequest request) {
+    /**
+     * Reset password using a reset token. Requires API key for instance identification.
+     */
+    public ResetPasswordResponse resetPassword(ResetPasswordAuthRequest request) {
         return this.rawClient.resetPassword(request).body();
     }
 
-    public PostAuthResetPasswordResponse resetPassword(
-            PostAuthResetPasswordRequest request, RequestOptions requestOptions) {
+    /**
+     * Reset password using a reset token. Requires API key for instance identification.
+     */
+    public ResetPasswordResponse resetPassword(ResetPasswordAuthRequest request, RequestOptions requestOptions) {
         return this.rawClient.resetPassword(request, requestOptions).body();
     }
 }

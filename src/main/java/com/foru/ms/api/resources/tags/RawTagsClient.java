@@ -18,23 +18,21 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.tags.requests.DeleteTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.DeleteTagsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdSubscribersRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsRequest;
-import com.foru.ms.api.resources.tags.requests.PatchTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.PostTagsRequest;
-import com.foru.ms.api.resources.tags.types.DeleteTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.DeleteTagsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdSubscribersResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsResponse;
-import com.foru.ms.api.resources.tags.types.PatchTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.PostTagsResponse;
+import com.foru.ms.api.resources.tags.requests.CreateTagsRequest;
+import com.foru.ms.api.resources.tags.requests.DeleteSubscriberTagsRequest;
+import com.foru.ms.api.resources.tags.requests.DeleteTagsRequest;
+import com.foru.ms.api.resources.tags.requests.ListSubscribersTagsRequest;
+import com.foru.ms.api.resources.tags.requests.ListTagsRequest;
+import com.foru.ms.api.resources.tags.requests.RetrieveSubscriberTagsRequest;
+import com.foru.ms.api.resources.tags.requests.RetrieveTagsRequest;
+import com.foru.ms.api.resources.tags.requests.UpdateTagsRequest;
+import com.foru.ms.api.resources.tags.types.RetrieveSubscriberTagsResponse;
+import com.foru.ms.api.resources.tags.types.UpdateTagsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.TagListResponse;
+import com.foru.ms.api.types.TagResponse;
+import com.foru.ms.api.types.TagSubscriberListResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -51,29 +49,41 @@ public class RawTagsClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetTagsResponse> listAllTags() {
-        return listAllTags(GetTagsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<TagListResponse> list() {
+        return list(ListTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetTagsResponse> listAllTags(RequestOptions requestOptions) {
-        return listAllTags(GetTagsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<TagListResponse> list(RequestOptions requestOptions) {
+        return list(ListTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetTagsResponse> listAllTags(GetTagsRequest request) {
-        return listAllTags(request, null);
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<TagListResponse> list(ListTagsRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetTagsResponse> listAllTags(GetTagsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<TagListResponse> list(ListTagsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -94,7 +104,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetTagsResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -122,12 +132,17 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostTagsResponse> createATag(PostTagsRequest request) {
-        return createATag(request, null);
+    /**
+     * Create a new tag.
+     */
+    public ForumClientHttpResponse<TagResponse> create(CreateTagsRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostTagsResponse> createATag(
-            PostTagsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new tag.
+     */
+    public ForumClientHttpResponse<TagResponse> create(CreateTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -155,7 +170,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostTagsResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -186,20 +201,32 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetTagsIdResponse> getATag(String id) {
-        return getATag(id, GetTagsIdRequest.builder().build());
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<TagResponse> retrieve(String id) {
+        return retrieve(id, RetrieveTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetTagsIdResponse> getATag(String id, RequestOptions requestOptions) {
-        return getATag(id, GetTagsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<TagResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetTagsIdResponse> getATag(String id, GetTagsIdRequest request) {
-        return getATag(id, request, null);
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<TagResponse> retrieve(String id, RetrieveTagsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetTagsIdResponse> getATag(
-            String id, GetTagsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<TagResponse> retrieve(
+            String id, RetrieveTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -220,7 +247,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetTagsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -251,20 +278,32 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdResponse> deleteATag(String id) {
-        return deleteATag(id, DeleteTagsIdRequest.builder().build());
+    /**
+     * Permanently delete a tag.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdResponse> deleteATag(String id, RequestOptions requestOptions) {
-        return deleteATag(id, DeleteTagsIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a tag.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdResponse> deleteATag(String id, DeleteTagsIdRequest request) {
-        return deleteATag(id, request, null);
+    /**
+     * Permanently delete a tag.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteTagsRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdResponse> deleteATag(
-            String id, DeleteTagsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a tag.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -285,7 +324,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteTagsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -316,20 +355,32 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<PatchTagsIdResponse> updateATag(String id) {
-        return updateATag(id, PatchTagsIdRequest.builder().build());
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateTagsResponse> update(String id) {
+        return update(id, UpdateTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<PatchTagsIdResponse> updateATag(String id, RequestOptions requestOptions) {
-        return updateATag(id, PatchTagsIdRequest.builder().build(), requestOptions);
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateTagsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<PatchTagsIdResponse> updateATag(String id, PatchTagsIdRequest request) {
-        return updateATag(id, request, null);
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateTagsResponse> update(String id, UpdateTagsRequest request) {
+        return update(id, request, null);
     }
 
-    public ForumClientHttpResponse<PatchTagsIdResponse> updateATag(
-            String id, PatchTagsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateTagsResponse> update(
+            String id, UpdateTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -358,7 +409,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchTagsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateTagsResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -392,34 +443,46 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersResponse> listTagSubscribers(String id) {
-        return listTagSubscribers(id, GetTagsIdSubscribersRequest.builder().build());
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public ForumClientHttpResponse<TagSubscriberListResponse> listSubscribers(String id) {
+        return listSubscribers(id, ListSubscribersTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersResponse> listTagSubscribers(
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public ForumClientHttpResponse<TagSubscriberListResponse> listSubscribers(
             String id, RequestOptions requestOptions) {
-        return listTagSubscribers(id, GetTagsIdSubscribersRequest.builder().build(), requestOptions);
+        return listSubscribers(id, ListSubscribersTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersResponse> listTagSubscribers(
-            String id, GetTagsIdSubscribersRequest request) {
-        return listTagSubscribers(id, request, null);
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public ForumClientHttpResponse<TagSubscriberListResponse> listSubscribers(
+            String id, ListSubscribersTagsRequest request) {
+        return listSubscribers(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersResponse> listTagSubscribers(
-            String id, GetTagsIdSubscribersRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public ForumClientHttpResponse<TagSubscriberListResponse> listSubscribers(
+            String id, ListSubscribersTagsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
                 .addPathSegment(id)
                 .addPathSegments("subscribers");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -436,7 +499,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetTagsIdSubscribersResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagSubscriberListResponse.class),
                         response);
             }
             try {
@@ -465,24 +528,24 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse> getASubscriberFromTag(String id, String subId) {
-        return getASubscriberFromTag(
-                id, subId, GetTagsIdSubscribersSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrieveSubscriberTagsResponse> retrieveSubscriber(String id, String subId) {
+        return retrieveSubscriber(
+                id, subId, RetrieveSubscriberTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse> getASubscriberFromTag(
+    public ForumClientHttpResponse<RetrieveSubscriberTagsResponse> retrieveSubscriber(
             String id, String subId, RequestOptions requestOptions) {
-        return getASubscriberFromTag(
-                id, subId, GetTagsIdSubscribersSubIdRequest.builder().build(), requestOptions);
+        return retrieveSubscriber(
+                id, subId, RetrieveSubscriberTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse> getASubscriberFromTag(
-            String id, String subId, GetTagsIdSubscribersSubIdRequest request) {
-        return getASubscriberFromTag(id, subId, request, null);
+    public ForumClientHttpResponse<RetrieveSubscriberTagsResponse> retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberTagsRequest request) {
+        return retrieveSubscriber(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse> getASubscriberFromTag(
-            String id, String subId, GetTagsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrieveSubscriberTagsResponse> retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -505,8 +568,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, GetTagsIdSubscribersSubIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RetrieveSubscriberTagsResponse.class),
                         response);
             }
             try {
@@ -535,25 +597,22 @@ public class RawTagsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse> deleteASubscriberFromTag(
-            String id, String subId) {
-        return deleteASubscriberFromTag(
-                id, subId, DeleteTagsIdSubscribersSubIdRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deleteSubscriber(String id, String subId) {
+        return deleteSubscriber(id, subId, DeleteSubscriberTagsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse> deleteASubscriberFromTag(
+    public ForumClientHttpResponse<SuccessResponse> deleteSubscriber(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteASubscriberFromTag(
-                id, subId, DeleteTagsIdSubscribersSubIdRequest.builder().build(), requestOptions);
+        return deleteSubscriber(id, subId, DeleteSubscriberTagsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse> deleteASubscriberFromTag(
-            String id, String subId, DeleteTagsIdSubscribersSubIdRequest request) {
-        return deleteASubscriberFromTag(id, subId, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deleteSubscriber(
+            String id, String subId, DeleteSubscriberTagsRequest request) {
+        return deleteSubscriber(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse> deleteASubscriberFromTag(
-            String id, String subId, DeleteTagsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deleteSubscriber(
+            String id, String subId, DeleteSubscriberTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -576,9 +635,7 @@ public class RawTagsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, DeleteTagsIdSubscribersSubIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {

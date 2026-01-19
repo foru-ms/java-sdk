@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.ssos;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.ssos.requests.DeleteSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoRequest;
-import com.foru.ms.api.resources.ssos.requests.PatchSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.PostSsoRequest;
-import com.foru.ms.api.resources.ssos.types.DeleteSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoResponse;
-import com.foru.ms.api.resources.ssos.types.PatchSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.PostSsoResponse;
+import com.foru.ms.api.resources.ssos.requests.CreateSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.DeleteSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.ListSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.RetrieveSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.UpdateSsOsRequest;
+import com.foru.ms.api.resources.ssos.types.UpdateSsOsResponse;
+import com.foru.ms.api.types.SsoListResponse;
+import com.foru.ms.api.types.SsoResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncSsOsClient {
@@ -34,78 +33,150 @@ public class AsyncSsOsClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetSsoResponse> listAllSsOs() {
-        return this.rawClient.listAllSsOs().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoResponse> listAllSsOs(RequestOptions requestOptions) {
-        return this.rawClient.listAllSsOs(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoResponse> listAllSsOs(GetSsoRequest request) {
-        return this.rawClient.listAllSsOs(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoListResponse> list(ListSsOsRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoResponse> listAllSsOs(GetSsoRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllSsOs(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoListResponse> list(ListSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostSsoResponse> createAnSso(PostSsoRequest request) {
-        return this.rawClient.createAnSso(request).thenApply(response -> response.body());
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoResponse> create(CreateSsOsRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostSsoResponse> createAnSso(PostSsoRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAnSso(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoResponse> create(CreateSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoIdResponse> getAnSso(String id) {
-        return this.rawClient.getAnSso(id).thenApply(response -> response.body());
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoIdResponse> getAnSso(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAnSso(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoIdResponse> getAnSso(String id, GetSsoIdRequest request) {
-        return this.rawClient.getAnSso(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoResponse> retrieve(String id, RetrieveSsOsRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetSsoIdResponse> getAnSso(
-            String id, GetSsoIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAnSso(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SsoResponse> retrieve(
+            String id, RetrieveSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteSsoIdResponse> deleteAnSso(String id) {
-        return this.rawClient.deleteAnSso(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteSsoIdResponse> deleteAnSso(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnSso(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteSsoIdResponse> deleteAnSso(String id, DeleteSsoIdRequest request) {
-        return this.rawClient.deleteAnSso(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteSsOsRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteSsoIdResponse> deleteAnSso(
-            String id, DeleteSsoIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnSso(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchSsoIdResponse> updateAnSso(String id) {
-        return this.rawClient.updateAnSso(id).thenApply(response -> response.body());
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<UpdateSsOsResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchSsoIdResponse> updateAnSso(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAnSso(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<UpdateSsOsResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchSsoIdResponse> updateAnSso(String id, PatchSsoIdRequest request) {
-        return this.rawClient.updateAnSso(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<UpdateSsOsResponse> update(String id, UpdateSsOsRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchSsoIdResponse> updateAnSso(
-            String id, PatchSsoIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAnSso(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<UpdateSsOsResponse> update(
+            String id, UpdateSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 }

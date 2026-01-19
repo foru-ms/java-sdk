@@ -16,109 +16,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TagResponse.Builder.class)
 public final class TagResponse {
-    private final String name;
-
-    private final Optional<String> slug;
-
-    private final Optional<String> description;
-
-    private final Optional<String> color;
-
-    private final Optional<Map<String, Object>> extendedData;
-
-    private final String id;
-
-    private final String createdAt;
-
-    private final String updatedAt;
+    private final Optional<TagResponseData> data;
 
     private final Map<String, Object> additionalProperties;
 
-    private TagResponse(
-            String name,
-            Optional<String> slug,
-            Optional<String> description,
-            Optional<String> color,
-            Optional<Map<String, Object>> extendedData,
-            String id,
-            String createdAt,
-            String updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.slug = slug;
-        this.description = description;
-        this.color = color;
-        this.extendedData = extendedData;
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    private TagResponse(Optional<TagResponseData> data, Map<String, Object> additionalProperties) {
+        this.data = data;
         this.additionalProperties = additionalProperties;
     }
 
-    /**
-     * @return Tag name
-     */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return Tag slug (unique identifier)
-     */
-    @JsonProperty("slug")
-    public Optional<String> getSlug() {
-        return slug;
-    }
-
-    /**
-     * @return Tag description
-     */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
-    }
-
-    /**
-     * @return Hex color code
-     */
-    @JsonProperty("color")
-    public Optional<String> getColor() {
-        return color;
-    }
-
-    /**
-     * @return Extended data
-     */
-    @JsonProperty("extendedData")
-    public Optional<Map<String, Object>> getExtendedData() {
-        return extendedData;
-    }
-
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @return Tag creation timestamp
-     */
-    @JsonProperty("createdAt")
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * @return Tag last update timestamp
-     */
-    @JsonProperty("updatedAt")
-    public String getUpdatedAt() {
-        return updatedAt;
+    @JsonProperty("data")
+    public Optional<TagResponseData> getData() {
+        return data;
     }
 
     @java.lang.Override
@@ -133,27 +46,12 @@ public final class TagResponse {
     }
 
     private boolean equalTo(TagResponse other) {
-        return name.equals(other.name)
-                && slug.equals(other.slug)
-                && description.equals(other.description)
-                && color.equals(other.color)
-                && extendedData.equals(other.extendedData)
-                && id.equals(other.id)
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+        return data.equals(other.data);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.name,
-                this.slug,
-                this.description,
-                this.color,
-                this.extendedData,
-                this.id,
-                this.createdAt,
-                this.updatedAt);
+        return Objects.hash(this.data);
     }
 
     @java.lang.Override
@@ -161,232 +59,37 @@ public final class TagResponse {
         return ObjectMappers.stringify(this);
     }
 
-    public static NameStage builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public interface NameStage {
-        /**
-         * <p>Tag name</p>
-         */
-        IdStage name(@NotNull String name);
-
-        Builder from(TagResponse other);
-    }
-
-    public interface IdStage {
-        CreatedAtStage id(@NotNull String id);
-    }
-
-    public interface CreatedAtStage {
-        /**
-         * <p>Tag creation timestamp</p>
-         */
-        UpdatedAtStage createdAt(@NotNull String createdAt);
-    }
-
-    public interface UpdatedAtStage {
-        /**
-         * <p>Tag last update timestamp</p>
-         */
-        _FinalStage updatedAt(@NotNull String updatedAt);
-    }
-
-    public interface _FinalStage {
-        TagResponse build();
-
-        /**
-         * <p>Tag slug (unique identifier)</p>
-         */
-        _FinalStage slug(Optional<String> slug);
-
-        _FinalStage slug(String slug);
-
-        /**
-         * <p>Tag description</p>
-         */
-        _FinalStage description(Optional<String> description);
-
-        _FinalStage description(String description);
-
-        /**
-         * <p>Hex color code</p>
-         */
-        _FinalStage color(Optional<String> color);
-
-        _FinalStage color(String color);
-
-        /**
-         * <p>Extended data</p>
-         */
-        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
-
-        _FinalStage extendedData(Map<String, Object> extendedData);
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, IdStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
-        private String name;
-
-        private String id;
-
-        private String createdAt;
-
-        private String updatedAt;
-
-        private Optional<Map<String, Object>> extendedData = Optional.empty();
-
-        private Optional<String> color = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<String> slug = Optional.empty();
+    public static final class Builder {
+        private Optional<TagResponseData> data = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
-        @java.lang.Override
         public Builder from(TagResponse other) {
-            name(other.getName());
-            slug(other.getSlug());
-            description(other.getDescription());
-            color(other.getColor());
-            extendedData(other.getExtendedData());
-            id(other.getId());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
+            data(other.getData());
             return this;
         }
 
-        /**
-         * <p>Tag name</p>
-         * <p>Tag name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public IdStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
+        @JsonSetter(value = "data", nulls = Nulls.SKIP)
+        public Builder data(Optional<TagResponseData> data) {
+            this.data = data;
             return this;
         }
 
-        @java.lang.Override
-        @JsonSetter("id")
-        public CreatedAtStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
+        public Builder data(TagResponseData data) {
+            this.data = Optional.ofNullable(data);
             return this;
         }
 
-        /**
-         * <p>Tag creation timestamp</p>
-         * <p>Tag creation timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("createdAt")
-        public UpdatedAtStage createdAt(@NotNull String createdAt) {
-            this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Tag last update timestamp</p>
-         * <p>Tag last update timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("updatedAt")
-        public _FinalStage updatedAt(@NotNull String updatedAt) {
-            this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Extended data</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage extendedData(Map<String, Object> extendedData) {
-            this.extendedData = Optional.ofNullable(extendedData);
-            return this;
-        }
-
-        /**
-         * <p>Extended data</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
-        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
-            this.extendedData = extendedData;
-            return this;
-        }
-
-        /**
-         * <p>Hex color code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage color(String color) {
-            this.color = Optional.ofNullable(color);
-            return this;
-        }
-
-        /**
-         * <p>Hex color code</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "color", nulls = Nulls.SKIP)
-        public _FinalStage color(Optional<String> color) {
-            this.color = color;
-            return this;
-        }
-
-        /**
-         * <p>Tag description</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Tag description</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public _FinalStage description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        /**
-         * <p>Tag slug (unique identifier)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage slug(String slug) {
-            this.slug = Optional.ofNullable(slug);
-            return this;
-        }
-
-        /**
-         * <p>Tag slug (unique identifier)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "slug", nulls = Nulls.SKIP)
-        public _FinalStage slug(Optional<String> slug) {
-            this.slug = slug;
-            return this;
-        }
-
-        @java.lang.Override
         public TagResponse build() {
-            return new TagResponse(
-                    name, slug, description, color, extendedData, id, createdAt, updatedAt, additionalProperties);
+            return new TagResponse(data, additionalProperties);
         }
     }
 }

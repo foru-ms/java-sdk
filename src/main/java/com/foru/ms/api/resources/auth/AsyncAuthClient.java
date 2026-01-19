@@ -5,15 +5,15 @@ package com.foru.ms.api.resources.auth;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.auth.requests.PostAuthForgotPasswordRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthLoginRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthRegisterRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthResetPasswordRequest;
-import com.foru.ms.api.resources.auth.types.GetAuthMeResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthForgotPasswordResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthLoginResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthRegisterResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthResetPasswordResponse;
+import com.foru.ms.api.resources.auth.requests.ForgotPasswordAuthRequest;
+import com.foru.ms.api.resources.auth.requests.LoginAuthRequest;
+import com.foru.ms.api.resources.auth.requests.RegisterAuthRequest;
+import com.foru.ms.api.resources.auth.requests.ResetPasswordAuthRequest;
+import com.foru.ms.api.types.ForgotPasswordResponse;
+import com.foru.ms.api.types.LoginResponse;
+import com.foru.ms.api.types.MeResponse;
+import com.foru.ms.api.types.RegisterResponse;
+import com.foru.ms.api.types.ResetPasswordResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncAuthClient {
@@ -33,47 +33,69 @@ public class AsyncAuthClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<PostAuthRegisterResponse> register(PostAuthRegisterRequest request) {
+    /**
+     * Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<RegisterResponse> register(RegisterAuthRequest request) {
         return this.rawClient.register(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthRegisterResponse> register(
-            PostAuthRegisterRequest request, RequestOptions requestOptions) {
+    /**
+     * Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<RegisterResponse> register(RegisterAuthRequest request, RequestOptions requestOptions) {
         return this.rawClient.register(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthLoginResponse> login(PostAuthLoginRequest request) {
+    /**
+     * Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<LoginResponse> login(LoginAuthRequest request) {
         return this.rawClient.login(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthLoginResponse> login(PostAuthLoginRequest request, RequestOptions requestOptions) {
+    /**
+     * Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<LoginResponse> login(LoginAuthRequest request, RequestOptions requestOptions) {
         return this.rawClient.login(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetAuthMeResponse> getCurrentUser() {
-        return this.rawClient.getCurrentUser().thenApply(response -> response.body());
+    public CompletableFuture<MeResponse> me() {
+        return this.rawClient.me().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetAuthMeResponse> getCurrentUser(RequestOptions requestOptions) {
-        return this.rawClient.getCurrentUser(requestOptions).thenApply(response -> response.body());
+    public CompletableFuture<MeResponse> me(RequestOptions requestOptions) {
+        return this.rawClient.me(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthForgotPasswordResponse> requestPasswordReset(
-            PostAuthForgotPasswordRequest request) {
-        return this.rawClient.requestPasswordReset(request).thenApply(response -> response.body());
+    /**
+     * Request a password reset email. Requires API key for instance identification.
+     */
+    public CompletableFuture<ForgotPasswordResponse> forgotPassword(ForgotPasswordAuthRequest request) {
+        return this.rawClient.forgotPassword(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthForgotPasswordResponse> requestPasswordReset(
-            PostAuthForgotPasswordRequest request, RequestOptions requestOptions) {
-        return this.rawClient.requestPasswordReset(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Request a password reset email. Requires API key for instance identification.
+     */
+    public CompletableFuture<ForgotPasswordResponse> forgotPassword(
+            ForgotPasswordAuthRequest request, RequestOptions requestOptions) {
+        return this.rawClient.forgotPassword(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthResetPasswordResponse> resetPassword(PostAuthResetPasswordRequest request) {
+    /**
+     * Reset password using a reset token. Requires API key for instance identification.
+     */
+    public CompletableFuture<ResetPasswordResponse> resetPassword(ResetPasswordAuthRequest request) {
         return this.rawClient.resetPassword(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostAuthResetPasswordResponse> resetPassword(
-            PostAuthResetPasswordRequest request, RequestOptions requestOptions) {
+    /**
+     * Reset password using a reset token. Requires API key for instance identification.
+     */
+    public CompletableFuture<ResetPasswordResponse> resetPassword(
+            ResetPasswordAuthRequest request, RequestOptions requestOptions) {
         return this.rawClient.resetPassword(request, requestOptions).thenApply(response -> response.body());
     }
 }

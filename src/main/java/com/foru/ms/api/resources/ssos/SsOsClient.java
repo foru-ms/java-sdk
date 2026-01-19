@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.ssos;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.ssos.requests.DeleteSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoRequest;
-import com.foru.ms.api.resources.ssos.requests.PatchSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.PostSsoRequest;
-import com.foru.ms.api.resources.ssos.types.DeleteSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoResponse;
-import com.foru.ms.api.resources.ssos.types.PatchSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.PostSsoResponse;
+import com.foru.ms.api.resources.ssos.requests.CreateSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.DeleteSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.ListSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.RetrieveSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.UpdateSsOsRequest;
+import com.foru.ms.api.resources.ssos.types.UpdateSsOsResponse;
+import com.foru.ms.api.types.SsoListResponse;
+import com.foru.ms.api.types.SsoResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class SsOsClient {
     protected final ClientOptions clientOptions;
@@ -33,75 +32,147 @@ public class SsOsClient {
         return this.rawClient;
     }
 
-    public GetSsoResponse listAllSsOs() {
-        return this.rawClient.listAllSsOs().body();
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetSsoResponse listAllSsOs(RequestOptions requestOptions) {
-        return this.rawClient.listAllSsOs(requestOptions).body();
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetSsoResponse listAllSsOs(GetSsoRequest request) {
-        return this.rawClient.listAllSsOs(request).body();
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoListResponse list(ListSsOsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetSsoResponse listAllSsOs(GetSsoRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllSsOs(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoListResponse list(ListSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostSsoResponse createAnSso(PostSsoRequest request) {
-        return this.rawClient.createAnSso(request).body();
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoResponse create(CreateSsOsRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostSsoResponse createAnSso(PostSsoRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAnSso(request, requestOptions).body();
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoResponse create(CreateSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetSsoIdResponse getAnSso(String id) {
-        return this.rawClient.getAnSso(id).body();
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetSsoIdResponse getAnSso(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAnSso(id, requestOptions).body();
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetSsoIdResponse getAnSso(String id, GetSsoIdRequest request) {
-        return this.rawClient.getAnSso(id, request).body();
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoResponse retrieve(String id, RetrieveSsOsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetSsoIdResponse getAnSso(String id, GetSsoIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAnSso(id, request, requestOptions).body();
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SsoResponse retrieve(String id, RetrieveSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteSsoIdResponse deleteAnSso(String id) {
-        return this.rawClient.deleteAnSso(id).body();
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteSsoIdResponse deleteAnSso(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnSso(id, requestOptions).body();
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteSsoIdResponse deleteAnSso(String id, DeleteSsoIdRequest request) {
-        return this.rawClient.deleteAnSso(id, request).body();
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SuccessResponse delete(String id, DeleteSsOsRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteSsoIdResponse deleteAnSso(String id, DeleteSsoIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnSso(id, request, requestOptions).body();
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public SuccessResponse delete(String id, DeleteSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchSsoIdResponse updateAnSso(String id) {
-        return this.rawClient.updateAnSso(id).body();
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public UpdateSsOsResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchSsoIdResponse updateAnSso(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAnSso(id, requestOptions).body();
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public UpdateSsOsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public PatchSsoIdResponse updateAnSso(String id, PatchSsoIdRequest request) {
-        return this.rawClient.updateAnSso(id, request).body();
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public UpdateSsOsResponse update(String id, UpdateSsOsRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public PatchSsoIdResponse updateAnSso(String id, PatchSsoIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAnSso(id, request, requestOptions).body();
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public UpdateSsOsResponse update(String id, UpdateSsOsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 }

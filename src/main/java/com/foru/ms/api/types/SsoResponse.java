@@ -9,90 +9,29 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.foru.ms.api.core.ObjectMappers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SsoResponse.Builder.class)
 public final class SsoResponse {
-    private final String id;
-
-    private final SsoResponseProvider provider;
-
-    private final String domain;
-
-    private final boolean active;
-
-    private final String createdAt;
-
-    private final String updatedAt;
+    private final Optional<SsoResponseData> data;
 
     private final Map<String, Object> additionalProperties;
 
-    private SsoResponse(
-            String id,
-            SsoResponseProvider provider,
-            String domain,
-            boolean active,
-            String createdAt,
-            String updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.provider = provider;
-        this.domain = domain;
-        this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    private SsoResponse(Optional<SsoResponseData> data, Map<String, Object> additionalProperties) {
+        this.data = data;
         this.additionalProperties = additionalProperties;
     }
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @return SSO provider type
-     */
-    @JsonProperty("provider")
-    public SsoResponseProvider getProvider() {
-        return provider;
-    }
-
-    /**
-     * @return Email domain for this provider
-     */
-    @JsonProperty("domain")
-    public String getDomain() {
-        return domain;
-    }
-
-    /**
-     * @return Whether SSO is active
-     */
-    @JsonProperty("active")
-    public boolean getActive() {
-        return active;
-    }
-
-    /**
-     * @return SSO configuration creation timestamp
-     */
-    @JsonProperty("createdAt")
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * @return SSO configuration last update timestamp
-     */
-    @JsonProperty("updatedAt")
-    public String getUpdatedAt() {
-        return updatedAt;
+    @JsonProperty("data")
+    public Optional<SsoResponseData> getData() {
+        return data;
     }
 
     @java.lang.Override
@@ -107,17 +46,12 @@ public final class SsoResponse {
     }
 
     private boolean equalTo(SsoResponse other) {
-        return id.equals(other.id)
-                && provider.equals(other.provider)
-                && domain.equals(other.domain)
-                && active == other.active
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+        return data.equals(other.data);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.id, this.provider, this.domain, this.active, this.createdAt, this.updatedAt);
+        return Objects.hash(this.data);
     }
 
     @java.lang.Override
@@ -125,156 +59,37 @@ public final class SsoResponse {
         return ObjectMappers.stringify(this);
     }
 
-    public static IdStage builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public interface IdStage {
-        ProviderStage id(@NotNull String id);
-
-        Builder from(SsoResponse other);
-    }
-
-    public interface ProviderStage {
-        /**
-         * <p>SSO provider type</p>
-         */
-        DomainStage provider(@NotNull SsoResponseProvider provider);
-    }
-
-    public interface DomainStage {
-        /**
-         * <p>Email domain for this provider</p>
-         */
-        ActiveStage domain(@NotNull String domain);
-    }
-
-    public interface ActiveStage {
-        /**
-         * <p>Whether SSO is active</p>
-         */
-        CreatedAtStage active(boolean active);
-    }
-
-    public interface CreatedAtStage {
-        /**
-         * <p>SSO configuration creation timestamp</p>
-         */
-        UpdatedAtStage createdAt(@NotNull String createdAt);
-    }
-
-    public interface UpdatedAtStage {
-        /**
-         * <p>SSO configuration last update timestamp</p>
-         */
-        _FinalStage updatedAt(@NotNull String updatedAt);
-    }
-
-    public interface _FinalStage {
-        SsoResponse build();
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements IdStage, ProviderStage, DomainStage, ActiveStage, CreatedAtStage, UpdatedAtStage, _FinalStage {
-        private String id;
-
-        private SsoResponseProvider provider;
-
-        private String domain;
-
-        private boolean active;
-
-        private String createdAt;
-
-        private String updatedAt;
+    public static final class Builder {
+        private Optional<SsoResponseData> data = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
-        @java.lang.Override
         public Builder from(SsoResponse other) {
-            id(other.getId());
-            provider(other.getProvider());
-            domain(other.getDomain());
-            active(other.getActive());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
+            data(other.getData());
             return this;
         }
 
-        @java.lang.Override
-        @JsonSetter("id")
-        public ProviderStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
+        @JsonSetter(value = "data", nulls = Nulls.SKIP)
+        public Builder data(Optional<SsoResponseData> data) {
+            this.data = data;
             return this;
         }
 
-        /**
-         * <p>SSO provider type</p>
-         * <p>SSO provider type</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("provider")
-        public DomainStage provider(@NotNull SsoResponseProvider provider) {
-            this.provider = Objects.requireNonNull(provider, "provider must not be null");
+        public Builder data(SsoResponseData data) {
+            this.data = Optional.ofNullable(data);
             return this;
         }
 
-        /**
-         * <p>Email domain for this provider</p>
-         * <p>Email domain for this provider</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("domain")
-        public ActiveStage domain(@NotNull String domain) {
-            this.domain = Objects.requireNonNull(domain, "domain must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Whether SSO is active</p>
-         * <p>Whether SSO is active</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("active")
-        public CreatedAtStage active(boolean active) {
-            this.active = active;
-            return this;
-        }
-
-        /**
-         * <p>SSO configuration creation timestamp</p>
-         * <p>SSO configuration creation timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("createdAt")
-        public UpdatedAtStage createdAt(@NotNull String createdAt) {
-            this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>SSO configuration last update timestamp</p>
-         * <p>SSO configuration last update timestamp</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("updatedAt")
-        public _FinalStage updatedAt(@NotNull String updatedAt) {
-            this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
-            return this;
-        }
-
-        @java.lang.Override
         public SsoResponse build() {
-            return new SsoResponse(id, provider, domain, active, createdAt, updatedAt, additionalProperties);
+            return new SsoResponse(data, additionalProperties);
         }
     }
 }

@@ -18,17 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.ssos.requests.DeleteSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.GetSsoRequest;
-import com.foru.ms.api.resources.ssos.requests.PatchSsoIdRequest;
-import com.foru.ms.api.resources.ssos.requests.PostSsoRequest;
-import com.foru.ms.api.resources.ssos.types.DeleteSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.GetSsoResponse;
-import com.foru.ms.api.resources.ssos.types.PatchSsoIdResponse;
-import com.foru.ms.api.resources.ssos.types.PostSsoResponse;
+import com.foru.ms.api.resources.ssos.requests.CreateSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.DeleteSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.ListSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.RetrieveSsOsRequest;
+import com.foru.ms.api.resources.ssos.requests.UpdateSsOsRequest;
+import com.foru.ms.api.resources.ssos.types.UpdateSsOsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SsoListResponse;
+import com.foru.ms.api.types.SsoResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -49,34 +48,46 @@ public class AsyncRawSsOsClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoResponse>> listAllSsOs() {
-        return listAllSsOs(GetSsoRequest.builder().build());
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoListResponse>> list() {
+        return list(ListSsOsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoResponse>> listAllSsOs(RequestOptions requestOptions) {
-        return listAllSsOs(GetSsoRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoListResponse>> list(RequestOptions requestOptions) {
+        return list(ListSsOsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoResponse>> listAllSsOs(GetSsoRequest request) {
-        return listAllSsOs(request, null);
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoListResponse>> list(ListSsOsRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoResponse>> listAllSsOs(
-            GetSsoRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of ssos. Use cursor for pagination.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoListResponse>> list(
+            ListSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -88,7 +99,7 @@ public class AsyncRawSsOsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetSsoResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SsoListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -96,7 +107,7 @@ public class AsyncRawSsOsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetSsoResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SsoListResponse.class),
                                 response));
                         return;
                     }
@@ -143,12 +154,20 @@ public class AsyncRawSsOsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostSsoResponse>> createAnSso(PostSsoRequest request) {
-        return createAnSso(request, null);
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoResponse>> create(CreateSsOsRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostSsoResponse>> createAnSso(
-            PostSsoRequest request, RequestOptions requestOptions) {
+    /**
+     * Create an new sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoResponse>> create(
+            CreateSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -171,7 +190,7 @@ public class AsyncRawSsOsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostSsoResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SsoResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -179,8 +198,7 @@ public class AsyncRawSsOsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostSsoResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SsoResponse.class), response));
                         return;
                     }
                     try {
@@ -231,21 +249,36 @@ public class AsyncRawSsOsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoIdResponse>> getAnSso(String id) {
-        return getAnSso(id, GetSsoIdRequest.builder().build());
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveSsOsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoIdResponse>> getAnSso(
-            String id, RequestOptions requestOptions) {
-        return getAnSso(id, GetSsoIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoResponse>> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveSsOsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoIdResponse>> getAnSso(String id, GetSsoIdRequest request) {
-        return getAnSso(id, request, null);
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoResponse>> retrieve(String id, RetrieveSsOsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetSsoIdResponse>> getAnSso(
-            String id, GetSsoIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve an sso by ID or slug (if supported).
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SsoResponse>> retrieve(
+            String id, RetrieveSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -261,7 +294,7 @@ public class AsyncRawSsOsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetSsoIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SsoResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -269,8 +302,7 @@ public class AsyncRawSsOsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetSsoIdResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SsoResponse.class), response));
                         return;
                     }
                     try {
@@ -321,22 +353,37 @@ public class AsyncRawSsOsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteSsoIdResponse>> deleteAnSso(String id) {
-        return deleteAnSso(id, DeleteSsoIdRequest.builder().build());
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteSsOsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteSsoIdResponse>> deleteAnSso(
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteAnSso(id, DeleteSsoIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteSsOsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteSsoIdResponse>> deleteAnSso(
-            String id, DeleteSsoIdRequest request) {
-        return deleteAnSso(id, request, null);
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id, DeleteSsOsRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteSsoIdResponse>> deleteAnSso(
-            String id, DeleteSsoIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete an sso.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -352,7 +399,7 @@ public class AsyncRawSsOsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteSsoIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -360,7 +407,7 @@ public class AsyncRawSsOsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteSsoIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -412,22 +459,37 @@ public class AsyncRawSsOsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchSsoIdResponse>> updateAnSso(String id) {
-        return updateAnSso(id, PatchSsoIdRequest.builder().build());
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateSsOsResponse>> update(String id) {
+        return update(id, UpdateSsOsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchSsoIdResponse>> updateAnSso(
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateSsOsResponse>> update(
             String id, RequestOptions requestOptions) {
-        return updateAnSso(id, PatchSsoIdRequest.builder().build(), requestOptions);
+        return update(id, UpdateSsOsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchSsoIdResponse>> updateAnSso(
-            String id, PatchSsoIdRequest request) {
-        return updateAnSso(id, request, null);
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateSsOsResponse>> update(String id, UpdateSsOsRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchSsoIdResponse>> updateAnSso(
-            String id, PatchSsoIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing sso. Only provided fields will be modified.
+     * <p><strong>Requires feature: sso</strong></p>
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateSsOsResponse>> update(
+            String id, UpdateSsOsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("sso")
@@ -451,7 +513,7 @@ public class AsyncRawSsOsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PatchSsoIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UpdateSsOsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -459,7 +521,7 @@ public class AsyncRawSsOsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchSsoIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateSsOsResponse.class),
                                 response));
                         return;
                     }

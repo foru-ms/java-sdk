@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.integrations;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.integrations.requests.DeleteIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.GetIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.GetIntegrationsRequest;
-import com.foru.ms.api.resources.integrations.requests.PatchIntegrationsIdRequest;
-import com.foru.ms.api.resources.integrations.requests.PostIntegrationsRequest;
-import com.foru.ms.api.resources.integrations.types.DeleteIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.GetIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.GetIntegrationsResponse;
-import com.foru.ms.api.resources.integrations.types.PatchIntegrationsIdResponse;
-import com.foru.ms.api.resources.integrations.types.PostIntegrationsResponse;
+import com.foru.ms.api.resources.integrations.requests.CreateIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.DeleteIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.ListIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.RetrieveIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.requests.UpdateIntegrationsRequest;
+import com.foru.ms.api.resources.integrations.types.UpdateIntegrationsResponse;
+import com.foru.ms.api.types.IntegrationListResponse;
+import com.foru.ms.api.types.IntegrationResponse;
+import com.foru.ms.api.types.SuccessResponse;
 
 public class IntegrationsClient {
     protected final ClientOptions clientOptions;
@@ -33,79 +32,148 @@ public class IntegrationsClient {
         return this.rawClient;
     }
 
-    public GetIntegrationsResponse listAllIntegrations() {
-        return this.rawClient.listAllIntegrations().body();
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationListResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public GetIntegrationsResponse listAllIntegrations(RequestOptions requestOptions) {
-        return this.rawClient.listAllIntegrations(requestOptions).body();
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
-    public GetIntegrationsResponse listAllIntegrations(GetIntegrationsRequest request) {
-        return this.rawClient.listAllIntegrations(request).body();
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationListResponse list(ListIntegrationsRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public GetIntegrationsResponse listAllIntegrations(GetIntegrationsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllIntegrations(request, requestOptions).body();
+    /**
+     * Retrieve a paginated list of integrations. Use cursor for pagination.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationListResponse list(ListIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public PostIntegrationsResponse createAnIntegration(PostIntegrationsRequest request) {
-        return this.rawClient.createAnIntegration(request).body();
+    /**
+     * Create an new integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationResponse create(CreateIntegrationsRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public PostIntegrationsResponse createAnIntegration(
-            PostIntegrationsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAnIntegration(request, requestOptions).body();
+    /**
+     * Create an new integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationResponse create(CreateIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public GetIntegrationsIdResponse getAnIntegration(String id) {
-        return this.rawClient.getAnIntegration(id).body();
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationResponse retrieve(String id) {
+        return this.rawClient.retrieve(id).body();
     }
 
-    public GetIntegrationsIdResponse getAnIntegration(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAnIntegration(id, requestOptions).body();
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationResponse retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).body();
     }
 
-    public GetIntegrationsIdResponse getAnIntegration(String id, GetIntegrationsIdRequest request) {
-        return this.rawClient.getAnIntegration(id, request).body();
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationResponse retrieve(String id, RetrieveIntegrationsRequest request) {
+        return this.rawClient.retrieve(id, request).body();
     }
 
-    public GetIntegrationsIdResponse getAnIntegration(
-            String id, GetIntegrationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAnIntegration(id, request, requestOptions).body();
+    /**
+     * Retrieve an integration by ID or slug (if supported).
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public IntegrationResponse retrieve(String id, RetrieveIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).body();
     }
 
-    public DeleteIntegrationsIdResponse deleteAnIntegration(String id) {
-        return this.rawClient.deleteAnIntegration(id).body();
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public SuccessResponse delete(String id) {
+        return this.rawClient.delete(id).body();
     }
 
-    public DeleteIntegrationsIdResponse deleteAnIntegration(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnIntegration(id, requestOptions).body();
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public SuccessResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
     }
 
-    public DeleteIntegrationsIdResponse deleteAnIntegration(String id, DeleteIntegrationsIdRequest request) {
-        return this.rawClient.deleteAnIntegration(id, request).body();
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public SuccessResponse delete(String id, DeleteIntegrationsRequest request) {
+        return this.rawClient.delete(id, request).body();
     }
 
-    public DeleteIntegrationsIdResponse deleteAnIntegration(
-            String id, DeleteIntegrationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAnIntegration(id, request, requestOptions).body();
+    /**
+     * Permanently delete an integration.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public SuccessResponse delete(String id, DeleteIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).body();
     }
 
-    public PatchIntegrationsIdResponse updateAnIntegration(String id) {
-        return this.rawClient.updateAnIntegration(id).body();
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public UpdateIntegrationsResponse update(String id) {
+        return this.rawClient.update(id).body();
     }
 
-    public PatchIntegrationsIdResponse updateAnIntegration(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateAnIntegration(id, requestOptions).body();
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public UpdateIntegrationsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
     }
 
-    public PatchIntegrationsIdResponse updateAnIntegration(String id, PatchIntegrationsIdRequest request) {
-        return this.rawClient.updateAnIntegration(id, request).body();
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public UpdateIntegrationsResponse update(String id, UpdateIntegrationsRequest request) {
+        return this.rawClient.update(id, request).body();
     }
 
-    public PatchIntegrationsIdResponse updateAnIntegration(
-            String id, PatchIntegrationsIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateAnIntegration(id, request, requestOptions).body();
+    /**
+     * Update an existing integration. Only provided fields will be modified.
+     * <p><strong>Requires feature: integrations</strong></p>
+     */
+    public UpdateIntegrationsResponse update(
+            String id, UpdateIntegrationsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
     }
 }

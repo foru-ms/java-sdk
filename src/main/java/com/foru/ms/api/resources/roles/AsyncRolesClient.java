@@ -5,16 +5,15 @@ package com.foru.ms.api.resources.roles;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.roles.requests.DeleteRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.GetRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.GetRolesRequest;
-import com.foru.ms.api.resources.roles.requests.PatchRolesIdRequest;
-import com.foru.ms.api.resources.roles.requests.PostRolesRequest;
-import com.foru.ms.api.resources.roles.types.DeleteRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.GetRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.GetRolesResponse;
-import com.foru.ms.api.resources.roles.types.PatchRolesIdResponse;
-import com.foru.ms.api.resources.roles.types.PostRolesResponse;
+import com.foru.ms.api.resources.roles.requests.CreateRolesRequest;
+import com.foru.ms.api.resources.roles.requests.DeleteRolesRequest;
+import com.foru.ms.api.resources.roles.requests.ListRolesRequest;
+import com.foru.ms.api.resources.roles.requests.RetrieveRolesRequest;
+import com.foru.ms.api.resources.roles.requests.UpdateRolesRequest;
+import com.foru.ms.api.resources.roles.types.UpdateRolesResponse;
+import com.foru.ms.api.types.RoleListResponse;
+import com.foru.ms.api.types.RoleResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncRolesClient {
@@ -34,78 +33,132 @@ public class AsyncRolesClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetRolesResponse> listAllRoles() {
-        return this.rawClient.listAllRoles().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<RoleListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesResponse> listAllRoles(RequestOptions requestOptions) {
-        return this.rawClient.listAllRoles(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<RoleListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesResponse> listAllRoles(GetRolesRequest request) {
-        return this.rawClient.listAllRoles(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<RoleListResponse> list(ListRolesRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesResponse> listAllRoles(GetRolesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllRoles(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of roles. Use cursor for pagination.
+     */
+    public CompletableFuture<RoleListResponse> list(ListRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostRolesResponse> createARole(PostRolesRequest request) {
-        return this.rawClient.createARole(request).thenApply(response -> response.body());
+    /**
+     * Create a new role.
+     */
+    public CompletableFuture<RoleResponse> create(CreateRolesRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostRolesResponse> createARole(PostRolesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createARole(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create a new role.
+     */
+    public CompletableFuture<RoleResponse> create(CreateRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesIdResponse> getARole(String id) {
-        return this.rawClient.getARole(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<RoleResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesIdResponse> getARole(String id, RequestOptions requestOptions) {
-        return this.rawClient.getARole(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<RoleResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesIdResponse> getARole(String id, GetRolesIdRequest request) {
-        return this.rawClient.getARole(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<RoleResponse> retrieve(String id, RetrieveRolesRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetRolesIdResponse> getARole(
-            String id, GetRolesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getARole(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a role by ID or slug (if supported).
+     */
+    public CompletableFuture<RoleResponse> retrieve(
+            String id, RetrieveRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteRolesIdResponse> deleteARole(String id) {
-        return this.rawClient.deleteARole(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteRolesIdResponse> deleteARole(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteARole(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteRolesIdResponse> deleteARole(String id, DeleteRolesIdRequest request) {
-        return this.rawClient.deleteARole(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteRolesRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteRolesIdResponse> deleteARole(
-            String id, DeleteRolesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteARole(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a role.
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchRolesIdResponse> updateARole(String id) {
-        return this.rawClient.updateARole(id).thenApply(response -> response.body());
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateRolesResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchRolesIdResponse> updateARole(String id, RequestOptions requestOptions) {
-        return this.rawClient.updateARole(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateRolesResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchRolesIdResponse> updateARole(String id, PatchRolesIdRequest request) {
-        return this.rawClient.updateARole(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateRolesResponse> update(String id, UpdateRolesRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PatchRolesIdResponse> updateARole(
-            String id, PatchRolesIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateARole(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing role. Only provided fields will be modified.
+     */
+    public CompletableFuture<UpdateRolesResponse> update(
+            String id, UpdateRolesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 }

@@ -5,20 +5,20 @@ package com.foru.ms.api.resources.webhooks;
 
 import com.foru.ms.api.core.ClientOptions;
 import com.foru.ms.api.core.RequestOptions;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdDeliveriesSubIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksIdRequest;
-import com.foru.ms.api.resources.webhooks.requests.GetWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.requests.PostWebhooksRequest;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.DeleteWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdDeliveriesSubIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksIdResponse;
-import com.foru.ms.api.resources.webhooks.types.GetWebhooksResponse;
-import com.foru.ms.api.resources.webhooks.types.PostWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.requests.CreateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.DeleteWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListDeliveriesWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.ListWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveDeliveryWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.RetrieveWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.requests.UpdateWebhooksRequest;
+import com.foru.ms.api.resources.webhooks.types.RetrieveDeliveryWebhooksResponse;
+import com.foru.ms.api.resources.webhooks.types.UpdateWebhooksResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.WebhookDeliveryListResponse;
+import com.foru.ms.api.types.WebhookListResponse;
+import com.foru.ms.api.types.WebhookResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncWebhooksClient {
@@ -38,127 +38,223 @@ public class AsyncWebhooksClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<GetWebhooksResponse> listAllWebhooks() {
-        return this.rawClient.listAllWebhooks().thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksResponse> listAllWebhooks(RequestOptions requestOptions) {
-        return this.rawClient.listAllWebhooks(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksResponse> listAllWebhooks(GetWebhooksRequest request) {
-        return this.rawClient.listAllWebhooks(request).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookListResponse> list(ListWebhooksRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksResponse> listAllWebhooks(
-            GetWebhooksRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listAllWebhooks(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of webhooks. Use cursor for pagination.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookListResponse> list(ListWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostWebhooksResponse> createAWebhook(PostWebhooksRequest request) {
-        return this.rawClient.createAWebhook(request).thenApply(response -> response.body());
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookResponse> create(CreateWebhooksRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<PostWebhooksResponse> createAWebhook(
-            PostWebhooksRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createAWebhook(request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Create a new webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookResponse> create(CreateWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdResponse> getAWebhook(String id) {
-        return this.rawClient.getAWebhook(id).thenApply(response -> response.body());
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookResponse> retrieve(String id) {
+        return this.rawClient.retrieve(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdResponse> getAWebhook(String id, RequestOptions requestOptions) {
-        return this.rawClient.getAWebhook(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookResponse> retrieve(String id, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdResponse> getAWebhook(String id, GetWebhooksIdRequest request) {
-        return this.rawClient.getAWebhook(id, request).thenApply(response -> response.body());
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookResponse> retrieve(String id, RetrieveWebhooksRequest request) {
+        return this.rawClient.retrieve(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdResponse> getAWebhook(
-            String id, GetWebhooksIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getAWebhook(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieve a webhook by ID or slug (if supported).
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookResponse> retrieve(
+            String id, RetrieveWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.retrieve(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdResponse> deleteAWebhook(String id) {
-        return this.rawClient.deleteAWebhook(id).thenApply(response -> response.body());
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdResponse> deleteAWebhook(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteAWebhook(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdResponse> deleteAWebhook(String id, DeleteWebhooksIdRequest request) {
-        return this.rawClient.deleteAWebhook(id, request).thenApply(response -> response.body());
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(String id, DeleteWebhooksRequest request) {
+        return this.rawClient.delete(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdResponse> deleteAWebhook(
-            String id, DeleteWebhooksIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient.deleteAWebhook(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Permanently delete a webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<SuccessResponse> delete(
+            String id, DeleteWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(String id) {
-        return this.rawClient.listWebhookDeliveries(id).thenApply(response -> response.body());
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<UpdateWebhooksResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(
-            String id, RequestOptions requestOptions) {
-        return this.rawClient.listWebhookDeliveries(id, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<UpdateWebhooksResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request) {
-        return this.rawClient.listWebhookDeliveries(id, request).thenApply(response -> response.body());
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<UpdateWebhooksResponse> update(String id, UpdateWebhooksRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesResponse> listWebhookDeliveries(
-            String id, GetWebhooksIdDeliveriesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listWebhookDeliveries(id, request, requestOptions).thenApply(response -> response.body());
+    /**
+     * Update an existing webhook. Only provided fields will be modified.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<UpdateWebhooksResponse> update(
+            String id, UpdateWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(String id, String subId) {
-        return this.rawClient.getADeliveryFromWebhook(id, subId).thenApply(response -> response.body());
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookDeliveryListResponse> listDeliveries(String id) {
+        return this.rawClient.listDeliveries(id).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookDeliveryListResponse> listDeliveries(String id, RequestOptions requestOptions) {
+        return this.rawClient.listDeliveries(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookDeliveryListResponse> listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request) {
+        return this.rawClient.listDeliveries(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieve a paginated list of deliveries for Webhook.
+     * <p><strong>Requires feature: webhooks</strong></p>
+     */
+    public CompletableFuture<WebhookDeliveryListResponse> listDeliveries(
+            String id, ListDeliveriesWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.listDeliveries(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveDeliveryWebhooksResponse> retrieveDelivery(String id, String subId) {
+        return this.rawClient.retrieveDelivery(id, subId).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<RetrieveDeliveryWebhooksResponse> retrieveDelivery(
             String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient.getADeliveryFromWebhook(id, subId, requestOptions).thenApply(response -> response.body());
+        return this.rawClient.retrieveDelivery(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request) {
-        return this.rawClient.getADeliveryFromWebhook(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<RetrieveDeliveryWebhooksResponse> retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request) {
+        return this.rawClient.retrieveDelivery(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<GetWebhooksIdDeliveriesSubIdResponse> getADeliveryFromWebhook(
-            String id, String subId, GetWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<RetrieveDeliveryWebhooksResponse> retrieveDelivery(
+            String id, String subId, RetrieveDeliveryWebhooksRequest request, RequestOptions requestOptions) {
         return this.rawClient
-                .getADeliveryFromWebhook(id, subId, request, requestOptions)
+                .retrieveDelivery(id, subId, request, requestOptions)
                 .thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId) {
-        return this.rawClient.deleteADeliveryFromWebhook(id, subId).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteDelivery(String id, String subId) {
+        return this.rawClient.deleteDelivery(id, subId).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteADeliveryFromWebhook(id, subId, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteDelivery(String id, String subId, RequestOptions requestOptions) {
+        return this.rawClient.deleteDelivery(id, subId, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request) {
-        return this.rawClient.deleteADeliveryFromWebhook(id, subId, request).thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request) {
+        return this.rawClient.deleteDelivery(id, subId, request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<DeleteWebhooksIdDeliveriesSubIdResponse> deleteADeliveryFromWebhook(
-            String id, String subId, DeleteWebhooksIdDeliveriesSubIdRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteADeliveryFromWebhook(id, subId, request, requestOptions)
-                .thenApply(response -> response.body());
+    public CompletableFuture<SuccessResponse> deleteDelivery(
+            String id, String subId, DeleteDeliveryWebhooksRequest request, RequestOptions requestOptions) {
+        return this.rawClient.deleteDelivery(id, subId, request, requestOptions).thenApply(response -> response.body());
     }
 }

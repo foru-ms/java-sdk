@@ -31,7 +31,7 @@ Add the dependency in your `pom.xml` file:
 <dependency>
   <groupId>com.foru-ms</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.0.30</version>
+  <version>0.0.31</version>
 </dependency>
 ```
 
@@ -47,7 +47,7 @@ Instantiate and use the client with the following:
 package com.example.usage;
 
 import com.foru.ms.api.ForumClient;
-import com.foru.ms.api.resources.auth.requests.PostAuthRegisterRequest;
+import com.foru.ms.api.resources.auth.requests.RegisterAuthRequest;
 
 public class Example {
     public static void main(String[] args) {
@@ -57,7 +57,7 @@ public class Example {
             .build();
 
         client.auth().register(
-            PostAuthRegisterRequest
+            RegisterAuthRequest
                 .builder()
                 .username("username")
                 .email("email")

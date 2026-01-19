@@ -18,27 +18,26 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.DeleteUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowersSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdFollowingSubIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersIdRequest;
-import com.foru.ms.api.resources.users.requests.GetUsersRequest;
-import com.foru.ms.api.resources.users.requests.PatchUsersIdRequest;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.DeleteUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowersSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdFollowingSubIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersIdResponse;
-import com.foru.ms.api.resources.users.types.GetUsersResponse;
-import com.foru.ms.api.resources.users.types.PatchUsersIdResponse;
+import com.foru.ms.api.resources.users.requests.CreateUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.DeleteUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowersUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.ListUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowerUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveFollowingUsersRequest;
+import com.foru.ms.api.resources.users.requests.RetrieveUsersRequest;
+import com.foru.ms.api.resources.users.requests.UpdateUsersRequest;
+import com.foru.ms.api.resources.users.types.RetrieveFollowerUsersResponse;
+import com.foru.ms.api.resources.users.types.RetrieveFollowingUsersResponse;
+import com.foru.ms.api.resources.users.types.UpdateUsersResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.UserFollowerListResponse;
+import com.foru.ms.api.types.UserFollowingListResponse;
+import com.foru.ms.api.types.UserListResponse;
+import com.foru.ms.api.types.UserResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -55,34 +54,49 @@ public class RawUsersClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetUsersResponse> listAllUsers() {
-        return listAllUsers(GetUsersRequest.builder().build());
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<UserListResponse> list() {
+        return list(ListUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetUsersResponse> listAllUsers(RequestOptions requestOptions) {
-        return listAllUsers(GetUsersRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<UserListResponse> list(RequestOptions requestOptions) {
+        return list(ListUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetUsersResponse> listAllUsers(GetUsersRequest request) {
-        return listAllUsers(request, null);
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<UserListResponse> list(ListUsersRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetUsersResponse> listAllUsers(
-            GetUsersRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of users. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<UserListResponse> list(ListUsersRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -99,7 +113,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -127,20 +141,101 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<GetUsersIdResponse> getAUser(String id) {
-        return getAUser(id, GetUsersIdRequest.builder().build());
+    /**
+     * Create a new user.
+     */
+    public ForumClientHttpResponse<UserResponse> create(CreateUsersRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<GetUsersIdResponse> getAUser(String id, RequestOptions requestOptions) {
-        return getAUser(id, GetUsersIdRequest.builder().build(), requestOptions);
+    /**
+     * Create a new user.
+     */
+    public ForumClientHttpResponse<UserResponse> create(CreateUsersRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("users")
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+                return new ForumClientHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserResponse.class), response);
+            }
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 402:
+                        throw new PaymentRequiredError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 429:
+                        throw new TooManyRequestsError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new ForumClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (IOException e) {
+            throw new ForumClientException("Network error executing HTTP request", e);
+        }
     }
 
-    public ForumClientHttpResponse<GetUsersIdResponse> getAUser(String id, GetUsersIdRequest request) {
-        return getAUser(id, request, null);
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<UserResponse> retrieve(String id) {
+        return retrieve(id, RetrieveUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetUsersIdResponse> getAUser(
-            String id, GetUsersIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<UserResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveUsersRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<UserResponse> retrieve(String id, RetrieveUsersRequest request) {
+        return retrieve(id, request, null);
+    }
+
+    /**
+     * Retrieve a user by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<UserResponse> retrieve(
+            String id, RetrieveUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -161,7 +256,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -192,20 +287,32 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdResponse> deleteAUser(String id) {
-        return deleteAUser(id, DeleteUsersIdRequest.builder().build());
+    /**
+     * Permanently delete a user.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdResponse> deleteAUser(String id, RequestOptions requestOptions) {
-        return deleteAUser(id, DeleteUsersIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a user.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdResponse> deleteAUser(String id, DeleteUsersIdRequest request) {
-        return deleteAUser(id, request, null);
+    /**
+     * Permanently delete a user.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteUsersRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdResponse> deleteAUser(
-            String id, DeleteUsersIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a user.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -226,7 +333,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteUsersIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -257,20 +364,32 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<PatchUsersIdResponse> updateAUser(String id) {
-        return updateAUser(id, PatchUsersIdRequest.builder().build());
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateUsersResponse> update(String id) {
+        return update(id, UpdateUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<PatchUsersIdResponse> updateAUser(String id, RequestOptions requestOptions) {
-        return updateAUser(id, PatchUsersIdRequest.builder().build(), requestOptions);
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateUsersResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<PatchUsersIdResponse> updateAUser(String id, PatchUsersIdRequest request) {
-        return updateAUser(id, request, null);
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateUsersResponse> update(String id, UpdateUsersRequest request) {
+        return update(id, request, null);
     }
 
-    public ForumClientHttpResponse<PatchUsersIdResponse> updateAUser(
-            String id, PatchUsersIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing user. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateUsersResponse> update(
+            String id, UpdateUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -299,7 +418,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchUsersIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateUsersResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -333,34 +452,45 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersResponse> listUserFollowers(String id) {
-        return listUserFollowers(id, GetUsersIdFollowersRequest.builder().build());
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public ForumClientHttpResponse<UserFollowerListResponse> listFollowers(String id) {
+        return listFollowers(id, ListFollowersUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersResponse> listUserFollowers(
-            String id, RequestOptions requestOptions) {
-        return listUserFollowers(id, GetUsersIdFollowersRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public ForumClientHttpResponse<UserFollowerListResponse> listFollowers(String id, RequestOptions requestOptions) {
+        return listFollowers(id, ListFollowersUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersResponse> listUserFollowers(
-            String id, GetUsersIdFollowersRequest request) {
-        return listUserFollowers(id, request, null);
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public ForumClientHttpResponse<UserFollowerListResponse> listFollowers(
+            String id, ListFollowersUsersRequest request) {
+        return listFollowers(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersResponse> listUserFollowers(
-            String id, GetUsersIdFollowersRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of followers for User.
+     */
+    public ForumClientHttpResponse<UserFollowerListResponse> listFollowers(
+            String id, ListFollowersUsersRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
                 .addPathSegment(id)
                 .addPathSegments("followers");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -377,7 +507,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersIdFollowersResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserFollowerListResponse.class),
                         response);
             }
             try {
@@ -406,24 +536,24 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(String id, String subId) {
-        return getAFollowerFromUser(
-                id, subId, GetUsersIdFollowersSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrieveFollowerUsersResponse> retrieveFollower(String id, String subId) {
+        return retrieveFollower(
+                id, subId, RetrieveFollowerUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(
+    public ForumClientHttpResponse<RetrieveFollowerUsersResponse> retrieveFollower(
             String id, String subId, RequestOptions requestOptions) {
-        return getAFollowerFromUser(
-                id, subId, GetUsersIdFollowersSubIdRequest.builder().build(), requestOptions);
+        return retrieveFollower(
+                id, subId, RetrieveFollowerUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request) {
-        return getAFollowerFromUser(id, subId, request, null);
+    public ForumClientHttpResponse<RetrieveFollowerUsersResponse> retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request) {
+        return retrieveFollower(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowersSubIdResponse> getAFollowerFromUser(
-            String id, String subId, GetUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrieveFollowerUsersResponse> retrieveFollower(
+            String id, String subId, RetrieveFollowerUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -446,7 +576,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersIdFollowersSubIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RetrieveFollowerUsersResponse.class),
                         response);
             }
             try {
@@ -475,25 +605,22 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
-            String id, String subId) {
-        return deleteAFollowerFromUser(
-                id, subId, DeleteUsersIdFollowersSubIdRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deleteFollower(String id, String subId) {
+        return deleteFollower(id, subId, DeleteFollowerUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
+    public ForumClientHttpResponse<SuccessResponse> deleteFollower(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteAFollowerFromUser(
-                id, subId, DeleteUsersIdFollowersSubIdRequest.builder().build(), requestOptions);
+        return deleteFollower(id, subId, DeleteFollowerUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request) {
-        return deleteAFollowerFromUser(id, subId, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request) {
+        return deleteFollower(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowersSubIdResponse> deleteAFollowerFromUser(
-            String id, String subId, DeleteUsersIdFollowersSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deleteFollower(
+            String id, String subId, DeleteFollowerUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -516,9 +643,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, DeleteUsersIdFollowersSubIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -546,34 +671,45 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingResponse> listUserFollowing(String id) {
-        return listUserFollowing(id, GetUsersIdFollowingRequest.builder().build());
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public ForumClientHttpResponse<UserFollowingListResponse> listFollowing(String id) {
+        return listFollowing(id, ListFollowingUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingResponse> listUserFollowing(
-            String id, RequestOptions requestOptions) {
-        return listUserFollowing(id, GetUsersIdFollowingRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public ForumClientHttpResponse<UserFollowingListResponse> listFollowing(String id, RequestOptions requestOptions) {
+        return listFollowing(id, ListFollowingUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingResponse> listUserFollowing(
-            String id, GetUsersIdFollowingRequest request) {
-        return listUserFollowing(id, request, null);
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public ForumClientHttpResponse<UserFollowingListResponse> listFollowing(
+            String id, ListFollowingUsersRequest request) {
+        return listFollowing(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingResponse> listUserFollowing(
-            String id, GetUsersIdFollowingRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of following for User.
+     */
+    public ForumClientHttpResponse<UserFollowingListResponse> listFollowing(
+            String id, ListFollowingUsersRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
                 .addPathSegment(id)
                 .addPathSegments("following");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -590,7 +726,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersIdFollowingResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UserFollowingListResponse.class),
                         response);
             }
             try {
@@ -619,24 +755,24 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(String id, String subId) {
-        return getAFollowingFromUser(
-                id, subId, GetUsersIdFollowingSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrieveFollowingUsersResponse> retrieveFollowing(String id, String subId) {
+        return retrieveFollowing(
+                id, subId, RetrieveFollowingUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(
+    public ForumClientHttpResponse<RetrieveFollowingUsersResponse> retrieveFollowing(
             String id, String subId, RequestOptions requestOptions) {
-        return getAFollowingFromUser(
-                id, subId, GetUsersIdFollowingSubIdRequest.builder().build(), requestOptions);
+        return retrieveFollowing(
+                id, subId, RetrieveFollowingUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request) {
-        return getAFollowingFromUser(id, subId, request, null);
+    public ForumClientHttpResponse<RetrieveFollowingUsersResponse> retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request) {
+        return retrieveFollowing(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetUsersIdFollowingSubIdResponse> getAFollowingFromUser(
-            String id, String subId, GetUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrieveFollowingUsersResponse> retrieveFollowing(
+            String id, String subId, RetrieveFollowingUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -659,7 +795,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetUsersIdFollowingSubIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RetrieveFollowingUsersResponse.class),
                         response);
             }
             try {
@@ -688,25 +824,22 @@ public class RawUsersClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
-            String id, String subId) {
-        return deleteAFollowingFromUser(
-                id, subId, DeleteUsersIdFollowingSubIdRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deleteFollowing(String id, String subId) {
+        return deleteFollowing(id, subId, DeleteFollowingUsersRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
+    public ForumClientHttpResponse<SuccessResponse> deleteFollowing(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteAFollowingFromUser(
-                id, subId, DeleteUsersIdFollowingSubIdRequest.builder().build(), requestOptions);
+        return deleteFollowing(id, subId, DeleteFollowingUsersRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request) {
-        return deleteAFollowingFromUser(id, subId, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request) {
+        return deleteFollowing(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteUsersIdFollowingSubIdResponse> deleteAFollowingFromUser(
-            String id, String subId, DeleteUsersIdFollowingSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deleteFollowing(
+            String id, String subId, DeleteFollowingUsersRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("users")
@@ -729,9 +862,7 @@ public class RawUsersClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, DeleteUsersIdFollowingSubIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {

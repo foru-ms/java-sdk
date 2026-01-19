@@ -10,8 +10,10 @@ import com.foru.ms.api.resources.integrations.AsyncIntegrationsClient;
 import com.foru.ms.api.resources.notifications.AsyncNotificationsClient;
 import com.foru.ms.api.resources.posts.AsyncPostsClient;
 import com.foru.ms.api.resources.privatemessages.AsyncPrivateMessagesClient;
+import com.foru.ms.api.resources.provisioning.AsyncProvisioningClient;
 import com.foru.ms.api.resources.reports.AsyncReportsClient;
 import com.foru.ms.api.resources.roles.AsyncRolesClient;
+import com.foru.ms.api.resources.search.AsyncSearchClient;
 import com.foru.ms.api.resources.ssos.AsyncSsOsClient;
 import com.foru.ms.api.resources.tags.AsyncTagsClient;
 import com.foru.ms.api.resources.threads.AsyncThreadsClient;
@@ -23,6 +25,8 @@ public class AsyncForumClient {
     protected final ClientOptions clientOptions;
 
     protected final Supplier<AsyncAuthClient> authClient;
+
+    protected final Supplier<AsyncSearchClient> searchClient;
 
     protected final Supplier<AsyncTagsClient> tagsClient;
 
@@ -46,9 +50,12 @@ public class AsyncForumClient {
 
     protected final Supplier<AsyncSsOsClient> ssOsClient;
 
+    protected final Supplier<AsyncProvisioningClient> provisioningClient;
+
     public AsyncForumClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.authClient = Suppliers.memoize(() -> new AsyncAuthClient(clientOptions));
+        this.searchClient = Suppliers.memoize(() -> new AsyncSearchClient(clientOptions));
         this.tagsClient = Suppliers.memoize(() -> new AsyncTagsClient(clientOptions));
         this.threadsClient = Suppliers.memoize(() -> new AsyncThreadsClient(clientOptions));
         this.postsClient = Suppliers.memoize(() -> new AsyncPostsClient(clientOptions));
@@ -60,10 +67,15 @@ public class AsyncForumClient {
         this.webhooksClient = Suppliers.memoize(() -> new AsyncWebhooksClient(clientOptions));
         this.integrationsClient = Suppliers.memoize(() -> new AsyncIntegrationsClient(clientOptions));
         this.ssOsClient = Suppliers.memoize(() -> new AsyncSsOsClient(clientOptions));
+        this.provisioningClient = Suppliers.memoize(() -> new AsyncProvisioningClient(clientOptions));
     }
 
     public AsyncAuthClient auth() {
         return this.authClient.get();
+    }
+
+    public AsyncSearchClient search() {
+        return this.searchClient.get();
     }
 
     public AsyncTagsClient tags() {
@@ -108,6 +120,10 @@ public class AsyncForumClient {
 
     public AsyncSsOsClient ssOs() {
         return this.ssOsClient.get();
+    }
+
+    public AsyncProvisioningClient provisioning() {
+        return this.provisioningClient.get();
     }
 
     public static AsyncForumClientBuilder builder() {

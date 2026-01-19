@@ -32,6 +32,12 @@ public final class ThreadCreate {
 
     private final Optional<ThreadCreatePoll> poll;
 
+    private final Optional<Boolean> locked;
+
+    private final Optional<Boolean> pinned;
+
+    private final Optional<Map<String, Object>> extendedData;
+
     private final Map<String, Object> additionalProperties;
 
     private ThreadCreate(
@@ -40,12 +46,18 @@ public final class ThreadCreate {
             Optional<String> userId,
             Optional<List<String>> tags,
             Optional<ThreadCreatePoll> poll,
+            Optional<Boolean> locked,
+            Optional<Boolean> pinned,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
         this.title = title;
         this.body = body;
         this.userId = userId;
         this.tags = tags;
         this.poll = poll;
+        this.locked = locked;
+        this.pinned = pinned;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
@@ -89,6 +101,30 @@ public final class ThreadCreate {
         return poll;
     }
 
+    /**
+     * @return Lock thread on creation
+     */
+    @JsonProperty("locked")
+    public Optional<Boolean> getLocked() {
+        return locked;
+    }
+
+    /**
+     * @return Pin thread on creation
+     */
+    @JsonProperty("pinned")
+    public Optional<Boolean> getPinned() {
+        return pinned;
+    }
+
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -105,12 +141,16 @@ public final class ThreadCreate {
                 && body.equals(other.body)
                 && userId.equals(other.userId)
                 && tags.equals(other.tags)
-                && poll.equals(other.poll);
+                && poll.equals(other.poll)
+                && locked.equals(other.locked)
+                && pinned.equals(other.pinned)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.title, this.body, this.userId, this.tags, this.poll);
+        return Objects.hash(
+                this.title, this.body, this.userId, this.tags, this.poll, this.locked, this.pinned, this.extendedData);
     }
 
     @java.lang.Override
@@ -161,6 +201,27 @@ public final class ThreadCreate {
         _FinalStage poll(Optional<ThreadCreatePoll> poll);
 
         _FinalStage poll(ThreadCreatePoll poll);
+
+        /**
+         * <p>Lock thread on creation</p>
+         */
+        _FinalStage locked(Optional<Boolean> locked);
+
+        _FinalStage locked(Boolean locked);
+
+        /**
+         * <p>Pin thread on creation</p>
+         */
+        _FinalStage pinned(Optional<Boolean> pinned);
+
+        _FinalStage pinned(Boolean pinned);
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
+
+        _FinalStage extendedData(Map<String, Object> extendedData);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -168,6 +229,12 @@ public final class ThreadCreate {
         private String title;
 
         private String body;
+
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
+
+        private Optional<Boolean> pinned = Optional.empty();
+
+        private Optional<Boolean> locked = Optional.empty();
 
         private Optional<ThreadCreatePoll> poll = Optional.empty();
 
@@ -187,6 +254,9 @@ public final class ThreadCreate {
             userId(other.getUserId());
             tags(other.getTags());
             poll(other.getPoll());
+            locked(other.getLocked());
+            pinned(other.getPinned());
+            extendedData(other.getExtendedData());
             return this;
         }
 
@@ -211,6 +281,66 @@ public final class ThreadCreate {
         @JsonSetter("body")
         public _FinalStage body(@NotNull String body) {
             this.body = Objects.requireNonNull(body, "body must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
+            return this;
+        }
+
+        /**
+         * <p>Pin thread on creation</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage pinned(Boolean pinned) {
+            this.pinned = Optional.ofNullable(pinned);
+            return this;
+        }
+
+        /**
+         * <p>Pin thread on creation</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "pinned", nulls = Nulls.SKIP)
+        public _FinalStage pinned(Optional<Boolean> pinned) {
+            this.pinned = pinned;
+            return this;
+        }
+
+        /**
+         * <p>Lock thread on creation</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage locked(Boolean locked) {
+            this.locked = Optional.ofNullable(locked);
+            return this;
+        }
+
+        /**
+         * <p>Lock thread on creation</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "locked", nulls = Nulls.SKIP)
+        public _FinalStage locked(Optional<Boolean> locked) {
+            this.locked = locked;
             return this;
         }
 
@@ -276,7 +406,8 @@ public final class ThreadCreate {
 
         @java.lang.Override
         public ThreadCreate build() {
-            return new ThreadCreate(title, body, userId, tags, poll, additionalProperties);
+            return new ThreadCreate(
+                    title, body, userId, tags, poll, locked, pinned, extendedData, additionalProperties);
         }
     }
 }

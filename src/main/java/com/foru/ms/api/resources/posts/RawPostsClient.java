@@ -18,33 +18,28 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.DeletePostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdPostsRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdPostsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdReactionsSubIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.GetPostsRequest;
-import com.foru.ms.api.resources.posts.requests.PatchPostsIdRequest;
-import com.foru.ms.api.resources.posts.requests.PostPostsIdReactionsRequest;
-import com.foru.ms.api.resources.posts.requests.PostPostsRequest;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.DeletePostsIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdPostsResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdPostsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdReactionsSubIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsIdResponse;
-import com.foru.ms.api.resources.posts.types.GetPostsResponse;
-import com.foru.ms.api.resources.posts.types.PatchPostsIdResponse;
-import com.foru.ms.api.resources.posts.types.PostPostsIdReactionsResponse;
-import com.foru.ms.api.resources.posts.types.PostPostsResponse;
+import com.foru.ms.api.resources.posts.requests.CreatePostsRequest;
+import com.foru.ms.api.resources.posts.requests.CreateReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeletePostPostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeletePostsRequest;
+import com.foru.ms.api.resources.posts.requests.DeleteReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListPostsPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListPostsRequest;
+import com.foru.ms.api.resources.posts.requests.ListReactionsPostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrievePostPostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrievePostsRequest;
+import com.foru.ms.api.resources.posts.requests.RetrieveReactionPostsRequest;
+import com.foru.ms.api.resources.posts.requests.UpdatePostsRequest;
+import com.foru.ms.api.resources.posts.types.RetrievePostPostsResponse;
+import com.foru.ms.api.resources.posts.types.RetrieveReactionPostsResponse;
+import com.foru.ms.api.resources.posts.types.UpdatePostsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.PostListResponse;
+import com.foru.ms.api.types.PostPostListResponse;
+import com.foru.ms.api.types.PostReactionListResponse;
+import com.foru.ms.api.types.PostReactionResponse;
+import com.foru.ms.api.types.PostResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -61,34 +56,57 @@ public class RawPostsClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetPostsResponse> listAllPosts() {
-        return listAllPosts(GetPostsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PostListResponse> list() {
+        return list(ListPostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPostsResponse> listAllPosts(RequestOptions requestOptions) {
-        return listAllPosts(GetPostsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PostListResponse> list(RequestOptions requestOptions) {
+        return list(ListPostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPostsResponse> listAllPosts(GetPostsRequest request) {
-        return listAllPosts(request, null);
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PostListResponse> list(ListPostsRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetPostsResponse> listAllPosts(
-            GetPostsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of posts. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<PostListResponse> list(ListPostsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getUserId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "userId", request.getUserId().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
+        }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getType().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "type", request.getType().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -105,7 +123,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -133,12 +151,17 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostPostsResponse> createAPost(PostPostsRequest request) {
-        return createAPost(request, null);
+    /**
+     * Create a new post.
+     */
+    public ForumClientHttpResponse<PostResponse> create(CreatePostsRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostPostsResponse> createAPost(
-            PostPostsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new post.
+     */
+    public ForumClientHttpResponse<PostResponse> create(CreatePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -166,7 +189,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostPostsResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -197,20 +220,32 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPostsIdResponse> getAPost(String id) {
-        return getAPost(id, GetPostsIdRequest.builder().build());
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PostResponse> retrieve(String id) {
+        return retrieve(id, RetrievePostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPostsIdResponse> getAPost(String id, RequestOptions requestOptions) {
-        return getAPost(id, GetPostsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PostResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrievePostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPostsIdResponse> getAPost(String id, GetPostsIdRequest request) {
-        return getAPost(id, request, null);
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PostResponse> retrieve(String id, RetrievePostsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetPostsIdResponse> getAPost(
-            String id, GetPostsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a post by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<PostResponse> retrieve(
+            String id, RetrievePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -231,7 +266,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -262,20 +297,32 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeletePostsIdResponse> deleteAPost(String id) {
-        return deleteAPost(id, DeletePostsIdRequest.builder().build());
+    /**
+     * Permanently delete a post.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeletePostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeletePostsIdResponse> deleteAPost(String id, RequestOptions requestOptions) {
-        return deleteAPost(id, DeletePostsIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a post.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeletePostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeletePostsIdResponse> deleteAPost(String id, DeletePostsIdRequest request) {
-        return deleteAPost(id, request, null);
+    /**
+     * Permanently delete a post.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeletePostsRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeletePostsIdResponse> deleteAPost(
-            String id, DeletePostsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a post.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeletePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -296,7 +343,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeletePostsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -327,20 +374,32 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<PatchPostsIdResponse> updateAPost(String id) {
-        return updateAPost(id, PatchPostsIdRequest.builder().build());
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePostsResponse> update(String id) {
+        return update(id, UpdatePostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<PatchPostsIdResponse> updateAPost(String id, RequestOptions requestOptions) {
-        return updateAPost(id, PatchPostsIdRequest.builder().build(), requestOptions);
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePostsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdatePostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<PatchPostsIdResponse> updateAPost(String id, PatchPostsIdRequest request) {
-        return updateAPost(id, request, null);
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePostsResponse> update(String id, UpdatePostsRequest request) {
+        return update(id, request, null);
     }
 
-    public ForumClientHttpResponse<PatchPostsIdResponse> updateAPost(
-            String id, PatchPostsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing post. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdatePostsResponse> update(
+            String id, UpdatePostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -369,7 +428,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchPostsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdatePostsResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -403,34 +462,49 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsResponse> listPostReactions(String id) {
-        return listPostReactions(id, GetPostsIdReactionsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public ForumClientHttpResponse<PostReactionListResponse> listReactions(String id) {
+        return listReactions(id, ListReactionsPostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsResponse> listPostReactions(
-            String id, RequestOptions requestOptions) {
-        return listPostReactions(id, GetPostsIdReactionsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public ForumClientHttpResponse<PostReactionListResponse> listReactions(String id, RequestOptions requestOptions) {
+        return listReactions(id, ListReactionsPostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsResponse> listPostReactions(
-            String id, GetPostsIdReactionsRequest request) {
-        return listPostReactions(id, request, null);
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public ForumClientHttpResponse<PostReactionListResponse> listReactions(
+            String id, ListReactionsPostsRequest request) {
+        return listReactions(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsResponse> listPostReactions(
-            String id, GetPostsIdReactionsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of reactions for Post.
+     */
+    public ForumClientHttpResponse<PostReactionListResponse> listReactions(
+            String id, ListReactionsPostsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
                 .addPathSegment(id)
                 .addPathSegments("reactions");
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
         if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "cursor", request.getCursor().get(), false);
         }
-        if (request.getLimit().isPresent()) {
+        if (request.getType().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
+                    httpUrl, "type", request.getType().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -447,7 +521,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdReactionsResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostReactionListResponse.class),
                         response);
             }
             try {
@@ -476,13 +550,18 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostPostsIdReactionsResponse> createAReactionInPost(
-            String id, PostPostsIdReactionsRequest request) {
-        return createAReactionInPost(id, request, null);
+    /**
+     * Create a Reaction in Post.
+     */
+    public ForumClientHttpResponse<PostReactionResponse> createReaction(String id, CreateReactionPostsRequest request) {
+        return createReaction(id, request, null);
     }
 
-    public ForumClientHttpResponse<PostPostsIdReactionsResponse> createAReactionInPost(
-            String id, PostPostsIdReactionsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a Reaction in Post.
+     */
+    public ForumClientHttpResponse<PostReactionResponse> createReaction(
+            String id, CreateReactionPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -512,8 +591,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostPostsIdReactionsResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostReactionResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -544,41 +622,28 @@ public class RawPostsClient {
         }
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public ForumClientHttpResponse<DeletePostsIdReactionsResponse> removeYourReactionFromPost(String id) {
-        return removeYourReactionFromPost(
-                id, DeletePostsIdReactionsRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deleteReaction(String id, String subId) {
+        return deleteReaction(id, subId, DeleteReactionPostsRequest.builder().build());
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public ForumClientHttpResponse<DeletePostsIdReactionsResponse> removeYourReactionFromPost(
-            String id, RequestOptions requestOptions) {
-        return removeYourReactionFromPost(
-                id, DeletePostsIdReactionsRequest.builder().build(), requestOptions);
+    public ForumClientHttpResponse<SuccessResponse> deleteReaction(
+            String id, String subId, RequestOptions requestOptions) {
+        return deleteReaction(id, subId, DeleteReactionPostsRequest.builder().build(), requestOptions);
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public ForumClientHttpResponse<DeletePostsIdReactionsResponse> removeYourReactionFromPost(
-            String id, DeletePostsIdReactionsRequest request) {
-        return removeYourReactionFromPost(id, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deleteReaction(
+            String id, String subId, DeleteReactionPostsRequest request) {
+        return deleteReaction(id, subId, request, null);
     }
 
-    /**
-     * Removes the authenticated user's reaction. No subId needed.
-     */
-    public ForumClientHttpResponse<DeletePostsIdReactionsResponse> removeYourReactionFromPost(
-            String id, DeletePostsIdReactionsRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deleteReaction(
+            String id, String subId, DeleteReactionPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
                 .addPathSegment(id)
                 .addPathSegments("reactions")
+                .addPathSegment(subId)
                 .build();
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl)
@@ -595,8 +660,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeletePostsIdReactionsResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -624,24 +688,24 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse> getAReactionFromPost(String id, String subId) {
-        return getAReactionFromPost(
-                id, subId, GetPostsIdReactionsSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrieveReactionPostsResponse> retrieveReaction(String id, String subId) {
+        return retrieveReaction(
+                id, subId, RetrieveReactionPostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse> getAReactionFromPost(
+    public ForumClientHttpResponse<RetrieveReactionPostsResponse> retrieveReaction(
             String id, String subId, RequestOptions requestOptions) {
-        return getAReactionFromPost(
-                id, subId, GetPostsIdReactionsSubIdRequest.builder().build(), requestOptions);
+        return retrieveReaction(
+                id, subId, RetrieveReactionPostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse> getAReactionFromPost(
-            String id, String subId, GetPostsIdReactionsSubIdRequest request) {
-        return getAReactionFromPost(id, subId, request, null);
+    public ForumClientHttpResponse<RetrieveReactionPostsResponse> retrieveReaction(
+            String id, String subId, RetrieveReactionPostsRequest request) {
+        return retrieveReaction(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetPostsIdReactionsSubIdResponse> getAReactionFromPost(
-            String id, String subId, GetPostsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrieveReactionPostsResponse> retrieveReaction(
+            String id, String subId, RetrieveReactionPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -664,7 +728,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdReactionsSubIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RetrieveReactionPostsResponse.class),
                         response);
             }
             try {
@@ -693,103 +757,60 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse> deleteAReactionFromPost(
-            String id, String subId) {
-        return deleteAReactionFromPost(
-                id, subId, DeletePostsIdReactionsSubIdRequest.builder().build());
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public ForumClientHttpResponse<PostPostListResponse> listPosts(String id) {
+        return listPosts(id, ListPostsPostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse> deleteAReactionFromPost(
-            String id, String subId, RequestOptions requestOptions) {
-        return deleteAReactionFromPost(
-                id, subId, DeletePostsIdReactionsSubIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public ForumClientHttpResponse<PostPostListResponse> listPosts(String id, RequestOptions requestOptions) {
+        return listPosts(id, ListPostsPostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse> deleteAReactionFromPost(
-            String id, String subId, DeletePostsIdReactionsSubIdRequest request) {
-        return deleteAReactionFromPost(id, subId, request, null);
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public ForumClientHttpResponse<PostPostListResponse> listPosts(String id, ListPostsPostsRequest request) {
+        return listPosts(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeletePostsIdReactionsSubIdResponse> deleteAReactionFromPost(
-            String id, String subId, DeletePostsIdReactionsSubIdRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("posts")
-                .addPathSegment(id)
-                .addPathSegments("reactions")
-                .addPathSegment(subId)
-                .build();
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
-                .method("DELETE", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, DeletePostsIdReactionsSubIdResponse.class),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
-                    case 429:
-                        throw new TooManyRequestsError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new ForumClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new ForumClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    public ForumClientHttpResponse<GetPostsIdPostsResponse> listPostPosts(String id) {
-        return listPostPosts(id, GetPostsIdPostsRequest.builder().build());
-    }
-
-    public ForumClientHttpResponse<GetPostsIdPostsResponse> listPostPosts(String id, RequestOptions requestOptions) {
-        return listPostPosts(id, GetPostsIdPostsRequest.builder().build(), requestOptions);
-    }
-
-    public ForumClientHttpResponse<GetPostsIdPostsResponse> listPostPosts(String id, GetPostsIdPostsRequest request) {
-        return listPostPosts(id, request, null);
-    }
-
-    public ForumClientHttpResponse<GetPostsIdPostsResponse> listPostPosts(
-            String id, GetPostsIdPostsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of posts for Post.
+     */
+    public ForumClientHttpResponse<PostPostListResponse> listPosts(
+            String id, ListPostsPostsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
                 .addPathSegment(id)
                 .addPathSegments("posts");
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
         if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "cursor", request.getCursor().get(), false);
         }
-        if (request.getLimit().isPresent()) {
+        if (request.getUserId().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
+                    httpUrl, "userId", request.getUserId().get(), false);
+        }
+        if (request.getSort().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "sort", request.getSort().get(), false);
+        }
+        if (request.getSearch().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "search", request.getSearch().get(), false);
+        }
+        if (request.getType().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "type", request.getType().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -806,8 +827,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdPostsResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostPostListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -835,22 +855,22 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetPostsIdPostsSubIdResponse> getAPostFromPost(String id, String subId) {
-        return getAPostFromPost(id, subId, GetPostsIdPostsSubIdRequest.builder().build());
+    public ForumClientHttpResponse<RetrievePostPostsResponse> retrievePost(String id, String subId) {
+        return retrievePost(id, subId, RetrievePostPostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetPostsIdPostsSubIdResponse> getAPostFromPost(
+    public ForumClientHttpResponse<RetrievePostPostsResponse> retrievePost(
             String id, String subId, RequestOptions requestOptions) {
-        return getAPostFromPost(id, subId, GetPostsIdPostsSubIdRequest.builder().build(), requestOptions);
+        return retrievePost(id, subId, RetrievePostPostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetPostsIdPostsSubIdResponse> getAPostFromPost(
-            String id, String subId, GetPostsIdPostsSubIdRequest request) {
-        return getAPostFromPost(id, subId, request, null);
+    public ForumClientHttpResponse<RetrievePostPostsResponse> retrievePost(
+            String id, String subId, RetrievePostPostsRequest request) {
+        return retrievePost(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<GetPostsIdPostsSubIdResponse> getAPostFromPost(
-            String id, String subId, GetPostsIdPostsSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<RetrievePostPostsResponse> retrievePost(
+            String id, String subId, RetrievePostPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -873,7 +893,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPostsIdPostsSubIdResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RetrievePostPostsResponse.class),
                         response);
             }
             try {
@@ -902,24 +922,21 @@ public class RawPostsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse> deleteAPostFromPost(String id, String subId) {
-        return deleteAPostFromPost(
-                id, subId, DeletePostsIdPostsSubIdRequest.builder().build());
+    public ForumClientHttpResponse<SuccessResponse> deletePost(String id, String subId) {
+        return deletePost(id, subId, DeletePostPostsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse> deleteAPostFromPost(
-            String id, String subId, RequestOptions requestOptions) {
-        return deleteAPostFromPost(
-                id, subId, DeletePostsIdPostsSubIdRequest.builder().build(), requestOptions);
+    public ForumClientHttpResponse<SuccessResponse> deletePost(String id, String subId, RequestOptions requestOptions) {
+        return deletePost(id, subId, DeletePostPostsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse> deleteAPostFromPost(
-            String id, String subId, DeletePostsIdPostsSubIdRequest request) {
-        return deleteAPostFromPost(id, subId, request, null);
+    public ForumClientHttpResponse<SuccessResponse> deletePost(
+            String id, String subId, DeletePostPostsRequest request) {
+        return deletePost(id, subId, request, null);
     }
 
-    public ForumClientHttpResponse<DeletePostsIdPostsSubIdResponse> deleteAPostFromPost(
-            String id, String subId, DeletePostsIdPostsSubIdRequest request, RequestOptions requestOptions) {
+    public ForumClientHttpResponse<SuccessResponse> deletePost(
+            String id, String subId, DeletePostPostsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("posts")
@@ -942,8 +959,7 @@ public class RawPostsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeletePostsIdPostsSubIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {

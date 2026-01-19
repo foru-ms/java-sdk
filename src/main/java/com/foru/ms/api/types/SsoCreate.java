@@ -9,87 +9,84 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.foru.ms.api.core.ObjectMappers;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SsoCreate.Builder.class)
 public final class SsoCreate {
-    private final String name;
+    private final SsoCreateProvider provider;
 
-    private final String clientId;
+    private final String domain;
 
-    private final String clientSecret;
+    private final Map<String, Object> config;
 
-    private final String issuer;
+    private final Optional<Boolean> active;
 
-    private final String authorizationEndpoint;
-
-    private final String tokenEndpoint;
-
-    private final String userInfoEndpoint;
+    private final Optional<Map<String, Object>> extendedData;
 
     private final Map<String, Object> additionalProperties;
 
     private SsoCreate(
-            String name,
-            String clientId,
-            String clientSecret,
-            String issuer,
-            String authorizationEndpoint,
-            String tokenEndpoint,
-            String userInfoEndpoint,
+            SsoCreateProvider provider,
+            String domain,
+            Map<String, Object> config,
+            Optional<Boolean> active,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.issuer = issuer;
-        this.authorizationEndpoint = authorizationEndpoint;
-        this.tokenEndpoint = tokenEndpoint;
-        this.userInfoEndpoint = userInfoEndpoint;
+        this.provider = provider;
+        this.domain = domain;
+        this.config = config;
+        this.active = active;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Provider name (e.g. Google)
+     * @return SSO provider type
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @JsonProperty("provider")
+    public SsoCreateProvider getProvider() {
+        return provider;
     }
 
-    @JsonProperty("clientId")
-    public String getClientId() {
-        return clientId;
+    /**
+     * @return Email domain to match (e.g. 'acme.com')
+     */
+    @JsonProperty("domain")
+    public String getDomain() {
+        return domain;
     }
 
-    @JsonProperty("clientSecret")
-    public String getClientSecret() {
-        return clientSecret;
+    /**
+     * @return Provider configuration (clientId, issuer, etc.)
+     */
+    @JsonProperty("config")
+    public Map<String, Object> getConfig() {
+        return config;
     }
 
-    @JsonProperty("issuer")
-    public String getIssuer() {
-        return issuer;
+    /**
+     * @return Whether SSO is active
+     */
+    @JsonProperty("active")
+    public Optional<Boolean> getActive() {
+        return active;
     }
 
-    @JsonProperty("authorizationEndpoint")
-    public String getAuthorizationEndpoint() {
-        return authorizationEndpoint;
-    }
-
-    @JsonProperty("tokenEndpoint")
-    public String getTokenEndpoint() {
-        return tokenEndpoint;
-    }
-
-    @JsonProperty("userInfoEndpoint")
-    public String getUserInfoEndpoint() {
-        return userInfoEndpoint;
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
     }
 
     @java.lang.Override
@@ -104,25 +101,16 @@ public final class SsoCreate {
     }
 
     private boolean equalTo(SsoCreate other) {
-        return name.equals(other.name)
-                && clientId.equals(other.clientId)
-                && clientSecret.equals(other.clientSecret)
-                && issuer.equals(other.issuer)
-                && authorizationEndpoint.equals(other.authorizationEndpoint)
-                && tokenEndpoint.equals(other.tokenEndpoint)
-                && userInfoEndpoint.equals(other.userInfoEndpoint);
+        return provider.equals(other.provider)
+                && domain.equals(other.domain)
+                && config.equals(other.config)
+                && active.equals(other.active)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.name,
-                this.clientId,
-                this.clientSecret,
-                this.issuer,
-                this.authorizationEndpoint,
-                this.tokenEndpoint,
-                this.userInfoEndpoint);
+        return Objects.hash(this.provider, this.domain, this.config, this.active, this.extendedData);
     }
 
     @java.lang.Override
@@ -130,70 +118,64 @@ public final class SsoCreate {
         return ObjectMappers.stringify(this);
     }
 
-    public static NameStage builder() {
+    public static ProviderStage builder() {
         return new Builder();
     }
 
-    public interface NameStage {
+    public interface ProviderStage {
         /**
-         * <p>Provider name (e.g. Google)</p>
+         * <p>SSO provider type</p>
          */
-        ClientIdStage name(@NotNull String name);
+        DomainStage provider(@NotNull SsoCreateProvider provider);
 
         Builder from(SsoCreate other);
     }
 
-    public interface ClientIdStage {
-        ClientSecretStage clientId(@NotNull String clientId);
-    }
-
-    public interface ClientSecretStage {
-        IssuerStage clientSecret(@NotNull String clientSecret);
-    }
-
-    public interface IssuerStage {
-        AuthorizationEndpointStage issuer(@NotNull String issuer);
-    }
-
-    public interface AuthorizationEndpointStage {
-        TokenEndpointStage authorizationEndpoint(@NotNull String authorizationEndpoint);
-    }
-
-    public interface TokenEndpointStage {
-        UserInfoEndpointStage tokenEndpoint(@NotNull String tokenEndpoint);
-    }
-
-    public interface UserInfoEndpointStage {
-        _FinalStage userInfoEndpoint(@NotNull String userInfoEndpoint);
+    public interface DomainStage {
+        /**
+         * <p>Email domain to match (e.g. 'acme.com')</p>
+         */
+        _FinalStage domain(@NotNull String domain);
     }
 
     public interface _FinalStage {
         SsoCreate build();
+
+        /**
+         * <p>Provider configuration (clientId, issuer, etc.)</p>
+         */
+        _FinalStage config(Map<String, Object> config);
+
+        _FinalStage putAllConfig(Map<String, Object> config);
+
+        _FinalStage config(String key, Object value);
+
+        /**
+         * <p>Whether SSO is active</p>
+         */
+        _FinalStage active(Optional<Boolean> active);
+
+        _FinalStage active(Boolean active);
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
+
+        _FinalStage extendedData(Map<String, Object> extendedData);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements NameStage,
-                    ClientIdStage,
-                    ClientSecretStage,
-                    IssuerStage,
-                    AuthorizationEndpointStage,
-                    TokenEndpointStage,
-                    UserInfoEndpointStage,
-                    _FinalStage {
-        private String name;
+    public static final class Builder implements ProviderStage, DomainStage, _FinalStage {
+        private SsoCreateProvider provider;
 
-        private String clientId;
+        private String domain;
 
-        private String clientSecret;
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
 
-        private String issuer;
+        private Optional<Boolean> active = Optional.empty();
 
-        private String authorizationEndpoint;
-
-        private String tokenEndpoint;
-
-        private String userInfoEndpoint;
+        private Map<String, Object> config = new LinkedHashMap<>();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -202,82 +184,116 @@ public final class SsoCreate {
 
         @java.lang.Override
         public Builder from(SsoCreate other) {
-            name(other.getName());
-            clientId(other.getClientId());
-            clientSecret(other.getClientSecret());
-            issuer(other.getIssuer());
-            authorizationEndpoint(other.getAuthorizationEndpoint());
-            tokenEndpoint(other.getTokenEndpoint());
-            userInfoEndpoint(other.getUserInfoEndpoint());
+            provider(other.getProvider());
+            domain(other.getDomain());
+            config(other.getConfig());
+            active(other.getActive());
+            extendedData(other.getExtendedData());
             return this;
         }
 
         /**
-         * <p>Provider name (e.g. Google)</p>
-         * <p>Provider name (e.g. Google)</p>
+         * <p>SSO provider type</p>
+         * <p>SSO provider type</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        @JsonSetter("name")
-        public ClientIdStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
+        @JsonSetter("provider")
+        public DomainStage provider(@NotNull SsoCreateProvider provider) {
+            this.provider = Objects.requireNonNull(provider, "provider must not be null");
             return this;
         }
 
+        /**
+         * <p>Email domain to match (e.g. 'acme.com')</p>
+         * <p>Email domain to match (e.g. 'acme.com')</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
-        @JsonSetter("clientId")
-        public ClientSecretStage clientId(@NotNull String clientId) {
-            this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
+        @JsonSetter("domain")
+        public _FinalStage domain(@NotNull String domain) {
+            this.domain = Objects.requireNonNull(domain, "domain must not be null");
             return this;
         }
 
+        /**
+         * <p>Custom extended data</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
-        @JsonSetter("clientSecret")
-        public IssuerStage clientSecret(@NotNull String clientSecret) {
-            this.clientSecret = Objects.requireNonNull(clientSecret, "clientSecret must not be null");
+        public _FinalStage extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
             return this;
         }
 
+        /**
+         * <p>Custom extended data</p>
+         */
         @java.lang.Override
-        @JsonSetter("issuer")
-        public AuthorizationEndpointStage issuer(@NotNull String issuer) {
-            this.issuer = Objects.requireNonNull(issuer, "issuer must not be null");
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
             return this;
         }
 
+        /**
+         * <p>Whether SSO is active</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
-        @JsonSetter("authorizationEndpoint")
-        public TokenEndpointStage authorizationEndpoint(@NotNull String authorizationEndpoint) {
-            this.authorizationEndpoint =
-                    Objects.requireNonNull(authorizationEndpoint, "authorizationEndpoint must not be null");
+        public _FinalStage active(Boolean active) {
+            this.active = Optional.ofNullable(active);
             return this;
         }
 
+        /**
+         * <p>Whether SSO is active</p>
+         */
         @java.lang.Override
-        @JsonSetter("tokenEndpoint")
-        public UserInfoEndpointStage tokenEndpoint(@NotNull String tokenEndpoint) {
-            this.tokenEndpoint = Objects.requireNonNull(tokenEndpoint, "tokenEndpoint must not be null");
+        @JsonSetter(value = "active", nulls = Nulls.SKIP)
+        public _FinalStage active(Optional<Boolean> active) {
+            this.active = active;
             return this;
         }
 
+        /**
+         * <p>Provider configuration (clientId, issuer, etc.)</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
-        @JsonSetter("userInfoEndpoint")
-        public _FinalStage userInfoEndpoint(@NotNull String userInfoEndpoint) {
-            this.userInfoEndpoint = Objects.requireNonNull(userInfoEndpoint, "userInfoEndpoint must not be null");
+        public _FinalStage config(String key, Object value) {
+            this.config.put(key, value);
+            return this;
+        }
+
+        /**
+         * <p>Provider configuration (clientId, issuer, etc.)</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage putAllConfig(Map<String, Object> config) {
+            if (config != null) {
+                this.config.putAll(config);
+            }
+            return this;
+        }
+
+        /**
+         * <p>Provider configuration (clientId, issuer, etc.)</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "config", nulls = Nulls.SKIP)
+        public _FinalStage config(Map<String, Object> config) {
+            this.config.clear();
+            if (config != null) {
+                this.config.putAll(config);
+            }
             return this;
         }
 
         @java.lang.Override
         public SsoCreate build() {
-            return new SsoCreate(
-                    name,
-                    clientId,
-                    clientSecret,
-                    issuer,
-                    authorizationEndpoint,
-                    tokenEndpoint,
-                    userInfoEndpoint,
-                    additionalProperties);
+            return new SsoCreate(provider, domain, config, active, extendedData, additionalProperties);
         }
     }
 }

@@ -31,6 +31,10 @@ public final class WebhookCreate {
 
     private final Optional<String> secret;
 
+    private final Optional<Boolean> active;
+
+    private final Optional<Map<String, Object>> extendedData;
+
     private final Map<String, Object> additionalProperties;
 
     private WebhookCreate(
@@ -38,11 +42,15 @@ public final class WebhookCreate {
             String url,
             List<String> events,
             Optional<String> secret,
+            Optional<Boolean> active,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.url = url;
         this.events = events;
         this.secret = secret;
+        this.active = active;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
@@ -78,6 +86,22 @@ public final class WebhookCreate {
         return secret;
     }
 
+    /**
+     * @return Whether webhook is active
+     */
+    @JsonProperty("active")
+    public Optional<Boolean> getActive() {
+        return active;
+    }
+
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -93,12 +117,14 @@ public final class WebhookCreate {
         return name.equals(other.name)
                 && url.equals(other.url)
                 && events.equals(other.events)
-                && secret.equals(other.secret);
+                && secret.equals(other.secret)
+                && active.equals(other.active)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.url, this.events, this.secret);
+        return Objects.hash(this.name, this.url, this.events, this.secret, this.active, this.extendedData);
     }
 
     @java.lang.Override
@@ -144,6 +170,20 @@ public final class WebhookCreate {
         _FinalStage secret(Optional<String> secret);
 
         _FinalStage secret(String secret);
+
+        /**
+         * <p>Whether webhook is active</p>
+         */
+        _FinalStage active(Optional<Boolean> active);
+
+        _FinalStage active(Boolean active);
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
+
+        _FinalStage extendedData(Map<String, Object> extendedData);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -151,6 +191,10 @@ public final class WebhookCreate {
         private String name;
 
         private String url;
+
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
+
+        private Optional<Boolean> active = Optional.empty();
 
         private Optional<String> secret = Optional.empty();
 
@@ -167,6 +211,8 @@ public final class WebhookCreate {
             url(other.getUrl());
             events(other.getEvents());
             secret(other.getSecret());
+            active(other.getActive());
+            extendedData(other.getExtendedData());
             return this;
         }
 
@@ -191,6 +237,46 @@ public final class WebhookCreate {
         @JsonSetter("url")
         public _FinalStage url(@NotNull String url) {
             this.url = Objects.requireNonNull(url, "url must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
+            return this;
+        }
+
+        /**
+         * <p>Whether webhook is active</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage active(Boolean active) {
+            this.active = Optional.ofNullable(active);
+            return this;
+        }
+
+        /**
+         * <p>Whether webhook is active</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "active", nulls = Nulls.SKIP)
+        public _FinalStage active(Optional<Boolean> active) {
+            this.active = active;
             return this;
         }
 
@@ -251,7 +337,7 @@ public final class WebhookCreate {
 
         @java.lang.Override
         public WebhookCreate build() {
-            return new WebhookCreate(name, url, events, secret, additionalProperties);
+            return new WebhookCreate(name, url, events, secret, active, extendedData, additionalProperties);
         }
     }
 }

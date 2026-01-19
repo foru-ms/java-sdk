@@ -18,23 +18,21 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.tags.requests.DeleteTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.DeleteTagsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdSubscribersRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsIdSubscribersSubIdRequest;
-import com.foru.ms.api.resources.tags.requests.GetTagsRequest;
-import com.foru.ms.api.resources.tags.requests.PatchTagsIdRequest;
-import com.foru.ms.api.resources.tags.requests.PostTagsRequest;
-import com.foru.ms.api.resources.tags.types.DeleteTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.DeleteTagsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdSubscribersResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsIdSubscribersSubIdResponse;
-import com.foru.ms.api.resources.tags.types.GetTagsResponse;
-import com.foru.ms.api.resources.tags.types.PatchTagsIdResponse;
-import com.foru.ms.api.resources.tags.types.PostTagsResponse;
+import com.foru.ms.api.resources.tags.requests.CreateTagsRequest;
+import com.foru.ms.api.resources.tags.requests.DeleteSubscriberTagsRequest;
+import com.foru.ms.api.resources.tags.requests.DeleteTagsRequest;
+import com.foru.ms.api.resources.tags.requests.ListSubscribersTagsRequest;
+import com.foru.ms.api.resources.tags.requests.ListTagsRequest;
+import com.foru.ms.api.resources.tags.requests.RetrieveSubscriberTagsRequest;
+import com.foru.ms.api.resources.tags.requests.RetrieveTagsRequest;
+import com.foru.ms.api.resources.tags.requests.UpdateTagsRequest;
+import com.foru.ms.api.resources.tags.types.RetrieveSubscriberTagsResponse;
+import com.foru.ms.api.resources.tags.types.UpdateTagsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.SuccessResponse;
+import com.foru.ms.api.types.TagListResponse;
+import com.foru.ms.api.types.TagResponse;
+import com.foru.ms.api.types.TagSubscriberListResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -55,30 +53,42 @@ public class AsyncRawTagsClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsResponse>> listAllTags() {
-        return listAllTags(GetTagsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagListResponse>> list() {
+        return list(ListTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsResponse>> listAllTags(RequestOptions requestOptions) {
-        return listAllTags(GetTagsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagListResponse>> list(RequestOptions requestOptions) {
+        return list(ListTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsResponse>> listAllTags(GetTagsRequest request) {
-        return listAllTags(request, null);
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagListResponse>> list(ListTagsRequest request) {
+        return list(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsResponse>> listAllTags(
-            GetTagsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of tags. Use cursor for pagination.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagListResponse>> list(
+            ListTagsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -94,7 +104,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetTagsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<TagListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -102,7 +112,7 @@ public class AsyncRawTagsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetTagsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagListResponse.class),
                                 response));
                         return;
                     }
@@ -149,12 +159,18 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostTagsResponse>> createATag(PostTagsRequest request) {
-        return createATag(request, null);
+    /**
+     * Create a new tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagResponse>> create(CreateTagsRequest request) {
+        return create(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostTagsResponse>> createATag(
-            PostTagsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagResponse>> create(
+            CreateTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -177,7 +193,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostTagsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<TagResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -185,8 +201,7 @@ public class AsyncRawTagsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostTagsResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagResponse.class), response));
                         return;
                     }
                     try {
@@ -237,21 +252,32 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdResponse>> getATag(String id) {
-        return getATag(id, GetTagsIdRequest.builder().build());
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagResponse>> retrieve(String id) {
+        return retrieve(id, RetrieveTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdResponse>> getATag(
-            String id, RequestOptions requestOptions) {
-        return getATag(id, GetTagsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagResponse>> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdResponse>> getATag(String id, GetTagsIdRequest request) {
-        return getATag(id, request, null);
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagResponse>> retrieve(String id, RetrieveTagsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdResponse>> getATag(
-            String id, GetTagsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a tag by ID or slug (if supported).
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagResponse>> retrieve(
+            String id, RetrieveTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -267,7 +293,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetTagsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<TagResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -275,8 +301,7 @@ public class AsyncRawTagsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetTagsIdResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TagResponse.class), response));
                         return;
                     }
                     try {
@@ -327,22 +352,33 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdResponse>> deleteATag(String id) {
-        return deleteATag(id, DeleteTagsIdRequest.builder().build());
+    /**
+     * Permanently delete a tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id) {
+        return delete(id, DeleteTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdResponse>> deleteATag(
+    /**
+     * Permanently delete a tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
             String id, RequestOptions requestOptions) {
-        return deleteATag(id, DeleteTagsIdRequest.builder().build(), requestOptions);
+        return delete(id, DeleteTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdResponse>> deleteATag(
-            String id, DeleteTagsIdRequest request) {
-        return deleteATag(id, request, null);
+    /**
+     * Permanently delete a tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(String id, DeleteTagsRequest request) {
+        return delete(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdResponse>> deleteATag(
-            String id, DeleteTagsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> delete(
+            String id, DeleteTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -358,7 +394,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteTagsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -366,7 +402,7 @@ public class AsyncRawTagsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteTagsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }
@@ -418,22 +454,33 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchTagsIdResponse>> updateATag(String id) {
-        return updateATag(id, PatchTagsIdRequest.builder().build());
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateTagsResponse>> update(String id) {
+        return update(id, UpdateTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchTagsIdResponse>> updateATag(
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateTagsResponse>> update(
             String id, RequestOptions requestOptions) {
-        return updateATag(id, PatchTagsIdRequest.builder().build(), requestOptions);
+        return update(id, UpdateTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchTagsIdResponse>> updateATag(
-            String id, PatchTagsIdRequest request) {
-        return updateATag(id, request, null);
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateTagsResponse>> update(String id, UpdateTagsRequest request) {
+        return update(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PatchTagsIdResponse>> updateATag(
-            String id, PatchTagsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Update an existing tag. Only provided fields will be modified.
+     */
+    public CompletableFuture<ForumClientHttpResponse<UpdateTagsResponse>> update(
+            String id, UpdateTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -457,7 +504,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PatchTagsIdResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<UpdateTagsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -465,7 +512,7 @@ public class AsyncRawTagsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PatchTagsIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateTagsResponse.class),
                                 response));
                         return;
                     }
@@ -522,34 +569,46 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersResponse>> listTagSubscribers(String id) {
-        return listTagSubscribers(id, GetTagsIdSubscribersRequest.builder().build());
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagSubscriberListResponse>> listSubscribers(String id) {
+        return listSubscribers(id, ListSubscribersTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersResponse>> listTagSubscribers(
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagSubscriberListResponse>> listSubscribers(
             String id, RequestOptions requestOptions) {
-        return listTagSubscribers(id, GetTagsIdSubscribersRequest.builder().build(), requestOptions);
+        return listSubscribers(id, ListSubscribersTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersResponse>> listTagSubscribers(
-            String id, GetTagsIdSubscribersRequest request) {
-        return listTagSubscribers(id, request, null);
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagSubscriberListResponse>> listSubscribers(
+            String id, ListSubscribersTagsRequest request) {
+        return listSubscribers(id, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersResponse>> listTagSubscribers(
-            String id, GetTagsIdSubscribersRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of subscribers for Tag.
+     */
+    public CompletableFuture<ForumClientHttpResponse<TagSubscriberListResponse>> listSubscribers(
+            String id, ListSubscribersTagsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
                 .addPathSegment(id)
                 .addPathSegments("subscribers");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -561,7 +620,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<TagSubscriberListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -570,7 +629,7 @@ public class AsyncRawTagsClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetTagsIdSubscribersResponse.class),
+                                        responseBodyString, TagSubscriberListResponse.class),
                                 response));
                         return;
                     }
@@ -617,25 +676,25 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse>> getASubscriberFromTag(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveSubscriberTagsResponse>> retrieveSubscriber(
             String id, String subId) {
-        return getASubscriberFromTag(
-                id, subId, GetTagsIdSubscribersSubIdRequest.builder().build());
+        return retrieveSubscriber(
+                id, subId, RetrieveSubscriberTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse>> getASubscriberFromTag(
+    public CompletableFuture<ForumClientHttpResponse<RetrieveSubscriberTagsResponse>> retrieveSubscriber(
             String id, String subId, RequestOptions requestOptions) {
-        return getASubscriberFromTag(
-                id, subId, GetTagsIdSubscribersSubIdRequest.builder().build(), requestOptions);
+        return retrieveSubscriber(
+                id, subId, RetrieveSubscriberTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse>> getASubscriberFromTag(
-            String id, String subId, GetTagsIdSubscribersSubIdRequest request) {
-        return getASubscriberFromTag(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<RetrieveSubscriberTagsResponse>> retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberTagsRequest request) {
+        return retrieveSubscriber(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse>> getASubscriberFromTag(
-            String id, String subId, GetTagsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<RetrieveSubscriberTagsResponse>> retrieveSubscriber(
+            String id, String subId, RetrieveSubscriberTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -653,8 +712,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetTagsIdSubscribersSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RetrieveSubscriberTagsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -663,7 +721,7 @@ public class AsyncRawTagsClient {
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, GetTagsIdSubscribersSubIdResponse.class),
+                                        responseBodyString, RetrieveSubscriberTagsResponse.class),
                                 response));
                         return;
                     }
@@ -710,25 +768,22 @@ public class AsyncRawTagsClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse>> deleteASubscriberFromTag(
-            String id, String subId) {
-        return deleteASubscriberFromTag(
-                id, subId, DeleteTagsIdSubscribersSubIdRequest.builder().build());
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteSubscriber(String id, String subId) {
+        return deleteSubscriber(id, subId, DeleteSubscriberTagsRequest.builder().build());
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse>> deleteASubscriberFromTag(
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteSubscriber(
             String id, String subId, RequestOptions requestOptions) {
-        return deleteASubscriberFromTag(
-                id, subId, DeleteTagsIdSubscribersSubIdRequest.builder().build(), requestOptions);
+        return deleteSubscriber(id, subId, DeleteSubscriberTagsRequest.builder().build(), requestOptions);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse>> deleteASubscriberFromTag(
-            String id, String subId, DeleteTagsIdSubscribersSubIdRequest request) {
-        return deleteASubscriberFromTag(id, subId, request, null);
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteSubscriber(
+            String id, String subId, DeleteSubscriberTagsRequest request) {
+        return deleteSubscriber(id, subId, request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse>> deleteASubscriberFromTag(
-            String id, String subId, DeleteTagsIdSubscribersSubIdRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<SuccessResponse>> deleteSubscriber(
+            String id, String subId, DeleteSubscriberTagsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tags")
@@ -746,8 +801,7 @@ public class AsyncRawTagsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<DeleteTagsIdSubscribersSubIdResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -755,8 +809,7 @@ public class AsyncRawTagsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, DeleteTagsIdSubscribersSubIdResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class),
                                 response));
                         return;
                     }

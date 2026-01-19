@@ -18,15 +18,16 @@ import com.foru.ms.api.errors.NotFoundError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.reports.requests.DeleteReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsIdRequest;
-import com.foru.ms.api.resources.reports.requests.GetReportsRequest;
-import com.foru.ms.api.resources.reports.requests.PostReportsRequest;
-import com.foru.ms.api.resources.reports.types.DeleteReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsIdResponse;
-import com.foru.ms.api.resources.reports.types.GetReportsResponse;
-import com.foru.ms.api.resources.reports.types.PostReportsResponse;
+import com.foru.ms.api.resources.reports.requests.CreateReportsRequest;
+import com.foru.ms.api.resources.reports.requests.DeleteReportsRequest;
+import com.foru.ms.api.resources.reports.requests.ListReportsRequest;
+import com.foru.ms.api.resources.reports.requests.RetrieveReportsRequest;
+import com.foru.ms.api.resources.reports.requests.UpdateReportsRequest;
+import com.foru.ms.api.resources.reports.types.UpdateReportsResponse;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.ReportListResponse;
+import com.foru.ms.api.types.ReportResponse;
+import com.foru.ms.api.types.SuccessResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -43,34 +44,53 @@ public class RawReportsClient {
         this.clientOptions = clientOptions;
     }
 
-    public ForumClientHttpResponse<GetReportsResponse> listAllReports() {
-        return listAllReports(GetReportsRequest.builder().build());
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<ReportListResponse> list() {
+        return list(ListReportsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetReportsResponse> listAllReports(RequestOptions requestOptions) {
-        return listAllReports(GetReportsRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<ReportListResponse> list(RequestOptions requestOptions) {
+        return list(ListReportsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetReportsResponse> listAllReports(GetReportsRequest request) {
-        return listAllReports(request, null);
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<ReportListResponse> list(ListReportsRequest request) {
+        return list(request, null);
     }
 
-    public ForumClientHttpResponse<GetReportsResponse> listAllReports(
-            GetReportsRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a paginated list of reports. Use cursor for pagination.
+     */
+    public ForumClientHttpResponse<ReportListResponse> list(ListReportsRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports");
-        if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "page", request.getPage().get(), false);
-        }
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
-        if (request.getSearch().isPresent()) {
+        if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
-                    httpUrl, "search", request.getSearch().get(), false);
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getStatus().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "status", request.getStatus().get(), false);
+        }
+        if (request.getReporterId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "reporterId", request.getReporterId().get(), false);
+        }
+        if (request.getReportedId().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "reportedId", request.getReportedId().get(), false);
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -87,7 +107,7 @@ public class RawReportsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetReportsResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ReportListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -115,12 +135,17 @@ public class RawReportsClient {
         }
     }
 
-    public ForumClientHttpResponse<PostReportsResponse> createAReport(PostReportsRequest request) {
-        return createAReport(request, null);
+    /**
+     * Create a new report.
+     */
+    public ForumClientHttpResponse<ReportResponse> create(CreateReportsRequest request) {
+        return create(request, null);
     }
 
-    public ForumClientHttpResponse<PostReportsResponse> createAReport(
-            PostReportsRequest request, RequestOptions requestOptions) {
+    /**
+     * Create a new report.
+     */
+    public ForumClientHttpResponse<ReportResponse> create(CreateReportsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports")
@@ -148,7 +173,7 @@ public class RawReportsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostReportsResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ReportResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -179,20 +204,32 @@ public class RawReportsClient {
         }
     }
 
-    public ForumClientHttpResponse<GetReportsIdResponse> getAReport(String id) {
-        return getAReport(id, GetReportsIdRequest.builder().build());
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<ReportResponse> retrieve(String id) {
+        return retrieve(id, RetrieveReportsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<GetReportsIdResponse> getAReport(String id, RequestOptions requestOptions) {
-        return getAReport(id, GetReportsIdRequest.builder().build(), requestOptions);
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<ReportResponse> retrieve(String id, RequestOptions requestOptions) {
+        return retrieve(id, RetrieveReportsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<GetReportsIdResponse> getAReport(String id, GetReportsIdRequest request) {
-        return getAReport(id, request, null);
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<ReportResponse> retrieve(String id, RetrieveReportsRequest request) {
+        return retrieve(id, request, null);
     }
 
-    public ForumClientHttpResponse<GetReportsIdResponse> getAReport(
-            String id, GetReportsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Retrieve a report by ID or slug (if supported).
+     */
+    public ForumClientHttpResponse<ReportResponse> retrieve(
+            String id, RetrieveReportsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports")
@@ -213,7 +250,7 @@ public class RawReportsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetReportsIdResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ReportResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -244,20 +281,32 @@ public class RawReportsClient {
         }
     }
 
-    public ForumClientHttpResponse<DeleteReportsIdResponse> deleteAReport(String id) {
-        return deleteAReport(id, DeleteReportsIdRequest.builder().build());
+    /**
+     * Permanently delete a report.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id) {
+        return delete(id, DeleteReportsRequest.builder().build());
     }
 
-    public ForumClientHttpResponse<DeleteReportsIdResponse> deleteAReport(String id, RequestOptions requestOptions) {
-        return deleteAReport(id, DeleteReportsIdRequest.builder().build(), requestOptions);
+    /**
+     * Permanently delete a report.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, RequestOptions requestOptions) {
+        return delete(id, DeleteReportsRequest.builder().build(), requestOptions);
     }
 
-    public ForumClientHttpResponse<DeleteReportsIdResponse> deleteAReport(String id, DeleteReportsIdRequest request) {
-        return deleteAReport(id, request, null);
+    /**
+     * Permanently delete a report.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(String id, DeleteReportsRequest request) {
+        return delete(id, request, null);
     }
 
-    public ForumClientHttpResponse<DeleteReportsIdResponse> deleteAReport(
-            String id, DeleteReportsIdRequest request, RequestOptions requestOptions) {
+    /**
+     * Permanently delete a report.
+     */
+    public ForumClientHttpResponse<SuccessResponse> delete(
+            String id, DeleteReportsRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("reports")
@@ -278,11 +327,98 @@ public class RawReportsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new ForumClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteReportsIdResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
             }
             try {
                 switch (response.code()) {
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 402:
+                        throw new PaymentRequiredError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 429:
+                        throw new TooManyRequestsError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new ForumClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (IOException e) {
+            throw new ForumClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateReportsResponse> update(String id) {
+        return update(id, UpdateReportsRequest.builder().build());
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateReportsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, UpdateReportsRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateReportsResponse> update(String id, UpdateReportsRequest request) {
+        return update(id, request, null);
+    }
+
+    /**
+     * Update an existing report. Only provided fields will be modified.
+     */
+    public ForumClientHttpResponse<UpdateReportsResponse> update(
+            String id, UpdateReportsRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("reports")
+                .addPathSegment(id)
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new ForumClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("PATCH", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+                return new ForumClientHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateReportsResponse.class), response);
+            }
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                     case 401:
                         throw new UnauthorizedError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);

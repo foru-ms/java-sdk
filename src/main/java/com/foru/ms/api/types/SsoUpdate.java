@@ -20,55 +20,39 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SsoUpdate.Builder.class)
 public final class SsoUpdate {
-    private final Optional<String> name;
+    private final Optional<SsoUpdateProvider> provider;
 
     private final Optional<String> domain;
 
-    private final Optional<String> clientId;
-
-    private final Optional<String> clientSecret;
-
-    private final Optional<String> issuer;
-
-    private final Optional<String> authorizationEndpoint;
-
-    private final Optional<String> tokenEndpoint;
-
-    private final Optional<String> userInfoEndpoint;
+    private final Optional<Map<String, Object>> config;
 
     private final Optional<Boolean> active;
+
+    private final Optional<Map<String, Object>> extendedData;
 
     private final Map<String, Object> additionalProperties;
 
     private SsoUpdate(
-            Optional<String> name,
+            Optional<SsoUpdateProvider> provider,
             Optional<String> domain,
-            Optional<String> clientId,
-            Optional<String> clientSecret,
-            Optional<String> issuer,
-            Optional<String> authorizationEndpoint,
-            Optional<String> tokenEndpoint,
-            Optional<String> userInfoEndpoint,
+            Optional<Map<String, Object>> config,
             Optional<Boolean> active,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
-        this.name = name;
+        this.provider = provider;
         this.domain = domain;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.issuer = issuer;
-        this.authorizationEndpoint = authorizationEndpoint;
-        this.tokenEndpoint = tokenEndpoint;
-        this.userInfoEndpoint = userInfoEndpoint;
+        this.config = config;
         this.active = active;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Provider name
+     * @return SSO provider type
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonProperty("provider")
+    public Optional<SsoUpdateProvider> getProvider() {
+        return provider;
     }
 
     /**
@@ -79,34 +63,12 @@ public final class SsoUpdate {
         return domain;
     }
 
-    @JsonProperty("clientId")
-    public Optional<String> getClientId() {
-        return clientId;
-    }
-
-    @JsonProperty("clientSecret")
-    public Optional<String> getClientSecret() {
-        return clientSecret;
-    }
-
-    @JsonProperty("issuer")
-    public Optional<String> getIssuer() {
-        return issuer;
-    }
-
-    @JsonProperty("authorizationEndpoint")
-    public Optional<String> getAuthorizationEndpoint() {
-        return authorizationEndpoint;
-    }
-
-    @JsonProperty("tokenEndpoint")
-    public Optional<String> getTokenEndpoint() {
-        return tokenEndpoint;
-    }
-
-    @JsonProperty("userInfoEndpoint")
-    public Optional<String> getUserInfoEndpoint() {
-        return userInfoEndpoint;
+    /**
+     * @return Provider configuration
+     */
+    @JsonProperty("config")
+    public Optional<Map<String, Object>> getConfig() {
+        return config;
     }
 
     /**
@@ -115,6 +77,14 @@ public final class SsoUpdate {
     @JsonProperty("active")
     public Optional<Boolean> getActive() {
         return active;
+    }
+
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
     }
 
     @java.lang.Override
@@ -129,29 +99,16 @@ public final class SsoUpdate {
     }
 
     private boolean equalTo(SsoUpdate other) {
-        return name.equals(other.name)
+        return provider.equals(other.provider)
                 && domain.equals(other.domain)
-                && clientId.equals(other.clientId)
-                && clientSecret.equals(other.clientSecret)
-                && issuer.equals(other.issuer)
-                && authorizationEndpoint.equals(other.authorizationEndpoint)
-                && tokenEndpoint.equals(other.tokenEndpoint)
-                && userInfoEndpoint.equals(other.userInfoEndpoint)
-                && active.equals(other.active);
+                && config.equals(other.config)
+                && active.equals(other.active)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.name,
-                this.domain,
-                this.clientId,
-                this.clientSecret,
-                this.issuer,
-                this.authorizationEndpoint,
-                this.tokenEndpoint,
-                this.userInfoEndpoint,
-                this.active);
+        return Objects.hash(this.provider, this.domain, this.config, this.active, this.extendedData);
     }
 
     @java.lang.Override
@@ -165,23 +122,15 @@ public final class SsoUpdate {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<String> name = Optional.empty();
+        private Optional<SsoUpdateProvider> provider = Optional.empty();
 
         private Optional<String> domain = Optional.empty();
 
-        private Optional<String> clientId = Optional.empty();
-
-        private Optional<String> clientSecret = Optional.empty();
-
-        private Optional<String> issuer = Optional.empty();
-
-        private Optional<String> authorizationEndpoint = Optional.empty();
-
-        private Optional<String> tokenEndpoint = Optional.empty();
-
-        private Optional<String> userInfoEndpoint = Optional.empty();
+        private Optional<Map<String, Object>> config = Optional.empty();
 
         private Optional<Boolean> active = Optional.empty();
+
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -189,29 +138,25 @@ public final class SsoUpdate {
         private Builder() {}
 
         public Builder from(SsoUpdate other) {
-            name(other.getName());
+            provider(other.getProvider());
             domain(other.getDomain());
-            clientId(other.getClientId());
-            clientSecret(other.getClientSecret());
-            issuer(other.getIssuer());
-            authorizationEndpoint(other.getAuthorizationEndpoint());
-            tokenEndpoint(other.getTokenEndpoint());
-            userInfoEndpoint(other.getUserInfoEndpoint());
+            config(other.getConfig());
             active(other.getActive());
+            extendedData(other.getExtendedData());
             return this;
         }
 
         /**
-         * <p>Provider name</p>
+         * <p>SSO provider type</p>
          */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
+        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
+        public Builder provider(Optional<SsoUpdateProvider> provider) {
+            this.provider = provider;
             return this;
         }
 
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
+        public Builder provider(SsoUpdateProvider provider) {
+            this.provider = Optional.ofNullable(provider);
             return this;
         }
 
@@ -229,69 +174,17 @@ public final class SsoUpdate {
             return this;
         }
 
-        @JsonSetter(value = "clientId", nulls = Nulls.SKIP)
-        public Builder clientId(Optional<String> clientId) {
-            this.clientId = clientId;
+        /**
+         * <p>Provider configuration</p>
+         */
+        @JsonSetter(value = "config", nulls = Nulls.SKIP)
+        public Builder config(Optional<Map<String, Object>> config) {
+            this.config = config;
             return this;
         }
 
-        public Builder clientId(String clientId) {
-            this.clientId = Optional.ofNullable(clientId);
-            return this;
-        }
-
-        @JsonSetter(value = "clientSecret", nulls = Nulls.SKIP)
-        public Builder clientSecret(Optional<String> clientSecret) {
-            this.clientSecret = clientSecret;
-            return this;
-        }
-
-        public Builder clientSecret(String clientSecret) {
-            this.clientSecret = Optional.ofNullable(clientSecret);
-            return this;
-        }
-
-        @JsonSetter(value = "issuer", nulls = Nulls.SKIP)
-        public Builder issuer(Optional<String> issuer) {
-            this.issuer = issuer;
-            return this;
-        }
-
-        public Builder issuer(String issuer) {
-            this.issuer = Optional.ofNullable(issuer);
-            return this;
-        }
-
-        @JsonSetter(value = "authorizationEndpoint", nulls = Nulls.SKIP)
-        public Builder authorizationEndpoint(Optional<String> authorizationEndpoint) {
-            this.authorizationEndpoint = authorizationEndpoint;
-            return this;
-        }
-
-        public Builder authorizationEndpoint(String authorizationEndpoint) {
-            this.authorizationEndpoint = Optional.ofNullable(authorizationEndpoint);
-            return this;
-        }
-
-        @JsonSetter(value = "tokenEndpoint", nulls = Nulls.SKIP)
-        public Builder tokenEndpoint(Optional<String> tokenEndpoint) {
-            this.tokenEndpoint = tokenEndpoint;
-            return this;
-        }
-
-        public Builder tokenEndpoint(String tokenEndpoint) {
-            this.tokenEndpoint = Optional.ofNullable(tokenEndpoint);
-            return this;
-        }
-
-        @JsonSetter(value = "userInfoEndpoint", nulls = Nulls.SKIP)
-        public Builder userInfoEndpoint(Optional<String> userInfoEndpoint) {
-            this.userInfoEndpoint = userInfoEndpoint;
-            return this;
-        }
-
-        public Builder userInfoEndpoint(String userInfoEndpoint) {
-            this.userInfoEndpoint = Optional.ofNullable(userInfoEndpoint);
+        public Builder config(Map<String, Object> config) {
+            this.config = Optional.ofNullable(config);
             return this;
         }
 
@@ -309,18 +202,22 @@ public final class SsoUpdate {
             return this;
         }
 
+        /**
+         * <p>Custom extended data</p>
+         */
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public Builder extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
+            return this;
+        }
+
+        public Builder extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
+            return this;
+        }
+
         public SsoUpdate build() {
-            return new SsoUpdate(
-                    name,
-                    domain,
-                    clientId,
-                    clientSecret,
-                    issuer,
-                    authorizationEndpoint,
-                    tokenEndpoint,
-                    userInfoEndpoint,
-                    active,
-                    additionalProperties);
+            return new SsoUpdate(provider, domain, config, active, extendedData, additionalProperties);
         }
     }
 }

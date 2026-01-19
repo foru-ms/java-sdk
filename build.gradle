@@ -47,7 +47,7 @@ java {
 
 group = 'com.foru-ms'
 
-version = '0.0.30'
+version = '0.0.31'
 
 jar {
     dependsOn(":generatePomFileForMavenPublication")
@@ -78,12 +78,12 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.foru-ms'
             artifactId = 'sdk'
-            version = '0.0.30'
+            version = '0.0.31'
             from components.java
             pom {
                 name = 'foru-ms'
                 description = 'The official SDK of foru-ms'
-                url = 'https://buildwithfern.com'
+                url = 'https://foru.ms'
                 licenses {
                     license {
                         name = 'The MIT License (MIT)'

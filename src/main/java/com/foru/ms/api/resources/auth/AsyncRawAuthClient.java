@@ -16,16 +16,16 @@ import com.foru.ms.api.errors.InternalServerError;
 import com.foru.ms.api.errors.PaymentRequiredError;
 import com.foru.ms.api.errors.TooManyRequestsError;
 import com.foru.ms.api.errors.UnauthorizedError;
-import com.foru.ms.api.resources.auth.requests.PostAuthForgotPasswordRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthLoginRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthRegisterRequest;
-import com.foru.ms.api.resources.auth.requests.PostAuthResetPasswordRequest;
-import com.foru.ms.api.resources.auth.types.GetAuthMeResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthForgotPasswordResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthLoginResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthRegisterResponse;
-import com.foru.ms.api.resources.auth.types.PostAuthResetPasswordResponse;
+import com.foru.ms.api.resources.auth.requests.ForgotPasswordAuthRequest;
+import com.foru.ms.api.resources.auth.requests.LoginAuthRequest;
+import com.foru.ms.api.resources.auth.requests.RegisterAuthRequest;
+import com.foru.ms.api.resources.auth.requests.ResetPasswordAuthRequest;
 import com.foru.ms.api.types.ErrorResponse;
+import com.foru.ms.api.types.ForgotPasswordResponse;
+import com.foru.ms.api.types.LoginResponse;
+import com.foru.ms.api.types.MeResponse;
+import com.foru.ms.api.types.RegisterResponse;
+import com.foru.ms.api.types.ResetPasswordResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -46,13 +46,18 @@ public class AsyncRawAuthClient {
         this.clientOptions = clientOptions;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthRegisterResponse>> register(
-            PostAuthRegisterRequest request) {
+    /**
+     * Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RegisterResponse>> register(RegisterAuthRequest request) {
         return register(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthRegisterResponse>> register(
-            PostAuthRegisterRequest request, RequestOptions requestOptions) {
+    /**
+     * Register a new user in your forum instance. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<ForumClientHttpResponse<RegisterResponse>> register(
+            RegisterAuthRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("auth/register")
@@ -75,7 +80,7 @@ public class AsyncRawAuthClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostAuthRegisterResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<RegisterResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -83,7 +88,7 @@ public class AsyncRawAuthClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostAuthRegisterResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RegisterResponse.class),
                                 response));
                         return;
                     }
@@ -91,6 +96,11 @@ public class AsyncRawAuthClient {
                         switch (response.code()) {
                             case 400:
                                 future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;
@@ -130,12 +140,18 @@ public class AsyncRawAuthClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthLoginResponse>> login(PostAuthLoginRequest request) {
+    /**
+     * Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<ForumClientHttpResponse<LoginResponse>> login(LoginAuthRequest request) {
         return login(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthLoginResponse>> login(
-            PostAuthLoginRequest request, RequestOptions requestOptions) {
+    /**
+     * Authenticate an existing user. Requires API key for instance identification. Returns a JWT token for subsequent authenticated requests.
+     */
+    public CompletableFuture<ForumClientHttpResponse<LoginResponse>> login(
+            LoginAuthRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("auth/login")
@@ -158,7 +174,7 @@ public class AsyncRawAuthClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostAuthLoginResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<LoginResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -166,7 +182,7 @@ public class AsyncRawAuthClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PostAuthLoginResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, LoginResponse.class),
                                 response));
                         return;
                     }
@@ -174,6 +190,11 @@ public class AsyncRawAuthClient {
                         switch (response.code()) {
                             case 400:
                                 future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;
@@ -213,11 +234,11 @@ public class AsyncRawAuthClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetAuthMeResponse>> getCurrentUser() {
-        return getCurrentUser(null);
+    public CompletableFuture<ForumClientHttpResponse<MeResponse>> me() {
+        return me(null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<GetAuthMeResponse>> getCurrentUser(RequestOptions requestOptions) {
+    public CompletableFuture<ForumClientHttpResponse<MeResponse>> me(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("auth/me")
@@ -232,7 +253,7 @@ public class AsyncRawAuthClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<GetAuthMeResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<MeResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -240,8 +261,7 @@ public class AsyncRawAuthClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetAuthMeResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, MeResponse.class), response));
                         return;
                     }
                     try {
@@ -287,13 +307,19 @@ public class AsyncRawAuthClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthForgotPasswordResponse>> requestPasswordReset(
-            PostAuthForgotPasswordRequest request) {
-        return requestPasswordReset(request, null);
+    /**
+     * Request a password reset email. Requires API key for instance identification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ForgotPasswordResponse>> forgotPassword(
+            ForgotPasswordAuthRequest request) {
+        return forgotPassword(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthForgotPasswordResponse>> requestPasswordReset(
-            PostAuthForgotPasswordRequest request, RequestOptions requestOptions) {
+    /**
+     * Request a password reset email. Requires API key for instance identification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ForgotPasswordResponse>> forgotPassword(
+            ForgotPasswordAuthRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("auth/forgot-password")
@@ -316,7 +342,7 @@ public class AsyncRawAuthClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostAuthForgotPasswordResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<ForgotPasswordResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -324,8 +350,7 @@ public class AsyncRawAuthClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PostAuthForgotPasswordResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ForgotPasswordResponse.class),
                                 response));
                         return;
                     }
@@ -333,6 +358,11 @@ public class AsyncRawAuthClient {
                         switch (response.code()) {
                             case 400:
                                 future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;
@@ -372,13 +402,19 @@ public class AsyncRawAuthClient {
         return future;
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthResetPasswordResponse>> resetPassword(
-            PostAuthResetPasswordRequest request) {
+    /**
+     * Reset password using a reset token. Requires API key for instance identification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ResetPasswordResponse>> resetPassword(
+            ResetPasswordAuthRequest request) {
         return resetPassword(request, null);
     }
 
-    public CompletableFuture<ForumClientHttpResponse<PostAuthResetPasswordResponse>> resetPassword(
-            PostAuthResetPasswordRequest request, RequestOptions requestOptions) {
+    /**
+     * Reset password using a reset token. Requires API key for instance identification.
+     */
+    public CompletableFuture<ForumClientHttpResponse<ResetPasswordResponse>> resetPassword(
+            ResetPasswordAuthRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("auth/reset-password")
@@ -401,7 +437,7 @@ public class AsyncRawAuthClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<ForumClientHttpResponse<PostAuthResetPasswordResponse>> future = new CompletableFuture<>();
+        CompletableFuture<ForumClientHttpResponse<ResetPasswordResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -409,8 +445,7 @@ public class AsyncRawAuthClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new ForumClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, PostAuthResetPasswordResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ResetPasswordResponse.class),
                                 response));
                         return;
                     }
@@ -418,6 +453,11 @@ public class AsyncRawAuthClient {
                         switch (response.code()) {
                             case 400:
                                 future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;

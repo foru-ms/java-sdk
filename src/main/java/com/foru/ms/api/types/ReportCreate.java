@@ -23,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
 public final class ReportCreate {
     private final String type;
 
+    private final Optional<String> status;
+
     private final Optional<String> description;
 
     private final Optional<String> userId;
@@ -35,24 +37,30 @@ public final class ReportCreate {
 
     private final Optional<String> privateMessageId;
 
+    private final Optional<Map<String, Object>> extendedData;
+
     private final Map<String, Object> additionalProperties;
 
     private ReportCreate(
             String type,
+            Optional<String> status,
             Optional<String> description,
             Optional<String> userId,
             Optional<String> reportedId,
             Optional<String> threadId,
             Optional<String> postId,
             Optional<String> privateMessageId,
+            Optional<Map<String, Object>> extendedData,
             Map<String, Object> additionalProperties) {
         this.type = type;
+        this.status = status;
         this.description = description;
         this.userId = userId;
         this.reportedId = reportedId;
         this.threadId = threadId;
         this.postId = postId;
         this.privateMessageId = privateMessageId;
+        this.extendedData = extendedData;
         this.additionalProperties = additionalProperties;
     }
 
@@ -62,6 +70,14 @@ public final class ReportCreate {
     @JsonProperty("type")
     public String getType() {
         return type;
+    }
+
+    /**
+     * @return Report status (default: pending)
+     */
+    @JsonProperty("status")
+    public Optional<String> getStatus() {
+        return status;
     }
 
     /**
@@ -112,6 +128,14 @@ public final class ReportCreate {
         return privateMessageId;
     }
 
+    /**
+     * @return Custom extended data
+     */
+    @JsonProperty("extendedData")
+    public Optional<Map<String, Object>> getExtendedData() {
+        return extendedData;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -125,24 +149,28 @@ public final class ReportCreate {
 
     private boolean equalTo(ReportCreate other) {
         return type.equals(other.type)
+                && status.equals(other.status)
                 && description.equals(other.description)
                 && userId.equals(other.userId)
                 && reportedId.equals(other.reportedId)
                 && threadId.equals(other.threadId)
                 && postId.equals(other.postId)
-                && privateMessageId.equals(other.privateMessageId);
+                && privateMessageId.equals(other.privateMessageId)
+                && extendedData.equals(other.extendedData);
     }
 
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
                 this.type,
+                this.status,
                 this.description,
                 this.userId,
                 this.reportedId,
                 this.threadId,
                 this.postId,
-                this.privateMessageId);
+                this.privateMessageId,
+                this.extendedData);
     }
 
     @java.lang.Override
@@ -165,6 +193,13 @@ public final class ReportCreate {
 
     public interface _FinalStage {
         ReportCreate build();
+
+        /**
+         * <p>Report status (default: pending)</p>
+         */
+        _FinalStage status(Optional<String> status);
+
+        _FinalStage status(String status);
 
         /**
          * <p>Reason for reporting</p>
@@ -207,11 +242,20 @@ public final class ReportCreate {
         _FinalStage privateMessageId(Optional<String> privateMessageId);
 
         _FinalStage privateMessageId(String privateMessageId);
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        _FinalStage extendedData(Optional<Map<String, Object>> extendedData);
+
+        _FinalStage extendedData(Map<String, Object> extendedData);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements TypeStage, _FinalStage {
         private String type;
+
+        private Optional<Map<String, Object>> extendedData = Optional.empty();
 
         private Optional<String> privateMessageId = Optional.empty();
 
@@ -225,6 +269,8 @@ public final class ReportCreate {
 
         private Optional<String> description = Optional.empty();
 
+        private Optional<String> status = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -233,12 +279,14 @@ public final class ReportCreate {
         @java.lang.Override
         public Builder from(ReportCreate other) {
             type(other.getType());
+            status(other.getStatus());
             description(other.getDescription());
             userId(other.getUserId());
             reportedId(other.getReportedId());
             threadId(other.getThreadId());
             postId(other.getPostId());
             privateMessageId(other.getPrivateMessageId());
+            extendedData(other.getExtendedData());
             return this;
         }
 
@@ -251,6 +299,26 @@ public final class ReportCreate {
         @JsonSetter("type")
         public _FinalStage type(@NotNull String type) {
             this.type = Objects.requireNonNull(type, "type must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage extendedData(Map<String, Object> extendedData) {
+            this.extendedData = Optional.ofNullable(extendedData);
+            return this;
+        }
+
+        /**
+         * <p>Custom extended data</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "extendedData", nulls = Nulls.SKIP)
+        public _FinalStage extendedData(Optional<Map<String, Object>> extendedData) {
+            this.extendedData = extendedData;
             return this;
         }
 
@@ -374,10 +442,39 @@ public final class ReportCreate {
             return this;
         }
 
+        /**
+         * <p>Report status (default: pending)</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage status(String status) {
+            this.status = Optional.ofNullable(status);
+            return this;
+        }
+
+        /**
+         * <p>Report status (default: pending)</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "status", nulls = Nulls.SKIP)
+        public _FinalStage status(Optional<String> status) {
+            this.status = status;
+            return this;
+        }
+
         @java.lang.Override
         public ReportCreate build() {
             return new ReportCreate(
-                    type, description, userId, reportedId, threadId, postId, privateMessageId, additionalProperties);
+                    type,
+                    status,
+                    description,
+                    userId,
+                    reportedId,
+                    threadId,
+                    postId,
+                    privateMessageId,
+                    extendedData,
+                    additionalProperties);
         }
     }
 }
